@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
-#include<glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement {
@@ -65,6 +65,11 @@ public:
     glm::mat4 GetViewMatrix()
     {
         return glm::lookAt(this->Position, this->Position + this->Front, this->Up);
+    }
+
+    glm::mat4 GetProjectionMatrix(float fov=45.0, float ratio=1.0, float near=0.01, float far=100.0)
+    {
+        return glm::perspective(fov, ratio, near, far);
     }
 
     // Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)

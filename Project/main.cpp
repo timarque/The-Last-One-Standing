@@ -86,11 +86,16 @@ int main(int argc, char* argv[]) {
 
     Shader shader("../../Project/shaders/commonObjects/commonObjects.vert",
                   "../../Project/shaders/commonObjects/commonObjects.frag");
+
     Shader cubeMapShader("../../Project/shaders/skybox/skybox.vert",
                          "../../Project/shaders/skybox/skybox.frag");
 
+    Shader reflective_shader("../../Project/shaders/reflectiveObjects/reflectiveObjects.vert",
+                            "../../Project/shaders/reflectiveObjects/reflectiveObjects.frag");
+
     Object sphere1("../../Project/objects/sphere_smooth.obj");
-    sphere1.makeObject(shader, false);
+    sphere1.makeObject(reflective_shader);
+
     Object cubeMap("../../Project/objects/cube.obj");
     cubeMap.makeObject(cubeMapShader);
     // TODO : solve errors shown by the debugger
@@ -177,16 +182,6 @@ int main(int argc, char* argv[]) {
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glDepthFunc(GL_LEQUAL);
-        cubeMapShader.use();
-        cubeMapShader.setMatrix4("V", view);
-        cubeMapShader.setMatrix4("P", perspective);
-        cubeMapShader.setInteger("cubemapTexture", 0);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
-        cubeMap.draw();
-        glDepthFunc(GL_LESS);
-
         shader.use();
 
         shader.setMatrix4("M", model);
@@ -194,11 +189,34 @@ int main(int argc, char* argv[]) {
         shader.setMatrix4("V", view);
         shader.setMatrix4("P", perspective);
         shader.setVector3f("u_view_pos", camera.Position);
-        auto delta = light_pos + glm::vec3(0.0,0.0,2 * std::sin(now));
+        auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(now));
         shader.setVector3f("light.light_pos", delta);
+
+        reflective_shader.use();
+
+        reflective_shader.setMatrix4("M", model);
+        reflective_shader.setMatrix4("itM", inverseModel);
+        reflective_shader.setMatrix4("V", view);
+        reflective_shader.setMatrix4("P", perspective);
+        reflective_shader.setVector3f("u_view_pos", camera.Position);
+        reflective_shader.setVector3f("light.light_pos", delta);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
+        cubeMapShader.setInteger("cubemapTexture", 0);
+
+        
+        glDepthFunc(GL_LEQUAL);
         sphere1.draw();
 
+        cubeMapShader.use();
+        cubeMapShader.setMatrix4("V", view);
+        cubeMapShader.setMatrix4("P", perspective);
+        cubeMapShader.setInteger("cubemapTexture", 0);
+        cubeMap.draw();
+        glDepthFunc(GL_LESS);
 
+        
         //Show the object even if it's depth is equal to the depht of the object already present
 
         fps(now);

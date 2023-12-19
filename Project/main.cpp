@@ -93,8 +93,11 @@ int main(int argc, char* argv[]) {
     Shader reflective_shader("../../Project/shaders/reflectiveObjects/reflectiveObjects.vert",
                             "../../Project/shaders/reflectiveObjects/reflectiveObjects.frag");
 
+    Shader refractive_shader("../../Project/shaders/refractiveObjects/refractiveObjects.vert",
+        "../../Project/shaders/refractiveObjects/refractiveObjects.frag");
+
     Object sphere1("../../Project/objects/sphere_smooth.obj");
-    sphere1.makeObject(reflective_shader);
+    sphere1.makeObject(refractive_shader);
 
     Object cubeMap("../../Project/objects/cube.obj");
     cubeMap.makeObject(cubeMapShader);
@@ -192,14 +195,15 @@ int main(int argc, char* argv[]) {
         auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(now));
         shader.setVector3f("light.light_pos", delta);
 
-        reflective_shader.use();
+        // reflective is exact same as here but + that last line that is commented 
+        refractive_shader.use();
 
-        reflective_shader.setMatrix4("M", model);
-        reflective_shader.setMatrix4("itM", inverseModel);
-        reflective_shader.setMatrix4("V", view);
-        reflective_shader.setMatrix4("P", perspective);
-        reflective_shader.setVector3f("u_view_pos", camera.Position);
-        reflective_shader.setVector3f("light.light_pos", delta);
+        refractive_shader.setMatrix4("M", model);
+        refractive_shader.setMatrix4("itM", inverseModel);
+        refractive_shader.setMatrix4("V", view);
+        refractive_shader.setMatrix4("P", perspective);
+        refractive_shader.setVector3f("u_view_pos", camera.Position);
+        //reflective_shader.setVector3f("light.light_pos", delta);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
@@ -255,7 +259,7 @@ void setupDebug() {
 }
 
 GLFWwindow *createOpenGLWindow() {
-    GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Exercise 08", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Vr project", nullptr, nullptr);
     if (window == NULL)
     {
         glfwTerminate();

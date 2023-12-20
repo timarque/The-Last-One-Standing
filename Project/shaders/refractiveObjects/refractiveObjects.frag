@@ -7,9 +7,8 @@ uniform vec3 u_view_pos;
 uniform samplerCube cubemapSampler;
 uniform float refractionIndice;
 void main() { 
-	float ratio = 1.00 / refractionIndice;
 	vec3 N = normalize(v_normal);
 	vec3 V = normalize(u_view_pos - v_frag_coord); 
-	vec3 R = refract(-V,N,ratio); 
+	vec3 R = refract(-V,N,0.2); 
 	FragColor = texture(cubemapSampler,R); 
 }

@@ -46,6 +46,8 @@ public:
         }
     }
 
+    GLuint getTexture() { return cubeMapTextureID; };
+
     /**
      * Draws the cubeMap in the window
      */

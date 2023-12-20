@@ -169,7 +169,15 @@ int main(int argc, char* argv[]) {
         auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(now));
         shader.setVector3f("light.light_pos", delta);
 
-        // reflective is exact same as here but + that last line that is commented 
+        reflectiveShader.use();
+
+        reflectiveShader.setMatrix4("M", model);
+        reflectiveShader.setMatrix4("itM", inverseModel);
+        reflectiveShader.setMatrix4("V", view);
+        reflectiveShader.setMatrix4("P", perspective);
+        reflectiveShader.setVector3f("u_view_pos", camera.Position);
+        reflectiveShader.setVector3f("light.light_pos", delta);
+
         refractiveShader.use();
 
         refractiveShader.setMatrix4("M", model);
@@ -177,8 +185,12 @@ int main(int argc, char* argv[]) {
         refractiveShader.setMatrix4("V", view);
         refractiveShader.setMatrix4("P", perspective);
         refractiveShader.setVector3f("u_view_pos", camera.Position);
-        //reflective_shader.setVector3f("light.light_pos", delta);
 
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTexture());
+        cubeMapShader.setInteger("cubemapTexture", 0);
+        
+        glDepthFunc(GL_LEQUAL);
         sphere1.draw();
 
         cubeMapShader.use();

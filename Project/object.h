@@ -38,17 +38,14 @@ public:
     std::vector<glm::vec2> textures;
     std::vector<glm::vec3> normals;
     std::vector<Vertex> vertices;
-
     int numVertices;
-
     GLuint VBO, VAO;
-
     glm::mat4 model = glm::mat4(1.0);
+    Shader* shader;
 
+    Object(const char* modelPath, Shader* shader) {
 
-    Object(const char* path) {
-
-        std::ifstream infile(path);
+        std::ifstream infile(modelPath);
         //TODO Error management
         std::string line;
         while (std::getline(infile, line))
@@ -133,15 +130,15 @@ public:
         }
 
         std::cout << "Load model with " << vertices.size() << " vertices" << std::endl;
-
         infile.close();
 
+        this -> shader = shader;
         numVertices = vertices.size();
     }
 
 
 
-    void makeObject(Shader shader, bool texture = true) {
+    virtual void makeObject(Shader shader, bool texture = true) {
         /* This is a working but not perfect solution, you can improve it if you need/want
         * What happens if you call this function twice on an Model ?
         * What happens when a shader doesn't have a position, tex_coord or normal attribute ?

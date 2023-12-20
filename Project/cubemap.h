@@ -8,21 +8,18 @@
 
 #include <map>
 #include "object.h"
-#include "stb_image.h"
+//#define STB_IMAGE_IMPLEMENTATION
+//#include "stb_image.h"
 
 class CubeMap : public Object {
 
-protected:
+//protected:
     GLuint cubeMapTextureID;
 
 public:
+    CubeMap(const char *modelPath, Shader *shader) : Object(modelPath, shader) {}
 
-    /**
-     * Constructor of a cubeMap. The model of a cube map is a cube (by definition).
-     * @param texturePath is the path to the folder containing the textures of the cubemap.
-     */
-    explicit CubeMap(const char *texturePath) : Object(PATH_TO_OBJECTS "/cube.obj") {
-
+    void addTexture(std::string* texturePath) {
         glGenTextures(1, &cubeMapTextureID);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTextureID);
@@ -35,12 +32,12 @@ public:
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         std::map<std::string, GLenum> facesToLoad = {
-                {texturePath + "posx.jpg",GL_TEXTURE_CUBE_MAP_POSITIVE_X},
-                {texturePath + "posy.jpg",GL_TEXTURE_CUBE_MAP_POSITIVE_Y},
-                {texturePath + "posz.jpg",GL_TEXTURE_CUBE_MAP_POSITIVE_Z},
-                {texturePath + "negx.jpg",GL_TEXTURE_CUBE_MAP_NEGATIVE_X},
-                {texturePath + "negy.jpg",GL_TEXTURE_CUBE_MAP_NEGATIVE_Y},
-                {texturePath + "negz.jpg",GL_TEXTURE_CUBE_MAP_NEGATIVE_Z},
+                {*texturePath + "posx.jpg",GL_TEXTURE_CUBE_MAP_POSITIVE_X},
+                {*texturePath + "posy.jpg",GL_TEXTURE_CUBE_MAP_POSITIVE_Y},
+                {*texturePath + "posz.jpg",GL_TEXTURE_CUBE_MAP_POSITIVE_Z},
+                {*texturePath + "negx.jpg",GL_TEXTURE_CUBE_MAP_NEGATIVE_X},
+                {*texturePath + "negy.jpg",GL_TEXTURE_CUBE_MAP_NEGATIVE_Y},
+                {*texturePath + "negz.jpg",GL_TEXTURE_CUBE_MAP_NEGATIVE_Z},
         };
 
         //load the six faces
@@ -62,7 +59,6 @@ public:
     }
 
 private:
-
     /**
      * Assigns an image to one face of the cube map.
      * @param path is the path of the image to load

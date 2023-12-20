@@ -16,9 +16,9 @@
 #include "../../Project/camera.h"
 #include "../../Project/shader.h"
 #include "../../Project/object.h"
+#include "../../Project/cubemap.h"
 
 void processInput(GLFWwindow* window);
-void loadCubemapFace(const char * file, const GLenum& targetCube);
 void createOpenGLContext();
 GLFWwindow *createOpenGLWindow();
 void setupDebug();
@@ -90,16 +90,16 @@ int main(int argc, char* argv[]) {
     Shader cubeMapShader("../../Project/shaders/skybox/skybox.vert",
                          "../../Project/shaders/skybox/skybox.frag");
 
-    Shader reflective_shader("../../Project/shaders/reflectiveObjects/reflectiveObjects.vert",
+    Shader reflectiveShader("../../Project/shaders/reflectiveObjects/reflectiveObjects.vert",
                             "../../Project/shaders/reflectiveObjects/reflectiveObjects.frag");
 
-    Shader refractive_shader("../../Project/shaders/refractiveObjects/refractiveObjects.vert",
-        "../../Project/shaders/refractiveObjects/refractiveObjects.frag");
+    Shader refractiveShader("../../Project/shaders/refractiveObjects/refractiveObjects.vert",
+                            "../../Project/shaders/refractiveObjects/refractiveObjects.frag");
 
-    Object sphere1("../../Project/objects/sphere_smooth.obj");
-    sphere1.makeObject(refractive_shader);
+    Object sphere1("../../Project/objects/sphere_smooth.obj", &refractiveShader);
+    sphere1.makeObject(refractiveShader);
 
-    Object cubeMap("../../Project/objects/cube.obj");
+    CubeMap cubeMap("../../Project/objects/cube.obj", &cubeMapShader);
     cubeMap.makeObject(cubeMapShader);
     // TODO : solve errors shown by the debugger
 
@@ -147,34 +147,8 @@ int main(int argc, char* argv[]) {
     shader.setFloat("light.linear", 0.14);
     shader.setFloat("light.quadratic", 0.07);
 
-    GLuint cubeMapTexture;
-    glGenTextures(1, &cubeMapTexture);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
-
-    // texture parameters
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // Cubemap generator website : https://tools.wwwtyro.net/space-3d/index.html#animationSpeed=1&fov=82&nebulae=true&pointStars=true&resolution=1024&seed=4u760opsa328&stars=true&sun=true
-    std::string pathToCubeMap = "../../Project/textures/skybox/";
-
-    std::map<std::string, GLenum> facesToLoad = {
-            {pathToCubeMap + "posx.jpg",GL_TEXTURE_CUBE_MAP_POSITIVE_X},
-            {pathToCubeMap + "posy.jpg",GL_TEXTURE_CUBE_MAP_POSITIVE_Y},
-            {pathToCubeMap + "posz.jpg",GL_TEXTURE_CUBE_MAP_POSITIVE_Z},
-            {pathToCubeMap + "negx.jpg",GL_TEXTURE_CUBE_MAP_NEGATIVE_X},
-            {pathToCubeMap + "negy.jpg",GL_TEXTURE_CUBE_MAP_NEGATIVE_Y},
-            {pathToCubeMap + "negz.jpg",GL_TEXTURE_CUBE_MAP_NEGATIVE_Z},
-    };
-
-    //load the six faces
-    for (std::pair<std::string, GLenum> pair : facesToLoad) {
-        loadCubemapFace(pair.first.c_str(), pair.second);
-    }
+    std::string pathToCubeMapTexture = "../../Project/textures/skybox/";
+    cubeMap.addTexture(&pathToCubeMapTexture);
 
     glfwSwapInterval(1);
     while (!glfwWindowShouldClose(window)) {
@@ -196,21 +170,15 @@ int main(int argc, char* argv[]) {
         shader.setVector3f("light.light_pos", delta);
 
         // reflective is exact same as here but + that last line that is commented 
-        refractive_shader.use();
+        refractiveShader.use();
 
-        refractive_shader.setMatrix4("M", model);
-        refractive_shader.setMatrix4("itM", inverseModel);
-        refractive_shader.setMatrix4("V", view);
-        refractive_shader.setMatrix4("P", perspective);
-        refractive_shader.setVector3f("u_view_pos", camera.Position);
+        refractiveShader.setMatrix4("M", model);
+        refractiveShader.setMatrix4("itM", inverseModel);
+        refractiveShader.setMatrix4("V", view);
+        refractiveShader.setMatrix4("P", perspective);
+        refractiveShader.setVector3f("u_view_pos", camera.Position);
         //reflective_shader.setVector3f("light.light_pos", delta);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
-        cubeMapShader.setInteger("cubemapTexture", 0);
-
-        
-        glDepthFunc(GL_LEQUAL);
         sphere1.draw();
 
         cubeMapShader.use();
@@ -218,7 +186,6 @@ int main(int argc, char* argv[]) {
         cubeMapShader.setMatrix4("P", perspective);
         cubeMapShader.setInteger("cubemapTexture", 0);
         cubeMap.draw();
-        glDepthFunc(GL_LESS);
 
         
         //Show the object even if it's depth is equal to the depht of the object already present
@@ -285,25 +252,6 @@ void createOpenGLContext() {
 
 
 }
-
-void loadCubemapFace(const char * path, const GLenum& targetFace)
-{
-    int imWidth, imHeight, imNrChannels;
-    unsigned char* data = stbi_load(path, &imWidth, &imHeight, &imNrChannels, 0);
-    if (data)
-    {
-
-        glTexImage2D(targetFace, 0, GL_RGB, imWidth, imHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        //glGenerateMipmap(targetFace);
-    }
-    else {
-        std::cout << "Failed to Load texture" << std::endl;
-        const char* reason = stbi_failure_reason();
-        std::cout << (reason == NULL ? "Probably not implemented by the student" : reason) << std::endl;
-    }
-    stbi_image_free(data);
-}
-
 
 void processInput(GLFWwindow* window) {
     //3. Use the cameras class to change the parameters of the camera

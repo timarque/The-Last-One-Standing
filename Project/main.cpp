@@ -96,12 +96,13 @@ int main(int argc, char* argv[]) {
     Shader refractiveShader("../../Project/shaders/refractiveObjects/refractiveObjects.vert",
                             "../../Project/shaders/refractiveObjects/refractiveObjects.frag");
 
-    Object sphere1("../../Project/objects/sphere_smooth.obj", &refractiveShader);
-    sphere1.makeObject(refractiveShader);
+    Object moto1("../../Project/objects/tron_moto.obj", &shader);
+    moto1.makeObject(shader);
 
     CubeMap cubeMap("../../Project/objects/cube.obj", &cubeMapShader);
     cubeMap.makeObject(cubeMapShader);
     // TODO : solve errors shown by the debugger
+
 
     double prev = 0;
     int deltaFrame = 0;
@@ -120,11 +121,10 @@ int main(int argc, char* argv[]) {
 
 
     glm::vec3 light_pos = glm::vec3(1.0, 2.0, 1.5);
-    glm::mat4 model = glm::mat4(1.0);
-    model = glm::translate(model, glm::vec3(0.0, 0.0, -2.0));
-    model = glm::scale(model, glm::vec3(0.5, 0.5, 0.5));
 
-    glm::mat4 inverseModel = glm::transpose( glm::inverse(model));
+    moto1.model = glm::translate(moto1.model, glm::vec3(0.0, 0.0, -2.0));
+    moto1.model = glm::scale(moto1.model, glm::vec3(0.5, 0.5, 0.5));
+    glm::mat4 inverseModel = glm::transpose( glm::inverse(moto1.model));
 
     glm::mat4 view = camera.GetViewMatrix();
     glm::mat4 perspective = camera.GetProjectionMatrix();
@@ -159,19 +159,20 @@ int main(int argc, char* argv[]) {
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(now));
+
         shader.use();
 
-        shader.setMatrix4("M", model);
+        shader.setMatrix4("M", moto1.model);
         shader.setMatrix4("itM", inverseModel);
         shader.setMatrix4("V", view);
         shader.setMatrix4("P", perspective);
         shader.setVector3f("u_view_pos", camera.Position);
-        auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(now));
         shader.setVector3f("light.light_pos", delta);
 
         reflectiveShader.use();
 
-        reflectiveShader.setMatrix4("M", model);
+        reflectiveShader.setMatrix4("M", moto1.model);
         reflectiveShader.setMatrix4("itM", inverseModel);
         reflectiveShader.setMatrix4("V", view);
         reflectiveShader.setMatrix4("P", perspective);
@@ -180,18 +181,15 @@ int main(int argc, char* argv[]) {
 
         refractiveShader.use();
 
-        refractiveShader.setMatrix4("M", model);
+        refractiveShader.setMatrix4("M", moto1.model);
         refractiveShader.setMatrix4("itM", inverseModel);
         refractiveShader.setMatrix4("V", view);
         refractiveShader.setMatrix4("P", perspective);
         refractiveShader.setVector3f("u_view_pos", camera.Position);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMap.getTexture());
-        cubeMapShader.setInteger("cubemapTexture", 0);
-        
+
         glDepthFunc(GL_LEQUAL);
-        sphere1.draw();
+        moto1.draw();
 
         cubeMapShader.use();
         cubeMapShader.setMatrix4("V", view);

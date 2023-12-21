@@ -11,8 +11,21 @@
 
 
 class Motorbike : public Object {
+private:
+    Texture moto;
+    GLint u_texture;
+
 public:
-    Motorbike(const char *modelPath, Shader *shader, bool texture = true) : Object(modelPath, shader, texture) {}
+    Motorbike(const char *modelPath, Shader *shader, bool texture = true) : Object(modelPath, shader, texture) {
+        auto u_tex = glGetUniformLocation(shader->ID, "ourTexture"); 
+        this->u_texture = u_tex;
+    }
+
+    void createTexture() {
+        const char *file = "../../../../Project/textures/tronMoto.jpg";
+        Texture moto_tex(file);
+        this->moto = moto_tex;
+    }
 
     void draw(Camera *camera) override {
 
@@ -74,6 +87,11 @@ public:
         shader->setMatrix4("V", camera->GetViewMatrix());
         shader->setMatrix4("P", camera->GetProjectionMatrix());
         shader->setVector3f("u_view_pos", camera->Position);
+
+
+        glUniform1i(this->u_texture, 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, this->moto.getId());
 
         Object::draw(camera);
     }

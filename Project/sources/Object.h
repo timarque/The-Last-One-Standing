@@ -14,6 +14,7 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "Texture.h"
 
 /*Principe :
 * On donne le path du fichier -> on lit le fichier
@@ -26,19 +27,18 @@
 
 struct Vertex {
     glm::vec3 Position;
-    glm::vec2 Texture;
+    glm::vec2 Tex_coords;
     glm::vec3 Normal;
 };
-
 
 class Object {
 
 public:
-
     std::vector<glm::vec3> positions;
-    std::vector<glm::vec2> textures;
+    std::vector<glm::vec2> tex_coords;
     std::vector<glm::vec3> normals;
     std::vector<Vertex> vertices;
+    std::vector< unsigned int > vertexIndices, uvIndices, normalIndices;
     int numVertices;
     GLuint VBO, VAO;
     glm::mat4 model = glm::mat4(1.0);
@@ -69,7 +69,7 @@ public:
             else if (indice == "vt") {
                 float u, v;
                 iss >> u >> v;
-                textures.push_back(glm::vec2(u, v));
+                tex_coords.push_back(glm::vec2(u, v));
             }
             else if (indice == "f") {
                 std::string f1, f2, f3;
@@ -91,10 +91,10 @@ public:
 
                 v1.Position = positions.at(std::stof(p) - 1);
                 v1.Normal = normals.at(std::stof(n) - 1);
-                v1.Texture = textures.at(std::stof(t) - 1);
+                v1.Tex_coords = tex_coords.at(std::stof(t) - 1);
                 vertices.push_back(v1);
 
-                //for face 12
+                //for face 2
                 Vertex v2;
 
                 p = f2.substr(0, f2.find("/"));
@@ -108,7 +108,7 @@ public:
 
                 v2.Position = positions.at(std::stof(p) - 1);
                 v2.Normal = normals.at(std::stof(n) - 1);
-                v2.Texture = textures.at(std::stof(t) - 1);
+                v2.Tex_coords = tex_coords.at(std::stof(t) - 1);
                 vertices.push_back(v2);
 
                 //for face 3
@@ -125,7 +125,7 @@ public:
 
                 v3.Position = positions.at(std::stof(p) - 1);
                 v3.Normal = normals.at(std::stof(n) - 1);
-                v3.Texture = textures.at(std::stof(t) - 1);
+                v3.Tex_coords = tex_coords.at(std::stof(t) - 1);
                 vertices.push_back(v3);
             }
         }
@@ -165,8 +165,8 @@ protected:
             data[i * 8] = v.Position.x;
             data[i * 8 + 1] = v.Position.y;
             data[i * 8 + 2] = v.Position.z;
-            data[i * 8 + 3] = v.Texture.x;
-            data[i * 8 + 4] = v.Texture.y;
+            data[i * 8 + 3] = v.Tex_coords.x;
+            data[i * 8 + 4] = v.Tex_coords.y;
             data[i * 8 + 5] = v.Normal.x;
             data[i * 8 + 6] = v.Normal.y;
             data[i * 8 + 7] = v.Normal.z;

@@ -87,23 +87,23 @@ int main(int argc, char* argv[]) {
 
     // Creation of all the shaders
 
-    Shader shader("../../Project/shaders/commonObjects/commonObjects.vert",
-                  "../../Project/shaders/commonObjects/commonObjects.frag");
-    Shader cubeMapShader("../../Project/shaders/skybox/skybox.vert",
-                         "../../Project/shaders/skybox/skybox.frag");
-    Shader reflectiveShader("../../Project/shaders/reflectiveObjects/reflectiveObjects.vert",
-                            "../../Project/shaders/reflectiveObjects/reflectiveObjects.frag");
-    Shader refractiveShader("../../Project/shaders/refractiveObjects/refractiveObjects.vert",
-                            "../../Project/shaders/refractiveObjects/refractiveObjects.frag");
+    Shader shader("../../../../Project/shaders/commonObjects/commonObjects.vert",
+                  "../../../../Project/shaders/commonObjects/commonObjects.frag");
+    Shader cubeMapShader("../../../../Project/shaders/skybox/skybox.vert",
+                         "../../../../Project/shaders/skybox/skybox.frag");
+    Shader reflectiveShader("../../../../Project/shaders/reflectiveObjects/reflectiveObjects.vert",
+                            "../../../../Project/shaders/reflectiveObjects/reflectiveObjects.frag");
+    Shader refractiveShader("../../../../Project/shaders/refractiveObjects/refractiveObjects.vert",
+                            "../../../../Project/shaders/refractiveObjects/refractiveObjects.frag");
 
     // Creation of all the objects
 
-    Motorbike moto1("../../Project/objects/tron_moto.obj", &refractiveShader);
+    Motorbike moto1("../../../../Project/objects/tron_moto.obj", &shader);
     moto1.model = glm::translate(moto1.model, glm::vec3(0.0, 0.0, -2.0));
     moto1.model = glm::scale(moto1.model, glm::vec3(0.5, 0.5, 0.5));
 
-    CubeMap cubeMap("../../Project/objects/cube.obj", &cubeMapShader);
-    std::string pathToCubeMapTexture = "../../Project/textures/skybox/";
+    CubeMap cubeMap("../../../../Project/objects/cube.obj", &cubeMapShader);
+    std::string pathToCubeMapTexture = "../../../../Project/textures/skybox/";
     cubeMap.addTexture(&pathToCubeMapTexture);
 
     // TODO : solve errors shown by the debugger

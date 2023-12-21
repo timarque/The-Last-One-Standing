@@ -30,6 +30,9 @@ float specularCalculation(vec3 N, vec3 L, vec3 V ) {
     return light.specular_strength * spec;
 }
 
+in vec2 v_tex;
+uniform sampler2D ourTexture;
+
 void main() {
     vec3 N = normalize(v_normal);
     vec3 L = normalize(light.light_pos - v_frag_coord);
@@ -41,5 +44,5 @@ void main() {
     float attenuation = 1 / (light.constant + light.linear * distance + light.quadratic * distance * distance);
     float light = light.ambient_strength + attenuation * (diffuse + specular);
 
-    FragColor = vec4(materialColour * vec3(light), 1.0);
+    FragColor = texture(ourTexture, v_tex);
 }

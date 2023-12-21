@@ -7,18 +7,22 @@
 
 
 #include <map>
-#include "object.h"
+#include "Object.h"
 //#define STB_IMAGE_IMPLEMENTATION
 //#include "stb_image.h"
 
 class CubeMap : public Object {
 
-//protected:
+protected:
     GLuint cubeMapTextureID;
 
 public:
-    CubeMap(const char *modelPath, Shader *shader) : Object(modelPath, shader) {}
+    CubeMap(const char *modelPath, Shader *shader, bool texture = true) : Object(modelPath, shader, texture) {}
 
+    /**
+     * Applies a texture on all the faces of the cube map
+     * @param texturePath is the path to the folder containing the 6 images
+     */
     void addTexture(std::string* texturePath) {
         glGenTextures(1, &cubeMapTextureID);
         glActiveTexture(GL_TEXTURE0);
@@ -46,17 +50,21 @@ public:
         }
     }
 
-    GLuint getTexture() { return cubeMapTextureID; };
+    GLuint getTexture() { return cubeMapTextureID; }
 
     /**
      * Draws the cubeMap in the window
      */
-    void draw() override {
+    void draw(Camera *camera) override {
+        shader->use();
+        shader->setMatrix4("V", camera->GetViewMatrix());
+        shader->setMatrix4("P", camera->GetProjectionMatrix());
+        shader->setInteger("cubemapTexture", 0);
+
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTextureID);
-        glBindVertexArray(this->VAO);
-        glDrawArrays(GL_TRIANGLES, 0, numVertices);
+        Object::draw(camera);
         glDepthFunc(GL_LESS);
     }
 

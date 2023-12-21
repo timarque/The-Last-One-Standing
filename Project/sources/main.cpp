@@ -1,22 +1,23 @@
 #include<iostream>
 
 //include glad before GLFW to avoid header conflict or define "#define GLFW_INCLUDE_NONE"
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
 
-#include <glm/glm.hpp>
-#include<glm/gtc/matrix_transform.hpp>
-#include<glm/gtc/type_ptr.hpp>
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 #include <map>
 
-#include "../../Project/camera.h"
-#include "../../Project/shader.h"
-#include "../../Project/object.h"
-#include "../../Project/cubemap.h"
+#include "Camera.h"
+#include "Shader.h"
+#include "Object.h"
+#include "CubeMap.h"
+#include "Motorbike.h"
 
 void processInput(GLFWwindow* window);
 void createOpenGLContext();
@@ -84,29 +85,33 @@ int main(int argc, char* argv[]) {
     loadOpenGLFunctions();
     setupDebug();
 
+    // Creation of all the shaders
+
     Shader shader("../../Project/shaders/commonObjects/commonObjects.vert",
                   "../../Project/shaders/commonObjects/commonObjects.frag");
-
     Shader cubeMapShader("../../Project/shaders/skybox/skybox.vert",
                          "../../Project/shaders/skybox/skybox.frag");
-
     Shader reflectiveShader("../../Project/shaders/reflectiveObjects/reflectiveObjects.vert",
                             "../../Project/shaders/reflectiveObjects/reflectiveObjects.frag");
-
     Shader refractiveShader("../../Project/shaders/refractiveObjects/refractiveObjects.vert",
                             "../../Project/shaders/refractiveObjects/refractiveObjects.frag");
 
-    Object moto1("../../Project/objects/tron_moto.obj", &shader);
-    moto1.makeObject(shader);
+    // Creation of all the objects
+
+    Motorbike moto1("../../Project/objects/tron_moto.obj", &refractiveShader);
+    moto1.model = glm::translate(moto1.model, glm::vec3(0.0, 0.0, -2.0));
+    moto1.model = glm::scale(moto1.model, glm::vec3(0.5, 0.5, 0.5));
 
     CubeMap cubeMap("../../Project/objects/cube.obj", &cubeMapShader);
-    cubeMap.makeObject(cubeMapShader);
+    std::string pathToCubeMapTexture = "../../Project/textures/skybox/";
+    cubeMap.addTexture(&pathToCubeMapTexture);
+
     // TODO : solve errors shown by the debugger
 
+    // Implementation of the fps function
 
     double prev = 0;
     int deltaFrame = 0;
-    //fps function
     auto fps = [&](double now) {
         double deltaTime = now - prev;
         deltaFrame++;
@@ -119,86 +124,18 @@ int main(int argc, char* argv[]) {
         }
     };
 
-
-    glm::vec3 light_pos = glm::vec3(1.0, 2.0, 1.5);
-
-    moto1.model = glm::translate(moto1.model, glm::vec3(0.0, 0.0, -2.0));
-    moto1.model = glm::scale(moto1.model, glm::vec3(0.5, 0.5, 0.5));
-    glm::mat4 inverseModel = glm::transpose( glm::inverse(moto1.model));
-
-    glm::mat4 view = camera.GetViewMatrix();
-    glm::mat4 perspective = camera.GetProjectionMatrix();
-
-    float ambient = 0.1;
-    float diffuse = 0.5;
-    float specular = 0.8;
-
-    glm::vec3 materialColour = glm::vec3(0.5f,0.6,0.8);
-
     //Rendering
-
-    shader.use();
-    shader.setFloat("shininess", 32.0f);
-    shader.setVector3f("materialColour", materialColour);
-    shader.setFloat("light.ambient_strength", ambient);
-    shader.setFloat("light.diffuse_strength", diffuse);
-    shader.setFloat("light.specular_strength", specular);
-    shader.setFloat("light.constant", 1.0);
-    shader.setFloat("light.linear", 0.14);
-    shader.setFloat("light.quadratic", 0.07);
-
-    std::string pathToCubeMapTexture = "../../Project/textures/skybox/";
-    cubeMap.addTexture(&pathToCubeMapTexture);
 
     glfwSwapInterval(1);
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
-        view = camera.GetViewMatrix();
         glfwPollEvents();
         double now = glfwGetTime();
-        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        //glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(now));
-
-        shader.use();
-
-        shader.setMatrix4("M", moto1.model);
-        shader.setMatrix4("itM", inverseModel);
-        shader.setMatrix4("V", view);
-        shader.setMatrix4("P", perspective);
-        shader.setVector3f("u_view_pos", camera.Position);
-        shader.setVector3f("light.light_pos", delta);
-
-        reflectiveShader.use();
-
-        reflectiveShader.setMatrix4("M", moto1.model);
-        reflectiveShader.setMatrix4("itM", inverseModel);
-        reflectiveShader.setMatrix4("V", view);
-        reflectiveShader.setMatrix4("P", perspective);
-        reflectiveShader.setVector3f("u_view_pos", camera.Position);
-        reflectiveShader.setVector3f("light.light_pos", delta);
-
-        refractiveShader.use();
-
-        refractiveShader.setMatrix4("M", moto1.model);
-        refractiveShader.setMatrix4("itM", inverseModel);
-        refractiveShader.setMatrix4("V", view);
-        refractiveShader.setMatrix4("P", perspective);
-        refractiveShader.setVector3f("u_view_pos", camera.Position);
-
-
-        glDepthFunc(GL_LEQUAL);
-        moto1.draw();
-
-        cubeMapShader.use();
-        cubeMapShader.setMatrix4("V", view);
-        cubeMapShader.setMatrix4("P", perspective);
-        cubeMapShader.setInteger("cubemapTexture", 0);
-        cubeMap.draw();
-
-        
-        //Show the object even if it's depth is equal to the depht of the object already present
+        moto1.draw(&camera);
+        cubeMap.draw(&camera);
 
         fps(now);
         glfwSwapBuffers(window);
@@ -242,7 +179,6 @@ GLFWwindow *createOpenGLWindow() {
         glfwTerminate();
         throw std::runtime_error("Failed to create GLFW window\n");
     }
-
     glfwMakeContextCurrent(window);
     return window;
 }

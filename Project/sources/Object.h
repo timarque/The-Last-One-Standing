@@ -8,11 +8,11 @@
 #include <vector>
 
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 
 /*Principe :
@@ -31,9 +31,10 @@ struct Vertex {
 };
 
 
-class Object
-{
+class Object {
+
 public:
+
     std::vector<glm::vec3> positions;
     std::vector<glm::vec2> textures;
     std::vector<glm::vec3> normals;
@@ -43,7 +44,7 @@ public:
     glm::mat4 model = glm::mat4(1.0);
     Shader* shader;
 
-    Object(const char* modelPath, Shader* shader) {
+    Object(const char* modelPath, Shader* shader, bool texture = true) {
 
         std::ifstream infile(modelPath);
         //TODO Error management
@@ -132,13 +133,27 @@ public:
         std::cout << "Load model with " << vertices.size() << " vertices" << std::endl;
         infile.close();
 
-        this -> shader = shader;
         numVertices = vertices.size();
+
+        this->shader = shader;
+        makeObject(shader, texture);
     }
 
+    /**
+     * Draws each triangle in the scene (depends on the shader !)
+     * @param camera is the camera from which we see the scene
+     */
+    virtual void draw(Camera *camera) {
+        // the children of this class should implement the shader setup before
+        // calling this parent method.
 
+        glBindVertexArray(this->VAO);
+        glDrawArrays(GL_TRIANGLES, 0, numVertices);
+    }
 
-    virtual void makeObject(Shader shader, bool texture = true) {
+protected:
+
+    virtual void makeObject(Shader *shader, bool texture = true) {
         /* This is a working but not perfect solution, you can improve it if you need/want
         * What happens if you call this function twice on an Model ?
         * What happens when a shader doesn't have a position, tex_coord or normal attribute ?
@@ -165,19 +180,19 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * numVertices, data, GL_STATIC_DRAW);
 
-        auto att_pos = glGetAttribLocation(shader.ID, "position");
+        auto att_pos = glGetAttribLocation(shader->ID, "position");
         glEnableVertexAttribArray(att_pos);
         glVertexAttribPointer(att_pos, 3, GL_FLOAT, false, 8 * sizeof(float), (void*)0);
 
 
         if (texture) {
-            auto att_tex = glGetAttribLocation(shader.ID, "tex_coord");
+            auto att_tex = glGetAttribLocation(shader->ID, "tex_coord");
             glEnableVertexAttribArray(att_tex);
             glVertexAttribPointer(att_tex, 2, GL_FLOAT, false, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 
         }
 
-        auto att_col = glGetAttribLocation(shader.ID, "normal");
+        auto att_col = glGetAttribLocation(shader->ID, "normal");
         glEnableVertexAttribArray(att_col);
         glVertexAttribPointer(att_col, 3, GL_FLOAT, false, 8 * sizeof(float), (void*)(5 * sizeof(float)));
 
@@ -185,13 +200,6 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
         delete[] data;
-
-    }
-
-    virtual void draw() {
-
-        glBindVertexArray(this->VAO);
-        glDrawArrays(GL_TRIANGLES, 0, numVertices);
 
     }
 };

@@ -18,7 +18,7 @@
 #include "Object.h"
 #include "CubeMap.h"
 #include "Motorbike.h"
-#include "Terrain.h"
+
 
 void processInput(GLFWwindow* window);
 void createOpenGLContext();
@@ -90,6 +90,24 @@ int main(int argc, char* argv[]) {
 
     Shader shader("../../Project/shaders/commonObjects/commonObjects.vert",
                   "../../Project/shaders/commonObjects/commonObjects.frag");
+
+    //J ai mit ca la pr voir si ca changeais qlq chose mais non 
+    float ambient = 0.1;
+    float diffuse = 0.5;
+    float specular = 0.8;
+    glm::vec3 materialColour = glm::vec3(0.5f, 0.6, 0.8);
+
+    shader.use();
+    shader.setFloat("shininess", 32.0f);
+    shader.setVector3f("materialColour", materialColour);
+    shader.setFloat("light.ambient_strength", ambient);
+    shader.setFloat("light.diffuse_strength", diffuse);
+    shader.setFloat("light.specular_strength", specular);
+    shader.setFloat("light.constant", 1.0);
+    shader.setFloat("light.linear", 0.14);
+    shader.setFloat("light.quadratic", 0.07);
+
+
     Shader cubeMapShader("../../Project/shaders/skybox/skybox.vert",
                          "../../Project/shaders/skybox/skybox.frag");
     Shader reflectiveShader("../../Project/shaders/reflectiveObjects/reflectiveObjects.vert",
@@ -100,7 +118,7 @@ int main(int argc, char* argv[]) {
     // Creation of all the objects
 
 
-    Motorbike moto1("../../Project/objects/tron_moto.obj", &reflectiveShader , "../../Project/textures/container.jpg");
+    Motorbike moto1("../../Project/objects/tron_moto.obj", &shader , "../../Project/textures/container.jpg");
     moto1.model = glm::translate(moto1.model, glm::vec3(0.0, 0.0, -2.0));
     moto1.model = glm::scale(moto1.model, glm::vec3(0.2, 0.2, 0.2));
 
@@ -127,7 +145,7 @@ int main(int argc, char* argv[]) {
         }
     };
 
-    //Rendering
+
 
     glfwSwapInterval(1);
     while (!glfwWindowShouldClose(window)) {

@@ -83,6 +83,8 @@ public:
 
         //auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(now));
 
+
+
         shader->use();
         shader->setMatrix4("M", model);
         glm::mat4 inverseModel = glm::transpose( glm::inverse(model));
@@ -90,6 +92,10 @@ public:
         shader->setMatrix4("V", camera->GetViewMatrix());
         shader->setMatrix4("P", camera->GetProjectionMatrix());
         shader->setVector3f("u_view_pos", camera->Position);
+        glm::vec3 light_pos = glm::vec3(1.0, 2.0, 1.5);
+        double now = glfwGetTime();
+        auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(now));
+        shader->setVector3f("light.light_pos", delta);
 
         glUniform1i(u_texture, this->moto.getId());
         

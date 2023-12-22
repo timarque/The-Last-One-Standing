@@ -26,14 +26,15 @@ private:
 	int imNrChannels;
 
 public:
+	// celui la n est pas actif pour le moment mais le code ne marche pas sans :) (mais c est bien celui d en bas qui est prit la)
 	Texture() {
-		const char* file = "../../../../Project/textures/tronMoto.jpg";
+		const char* file = "../../Project/textures/tronMoto.jpg";
 		stbi_set_flip_vertically_on_load(true);
 		unsigned char* data = stbi_load(file, &imWidth, &imHeight, &imNrChannels, 0);
 		if (data)
 		{
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imWidth, imHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-			glGenerateMipmap(GL_TEXTURE_2D);
+			glTexImage2D(GL_TEXTURE_3D, 0, GL_RGB, imWidth, imHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			glGenerateMipmap(GL_TEXTURE_3D);
 		}
 		else {
 			std::cout << "Failed to Load texture" << std::endl;
@@ -45,16 +46,15 @@ public:
 
 		glGenTextures(1, &this->id);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, this->id);
-
+		glBindTexture(GL_TEXTURE_3D, this->id);
+		
 		//3. Define the parameters for the texture
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	};
 
-	// j arrive pas a faire passer le file en param jsp pk 
 	Texture(const char* file) {
 		stbi_set_flip_vertically_on_load(true);
 		unsigned char* data = stbi_load(file, &imWidth, &imHeight, &imNrChannels, 0);

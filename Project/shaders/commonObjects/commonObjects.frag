@@ -7,6 +7,7 @@ in vec3 v_frag_coord;
 in vec3 v_normal;
 
 uniform vec3 u_view_pos;
+uniform sampler2D ourTexture;
 
 struct Light {
     vec3 light_pos;
@@ -31,7 +32,6 @@ float specularCalculation(vec3 N, vec3 L, vec3 V ) {
 }
 
 in vec2 v_tex;
-uniform sampler2D ourTexture;
 
 void main() {
     vec3 N = normalize(v_normal);

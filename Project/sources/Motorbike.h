@@ -16,17 +16,16 @@ private:
     GLint u_texture;
 
 public:
-    Motorbike(const char *modelPath, Shader *shader, bool texture = true) : Object(modelPath, shader, texture) {
-        createTexture();
-        auto u_tex = glGetUniformLocation(shader->ID, "ourTexture"); 
+    Motorbike(const char *modelPath, Shader *shader, const char* file, bool texture = true) : Object(modelPath, shader, texture) {
+        createTexture(file);
+        auto u_tex = glGetUniformLocation(shader->ID, "ourTexture");
         this->u_texture = u_tex;
     }
 
+
     // texture container car la texture de la moto cause un access violation error (peut etre a cause du fait que y a plusieurs materiaux)
     // ideas to fix: trouver un moyen de séparer ca par materiaux ? 
-    void createTexture() {
-        const char *file = "../../Project/textures/container.jpg"; 
-        std::cout << "here";
+    void createTexture(const char* file) {
         Texture moto_tex(file);
         this->moto = moto_tex;
     }
@@ -92,8 +91,8 @@ public:
         shader->setMatrix4("P", camera->GetProjectionMatrix());
         shader->setVector3f("u_view_pos", camera->Position);
 
+        glUniform1i(u_texture, this->moto.getId());
         
-
         Object::draw(camera);
     }
 

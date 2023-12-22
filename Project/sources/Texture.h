@@ -56,6 +56,7 @@ public:
 	};
 
 	Texture(const char* file) {
+
 		stbi_set_flip_vertically_on_load(true);
 		unsigned char* data = stbi_load(file, &imWidth, &imHeight, &imNrChannels, 0);
 		if (data)
@@ -64,6 +65,7 @@ public:
 			glGenerateMipmap(GL_TEXTURE_2D);
 		}
 		else {
+			std::cout << file << std::endl;
 			std::cout << "Failed to Load texture" << std::endl;
 			const char* reason = stbi_failure_reason();
 			std::cout << reason << std::endl;

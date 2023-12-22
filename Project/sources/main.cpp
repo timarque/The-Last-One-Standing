@@ -18,6 +18,7 @@
 #include "Object.h"
 #include "CubeMap.h"
 #include "Motorbike.h"
+#include "Terrain.h"
 
 void processInput(GLFWwindow* window);
 void createOpenGLContext();
@@ -98,9 +99,11 @@ int main(int argc, char* argv[]) {
 
     // Creation of all the objects
 
-    Motorbike moto1("../../Project/objects/tron_moto.obj", &shader);
+
+    Motorbike moto1("../../Project/objects/tron_moto.obj", &reflectiveShader , "../../Project/textures/container.jpg");
     moto1.model = glm::translate(moto1.model, glm::vec3(0.0, 0.0, -2.0));
-    moto1.model = glm::scale(moto1.model, glm::vec3(0.5, 0.5, 0.5));
+    moto1.model = glm::scale(moto1.model, glm::vec3(0.2, 0.2, 0.2));
+
 
     CubeMap cubeMap("../../Project/objects/cube.obj", &cubeMapShader);
     std::string pathToCubeMapTexture = "../../Project/textures/skybox/";

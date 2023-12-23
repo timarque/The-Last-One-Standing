@@ -11,8 +11,23 @@
 
 
 class Motorbike : public Object {
+private:
+    Texture moto;
+    GLint u_texture;
 public:
-    Motorbike(const char *modelPath, Shader *shader, bool texture = true) : Object(modelPath, shader, texture) {}
+    Motorbike(const char *modelPath, Shader *shader,const char* file,bool texture = true) : Object(modelPath, shader, texture) {
+        createTexture(file);
+        auto u_tex = glGetUniformLocation(shader->ID, "ourTexture");
+        this->u_texture = u_tex;
+    }
+
+    // texture container car la texture de la moto cause un access violation error (peut etre a cause du fait que y a plusieurs materiaux)
+    // ideas to fix: trouver un moyen de séparer ca par materiaux ? 
+    void createTexture(const char* file) {
+        Texture moto_tex(file);
+        this->moto = moto_tex;
+    }
+
 
     void draw(Camera *camera) override {
 

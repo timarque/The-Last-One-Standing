@@ -1,7 +1,7 @@
 project("project")
 # Changer le nom une fois qu'on en aura un
 
-set(SOURCES_MAIN "sources/main.cpp" "sources/Camera.h" "sources/Shader.h" "sources/CubeMap.h"
+set(SOURCES_MAIN "sources/main.cpp" "sources/Camera.h" "sources/Shader.h" "sources/CubeMap.h" "sources/Texture.h"
         sources/Motorbike.h)
 
 

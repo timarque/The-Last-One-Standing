@@ -14,6 +14,8 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "Texture.h"
+
 
 /*Principe :
 * On donne le path du fichier -> on lit le fichier

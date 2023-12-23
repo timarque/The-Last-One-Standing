@@ -29,7 +29,6 @@ public:
 	// celui la n est pas actif pour le moment mais le code ne marche pas sans :) (mais c est bien celui d en bas qui est prit la)
 	Texture() {
 		const char* file = "../../Project/textures/tronMoto.jpg";
-		stbi_set_flip_vertically_on_load(true);
 		unsigned char* data = stbi_load(file, &imWidth, &imHeight, &imNrChannels, 0);
 		if (data)
 		{
@@ -57,7 +56,6 @@ public:
 
 	Texture(const char* file) {
 
-		stbi_set_flip_vertically_on_load(true);
 		unsigned char* data = stbi_load(file, &imWidth, &imHeight, &imNrChannels, 0);
 		if (data)
 		{

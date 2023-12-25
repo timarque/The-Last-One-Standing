@@ -74,7 +74,7 @@ void APIENTRY glDebugOutput(GLenum source,
 }
 #endif
 
-Camera camera(glm::vec3(0.0, 0.0, 0.1));
+Camera camera(glm::vec3(0.0, 5.0, 20.0));
 const int WINDOW_WIDTH = 500;
 const int WINDOW_HEIGHT = 500;
 
@@ -97,8 +97,8 @@ int main(int argc, char* argv[]) {
 
     // Creation of all the objects
 
-    Motorbike moto1("../../Project/objects/tron_moto.obj", &refractiveShader, "../../Project/textures/container.jpg");
-    moto1.model = glm::translate(moto1.model, glm::vec3(0.0, 0.0, -2.0));
+    Motorbike moto1("../../Project/objects/moto.obj", &shader, "../../Project/textures/container.jpg");
+    //moto1.model = glm::translate(moto1.model, glm::vec3(0.0, 0.0, 0.0));
     moto1.model = glm::scale(moto1.model, glm::vec3(0.5, 0.5, 0.5));
 
     CubeMap cubeMap("../../Project/objects/cube.obj", &cubeMapShader);

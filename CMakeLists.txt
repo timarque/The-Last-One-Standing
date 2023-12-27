@@ -17,6 +17,10 @@ add_library( glad STATIC 3rdParty/glad/src/glad.c)
 set(GLAD_INCLUDE "3rdParty/glad/include")
 target_include_directories(glad PUBLIC ${GLAD_INCLUDE})
 
+#for assimp library
+include_directories("3rdParty/assimp/include")
+link_directories("3rdParty/assimp/lib")
+
 #for GLFW
 option(GLFW_BUILD_DOCS OFF)
 option(GLFW_BUILD_EXAMPLES OFF)

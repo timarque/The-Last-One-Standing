@@ -84,6 +84,10 @@ public:
         glUniformMatrix4fv(glGetUniformLocation(ID, name), 1, GL_FALSE, glm::value_ptr(matrix));
     }
 
+    void setInt(const GLchar* name, GLuint i) {
+        glUniform1i(glGetUniformLocation(ID, name), i);
+    }
+
 private:
     GLuint compileShader(std::string shaderCode, GLenum shaderType)
     {

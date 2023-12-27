@@ -8,16 +8,13 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 #include <map>
 
-#include "Camera.h"
-#include "Shader.h"
-#include "Object.h"
-#include "CubeMap.h"
-#include "Motorbike.h"
+#include "../../Project/sources/Camera.h"
+#include "../../Project/sources/Shader.h"
+#include "../../Project/sources/Model.h"
 
 void processInput(GLFWwindow* window);
 void createOpenGLContext();
@@ -74,9 +71,9 @@ void APIENTRY glDebugOutput(GLenum source,
 }
 #endif
 
-Camera camera(glm::vec3(0.0, 5.0, 20.0));
 const int WINDOW_WIDTH = 500;
 const int WINDOW_HEIGHT = 500;
+Camera camera(glm::vec3(0.0, 7.0, 28.0));
 
 int main(int argc, char* argv[]) {
 
@@ -88,22 +85,9 @@ int main(int argc, char* argv[]) {
     // Creation of all the shaders
     Shader shader("../../Project/shaders/commonObjects/commonObjects.vert",
                   "../../Project/shaders/commonObjects/commonObjects.frag");
-    Shader cubeMapShader("../../Project/shaders/skybox/skybox.vert",
-                         "../../Project/shaders/skybox/skybox.frag");
-    Shader reflectiveShader("../../Project/shaders/reflectiveObjects/reflectiveObjects.vert",
-                         "../../Project/shaders/reflectiveObjects/reflectiveObjects.frag");
-    Shader refractiveShader("../../Project/shaders/refractiveObjects/refractiveObjects.vert",
-                         "../../Project/shaders/refractiveObjects/refractiveObjects.frag");
-
     // Creation of all the objects
-
-    Motorbike moto1("../../Project/objects/moto.obj", &shader, "../../Project/textures/container.jpg");
-    //moto1.model = glm::translate(moto1.model, glm::vec3(0.0, 0.0, 0.0));
-    moto1.model = glm::scale(moto1.model, glm::vec3(0.5, 0.5, 0.5));
-
-    CubeMap cubeMap("../../Project/objects/cube.obj", &cubeMapShader);
-    std::string pathToCubeMapTexture = "../../Project/textures/skybox/";
-    cubeMap.addTexture(&pathToCubeMapTexture);
+    const char *backPackModelPath("../../Project/models/backpack");
+    Model backpack(backPackModelPath);
 
     // TODO : solve errors shown by the debugger
 
@@ -133,8 +117,7 @@ int main(int argc, char* argv[]) {
         //glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        moto1.draw(&camera);
-        cubeMap.draw(&camera);
+        backpack.Draw(shader);
 
         fps(now);
         glfwSwapBuffers(window);

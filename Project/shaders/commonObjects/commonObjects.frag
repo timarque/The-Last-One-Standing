@@ -5,6 +5,7 @@ precision mediump float;
 
 in vec3 v_frag_coord;
 in vec3 v_normal;
+in vec2 v_tex_coords;
 
 uniform vec3 u_view_pos;
 
@@ -22,6 +23,7 @@ struct Light {
 uniform Light light;
 uniform float shininess;
 uniform vec3 materialColour;
+uniform sampler2D ourTexture;
 
 float specularCalculation(vec3 N, vec3 L, vec3 V ) {
     vec3 R = reflect (-L,N); //reflect (-L,N) is  equivalent to //max (2 * dot(N,L) * N - L , 0.0)
@@ -41,5 +43,5 @@ void main() {
     float attenuation = 1 / (light.constant + light.linear * distance + light.quadratic * distance * distance);
     float light = light.ambient_strength + attenuation * (diffuse + specular);
 
-    FragColor = vec4(materialColour * vec3(light), 1.0);
+    FragColor = texture(ourTexture, v_tex_coords); //vec4(materialColour * vec3(light), 1.0);
 }

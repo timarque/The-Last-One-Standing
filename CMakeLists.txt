@@ -18,8 +18,13 @@ set(GLAD_INCLUDE "3rdParty/glad/include")
 target_include_directories(glad PUBLIC ${GLAD_INCLUDE})
 
 #for assimp library
+#find_package(assimp REQUIRED)
+#target_include_directories(assimp PUBLIC ${ASSIMP_INCLUDE_DIRS})
 include_directories("3rdParty/assimp/include")
 link_directories("3rdParty/assimp/lib")
+# Add Assimp library as a dependency
+#add_library(assimp STATIC IMPORTED)
+#set_target_properties(assimp PROPERTIES IMPORTED_LOCATION "3rdParty/assimp/lib/Debug/assimp-vc143-mtd.lib")
 
 #for GLFW
 option(GLFW_BUILD_DOCS OFF)
@@ -38,7 +43,8 @@ endif()
 
 include_directories(3rdParty/glad/include/
                     3rdParty/glm/
-                    3rdParty/stb/)
+                    3rdParty/stb/
+                    3rdParty/assimp/include/)
 
                  
 if(COMPILE_PROJECT)

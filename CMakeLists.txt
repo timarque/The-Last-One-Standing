@@ -31,6 +31,14 @@ option(GLFW_BUILD_DOCS OFF)
 option(GLFW_BUILD_EXAMPLES OFF)
 option(GLFW_BUILD_TESTS OFF)
 
+# Assimp
+find_package(assimp QUIET)
+if (NOT assimp_FOUND)
+    #if assimp is not found, we will use the sources from the submodules
+    add_subdirectory(3rdParty/assimp)
+    include_directories(3rdParty/assimp/include/)
+endif()
+
 #Search for glfw in case it is installed
 find_package(glfw3 QUIET)
 if (NOT glfw3_FOUND)
@@ -44,7 +52,7 @@ endif()
 include_directories(3rdParty/glad/include/
                     3rdParty/glm/
                     3rdParty/stb/
-                    3rdParty/assimp/include/)
+                    3rdParty/assimp/)
 
                  
 if(COMPILE_PROJECT)

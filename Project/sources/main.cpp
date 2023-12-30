@@ -86,8 +86,8 @@ int main(int argc, char* argv[]) {
     Shader shader("../shaders/commonObjects/commonObjects.vert",
                   "../shaders/commonObjects/commonObjects.frag");
     // Creation of all the objects
-    const char *backPackModelPath("../models/backpack");
-    Model backpack(backPackModelPath);
+    // Warning: The path to the objects start from the root of the Project (ie. the root of the git)
+    Model backpack("Project/objects/backpack/backpack.obj");
 
     // TODO : solve errors shown by the debugger
 

@@ -9,6 +9,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include <vector>
+#include <iostream>
 #include "Shader.h"
 #include "Mesh.h"
 
@@ -29,7 +30,7 @@ public:
      * Constructor of a Model
      * @param path to the model file
      */
-    Model(const char *path);
+    Model(std::string path);
 
     /**
      * Draws the model in the 3D scene

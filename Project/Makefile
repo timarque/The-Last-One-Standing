@@ -226,29 +226,29 @@ sources/Model.cpp.s:
 	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/Model.cpp.s
 .PHONY : sources/Model.cpp.s
 
-sources/main.o: sources/main.cpp.o
-.PHONY : sources/main.o
+sources/main2.o: sources/main2.cpp.o
+.PHONY : sources/main2.o
 
 # target to build an object file
-sources/main.cpp.o:
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/main.cpp.o
-.PHONY : sources/main.cpp.o
+sources/main2.cpp.o:
+	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/main2.cpp.o
+.PHONY : sources/main2.cpp.o
 
-sources/main.i: sources/main.cpp.i
-.PHONY : sources/main.i
+sources/main2.i: sources/main2.cpp.i
+.PHONY : sources/main2.i
 
 # target to preprocess a source file
-sources/main.cpp.i:
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/main.cpp.i
-.PHONY : sources/main.cpp.i
+sources/main2.cpp.i:
+	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/main2.cpp.i
+.PHONY : sources/main2.cpp.i
 
-sources/main.s: sources/main.cpp.s
-.PHONY : sources/main.s
+sources/main2.s: sources/main2.cpp.s
+.PHONY : sources/main2.s
 
 # target to generate assembly for a file
-sources/main.cpp.s:
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/main.cpp.s
-.PHONY : sources/main.cpp.s
+sources/main2.cpp.s:
+	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/main2.cpp.s
+.PHONY : sources/main2.cpp.s
 
 # Help Target
 help:
@@ -269,9 +269,9 @@ help:
 	@echo "... sources/Model.o"
 	@echo "... sources/Model.i"
 	@echo "... sources/Model.s"
-	@echo "... sources/main.o"
-	@echo "... sources/main.i"
-	@echo "... sources/main.s"
+	@echo "... sources/main2.o"
+	@echo "... sources/main2.i"
+	@echo "... sources/main2.s"
 .PHONY : help
 
 

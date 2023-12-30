@@ -83,8 +83,8 @@ int main(int argc, char* argv[]) {
     setupDebug();
 
     // Creation of all the shaders
-    Shader shader("../shaders/commonObjects/commonObjects.vert",
-                  "../shaders/commonObjects/commonObjects.frag");
+    Shader shader("Project/shaders/commonObjects/commonObjects.vert",
+                  "Project/shaders/commonObjects/commonObjects.frag");
     // Creation of all the objects
     // Warning: The path to the objects start from the root of the Project (ie. the root of the git)
     Model backpack("Project/objects/backpack/backpack.obj");
@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) {
         processInput(window);
         glfwPollEvents();
         double now = glfwGetTime();
-        //glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         backpack.Draw(shader);

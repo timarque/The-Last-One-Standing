@@ -86,21 +86,55 @@ Project/CMakeFiles/project_main.dir/sources/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/project_main.dir/sources/main.cpp.s"
 	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/main.cpp -o CMakeFiles/project_main.dir/sources/main.cpp.s
 
+Project/CMakeFiles/project_main.dir/sources/Mesh.cpp.o: Project/CMakeFiles/project_main.dir/flags.make
+Project/CMakeFiles/project_main.dir/sources/Mesh.cpp.o: Project/sources/Mesh.cpp
+Project/CMakeFiles/project_main.dir/sources/Mesh.cpp.o: Project/CMakeFiles/project_main.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object Project/CMakeFiles/project_main.dir/sources/Mesh.cpp.o"
+	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Project/CMakeFiles/project_main.dir/sources/Mesh.cpp.o -MF CMakeFiles/project_main.dir/sources/Mesh.cpp.o.d -o CMakeFiles/project_main.dir/sources/Mesh.cpp.o -c /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/Mesh.cpp
+
+Project/CMakeFiles/project_main.dir/sources/Mesh.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/project_main.dir/sources/Mesh.cpp.i"
+	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/Mesh.cpp > CMakeFiles/project_main.dir/sources/Mesh.cpp.i
+
+Project/CMakeFiles/project_main.dir/sources/Mesh.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/project_main.dir/sources/Mesh.cpp.s"
+	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/Mesh.cpp -o CMakeFiles/project_main.dir/sources/Mesh.cpp.s
+
+Project/CMakeFiles/project_main.dir/sources/Model.cpp.o: Project/CMakeFiles/project_main.dir/flags.make
+Project/CMakeFiles/project_main.dir/sources/Model.cpp.o: Project/sources/Model.cpp
+Project/CMakeFiles/project_main.dir/sources/Model.cpp.o: Project/CMakeFiles/project_main.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object Project/CMakeFiles/project_main.dir/sources/Model.cpp.o"
+	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Project/CMakeFiles/project_main.dir/sources/Model.cpp.o -MF CMakeFiles/project_main.dir/sources/Model.cpp.o.d -o CMakeFiles/project_main.dir/sources/Model.cpp.o -c /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/Model.cpp
+
+Project/CMakeFiles/project_main.dir/sources/Model.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/project_main.dir/sources/Model.cpp.i"
+	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/Model.cpp > CMakeFiles/project_main.dir/sources/Model.cpp.i
+
+Project/CMakeFiles/project_main.dir/sources/Model.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/project_main.dir/sources/Model.cpp.s"
+	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/Model.cpp -o CMakeFiles/project_main.dir/sources/Model.cpp.s
+
 # Object files for target project_main
 project_main_OBJECTS = \
-"CMakeFiles/project_main.dir/sources/main.cpp.o"
+"CMakeFiles/project_main.dir/sources/main.cpp.o" \
+"CMakeFiles/project_main.dir/sources/Mesh.cpp.o" \
+"CMakeFiles/project_main.dir/sources/Model.cpp.o"
 
 # External object files for target project_main
 project_main_EXTERNAL_OBJECTS =
 
 Project/project_main: Project/CMakeFiles/project_main.dir/sources/main.cpp.o
+Project/project_main: Project/CMakeFiles/project_main.dir/sources/Mesh.cpp.o
+Project/project_main: Project/CMakeFiles/project_main.dir/sources/Model.cpp.o
 Project/project_main: Project/CMakeFiles/project_main.dir/build.make
 Project/project_main: /usr/lib64/libglfw.so.3.3
 Project/project_main: libglad.a
+Project/project_main: 3rdParty/assimp/bin/libassimp.so.5.3.0
 Project/project_main: /usr/lib64/libGLX.so
 Project/project_main: /usr/lib64/libOpenGL.so
+Project/project_main: /usr/lib64/libz.so
 Project/project_main: Project/CMakeFiles/project_main.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable project_main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable project_main"
 	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/project_main.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

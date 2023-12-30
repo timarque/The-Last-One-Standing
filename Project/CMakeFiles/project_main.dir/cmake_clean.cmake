@@ -1,4 +1,8 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/project_main.dir/sources/Mesh.cpp.o"
+  "CMakeFiles/project_main.dir/sources/Mesh.cpp.o.d"
+  "CMakeFiles/project_main.dir/sources/Model.cpp.o"
+  "CMakeFiles/project_main.dir/sources/Model.cpp.o.d"
   "CMakeFiles/project_main.dir/sources/main.cpp.o"
   "CMakeFiles/project_main.dir/sources/main.cpp.o.d"
   "project_main"

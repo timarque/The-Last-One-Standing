@@ -72,19 +72,19 @@ include Project/CMakeFiles/project_main.dir/progress.make
 # Include the compile flags for this target's objects.
 include Project/CMakeFiles/project_main.dir/flags.make
 
-Project/CMakeFiles/project_main.dir/sources/main.cpp.o: Project/CMakeFiles/project_main.dir/flags.make
-Project/CMakeFiles/project_main.dir/sources/main.cpp.o: Project/sources/main.cpp
-Project/CMakeFiles/project_main.dir/sources/main.cpp.o: Project/CMakeFiles/project_main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object Project/CMakeFiles/project_main.dir/sources/main.cpp.o"
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Project/CMakeFiles/project_main.dir/sources/main.cpp.o -MF CMakeFiles/project_main.dir/sources/main.cpp.o.d -o CMakeFiles/project_main.dir/sources/main.cpp.o -c /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/main.cpp
+Project/CMakeFiles/project_main.dir/sources/main2.cpp.o: Project/CMakeFiles/project_main.dir/flags.make
+Project/CMakeFiles/project_main.dir/sources/main2.cpp.o: Project/sources/main2.cpp
+Project/CMakeFiles/project_main.dir/sources/main2.cpp.o: Project/CMakeFiles/project_main.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object Project/CMakeFiles/project_main.dir/sources/main2.cpp.o"
+	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Project/CMakeFiles/project_main.dir/sources/main2.cpp.o -MF CMakeFiles/project_main.dir/sources/main2.cpp.o.d -o CMakeFiles/project_main.dir/sources/main2.cpp.o -c /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/main2.cpp
 
-Project/CMakeFiles/project_main.dir/sources/main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/project_main.dir/sources/main.cpp.i"
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/main.cpp > CMakeFiles/project_main.dir/sources/main.cpp.i
+Project/CMakeFiles/project_main.dir/sources/main2.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/project_main.dir/sources/main2.cpp.i"
+	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/main2.cpp > CMakeFiles/project_main.dir/sources/main2.cpp.i
 
-Project/CMakeFiles/project_main.dir/sources/main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/project_main.dir/sources/main.cpp.s"
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/main.cpp -o CMakeFiles/project_main.dir/sources/main.cpp.s
+Project/CMakeFiles/project_main.dir/sources/main2.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/project_main.dir/sources/main2.cpp.s"
+	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/main2.cpp -o CMakeFiles/project_main.dir/sources/main2.cpp.s
 
 Project/CMakeFiles/project_main.dir/sources/Mesh.cpp.o: Project/CMakeFiles/project_main.dir/flags.make
 Project/CMakeFiles/project_main.dir/sources/Mesh.cpp.o: Project/sources/Mesh.cpp
@@ -116,14 +116,14 @@ Project/CMakeFiles/project_main.dir/sources/Model.cpp.s: cmake_force
 
 # Object files for target project_main
 project_main_OBJECTS = \
-"CMakeFiles/project_main.dir/sources/main.cpp.o" \
+"CMakeFiles/project_main.dir/sources/main2.cpp.o" \
 "CMakeFiles/project_main.dir/sources/Mesh.cpp.o" \
 "CMakeFiles/project_main.dir/sources/Model.cpp.o"
 
 # External object files for target project_main
 project_main_EXTERNAL_OBJECTS =
 
-Project/project_main: Project/CMakeFiles/project_main.dir/sources/main.cpp.o
+Project/project_main: Project/CMakeFiles/project_main.dir/sources/main2.cpp.o
 Project/project_main: Project/CMakeFiles/project_main.dir/sources/Mesh.cpp.o
 Project/project_main: Project/CMakeFiles/project_main.dir/sources/Model.cpp.o
 Project/project_main: Project/CMakeFiles/project_main.dir/build.make

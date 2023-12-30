@@ -135,14 +135,14 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(CMAKE_COMMAND) -E cmake_progress_start /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/CMakeFiles /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project//CMakeFiles/progress.marks
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Project/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/CMakeFiles /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project//CMakeFiles/progress.marks
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Project/clean
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 clean
 .PHONY : clean
 
 # The main clean target
@@ -151,104 +151,107 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Project/preinstall
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Project/preinstall
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
-# Convenience name for target.
-Project/CMakeFiles/project_main.dir/rule:
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Project/CMakeFiles/project_main.dir/rule
-.PHONY : Project/CMakeFiles/project_main.dir/rule
+#=============================================================================
+# Target rules for targets named glad
 
-# Convenience name for target.
-project_main: Project/CMakeFiles/project_main.dir/rule
+# Build rule for target.
+glad: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 glad
+.PHONY : glad
+
+# fast build rule for target.
+glad/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/glad.dir/build.make CMakeFiles/glad.dir/build
+.PHONY : glad/fast
+
+#=============================================================================
+# Target rules for targets named uninstall
+
+# Build rule for target.
+uninstall: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 uninstall
+.PHONY : uninstall
+
+# fast build rule for target.
+uninstall/fast:
+	$(MAKE) $(MAKESILENT) -f 3rdParty/assimp/CMakeFiles/uninstall.dir/build.make 3rdParty/assimp/CMakeFiles/uninstall.dir/build
+.PHONY : uninstall/fast
+
+#=============================================================================
+# Target rules for targets named assimp
+
+# Build rule for target.
+assimp: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 assimp
+.PHONY : assimp
+
+# fast build rule for target.
+assimp/fast:
+	$(MAKE) $(MAKESILENT) -f 3rdParty/assimp/code/CMakeFiles/assimp.dir/build.make 3rdParty/assimp/code/CMakeFiles/assimp.dir/build
+.PHONY : assimp/fast
+
+#=============================================================================
+# Target rules for targets named unit
+
+# Build rule for target.
+unit: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 unit
+.PHONY : unit
+
+# fast build rule for target.
+unit/fast:
+	$(MAKE) $(MAKESILENT) -f 3rdParty/assimp/test/CMakeFiles/unit.dir/build.make 3rdParty/assimp/test/CMakeFiles/unit.dir/build
+.PHONY : unit/fast
+
+#=============================================================================
+# Target rules for targets named project_main
+
+# Build rule for target.
+project_main: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 project_main
 .PHONY : project_main
 
 # fast build rule for target.
 project_main/fast:
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/build
+	$(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/build
 .PHONY : project_main/fast
 
-sources/Mesh.o: sources/Mesh.cpp.o
-.PHONY : sources/Mesh.o
+3rdParty/glad/src/glad.o: 3rdParty/glad/src/glad.c.o
+.PHONY : 3rdParty/glad/src/glad.o
 
 # target to build an object file
-sources/Mesh.cpp.o:
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/Mesh.cpp.o
-.PHONY : sources/Mesh.cpp.o
+3rdParty/glad/src/glad.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/glad.dir/build.make CMakeFiles/glad.dir/3rdParty/glad/src/glad.c.o
+.PHONY : 3rdParty/glad/src/glad.c.o
 
-sources/Mesh.i: sources/Mesh.cpp.i
-.PHONY : sources/Mesh.i
-
-# target to preprocess a source file
-sources/Mesh.cpp.i:
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/Mesh.cpp.i
-.PHONY : sources/Mesh.cpp.i
-
-sources/Mesh.s: sources/Mesh.cpp.s
-.PHONY : sources/Mesh.s
-
-# target to generate assembly for a file
-sources/Mesh.cpp.s:
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/Mesh.cpp.s
-.PHONY : sources/Mesh.cpp.s
-
-sources/Model.o: sources/Model.cpp.o
-.PHONY : sources/Model.o
-
-# target to build an object file
-sources/Model.cpp.o:
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/Model.cpp.o
-.PHONY : sources/Model.cpp.o
-
-sources/Model.i: sources/Model.cpp.i
-.PHONY : sources/Model.i
+3rdParty/glad/src/glad.i: 3rdParty/glad/src/glad.c.i
+.PHONY : 3rdParty/glad/src/glad.i
 
 # target to preprocess a source file
-sources/Model.cpp.i:
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/Model.cpp.i
-.PHONY : sources/Model.cpp.i
+3rdParty/glad/src/glad.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/glad.dir/build.make CMakeFiles/glad.dir/3rdParty/glad/src/glad.c.i
+.PHONY : 3rdParty/glad/src/glad.c.i
 
-sources/Model.s: sources/Model.cpp.s
-.PHONY : sources/Model.s
-
-# target to generate assembly for a file
-sources/Model.cpp.s:
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/Model.cpp.s
-.PHONY : sources/Model.cpp.s
-
-sources/main.o: sources/main.cpp.o
-.PHONY : sources/main.o
-
-# target to build an object file
-sources/main.cpp.o:
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/main.cpp.o
-.PHONY : sources/main.cpp.o
-
-sources/main.i: sources/main.cpp.i
-.PHONY : sources/main.i
-
-# target to preprocess a source file
-sources/main.cpp.i:
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/main.cpp.i
-.PHONY : sources/main.cpp.i
-
-sources/main.s: sources/main.cpp.s
-.PHONY : sources/main.s
+3rdParty/glad/src/glad.s: 3rdParty/glad/src/glad.c.s
+.PHONY : 3rdParty/glad/src/glad.s
 
 # target to generate assembly for a file
-sources/main.cpp.s:
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/main.cpp.s
-.PHONY : sources/main.cpp.s
+3rdParty/glad/src/glad.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/glad.dir/build.make CMakeFiles/glad.dir/3rdParty/glad/src/glad.c.s
+.PHONY : 3rdParty/glad/src/glad.c.s
 
 # Help Target
 help:
@@ -262,16 +265,14 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... uninstall"
+	@echo "... assimp"
+	@echo "... glad"
 	@echo "... project_main"
-	@echo "... sources/Mesh.o"
-	@echo "... sources/Mesh.i"
-	@echo "... sources/Mesh.s"
-	@echo "... sources/Model.o"
-	@echo "... sources/Model.i"
-	@echo "... sources/Model.s"
-	@echo "... sources/main.o"
-	@echo "... sources/main.i"
-	@echo "... sources/main.s"
+	@echo "... unit"
+	@echo "... 3rdParty/glad/src/glad.o"
+	@echo "... 3rdParty/glad/src/glad.i"
+	@echo "... 3rdParty/glad/src/glad.s"
 .PHONY : help
 
 
@@ -283,6 +284,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

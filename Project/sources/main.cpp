@@ -12,9 +12,9 @@
 
 #include <map>
 
-#include "../../Project/sources/Camera.h"
-#include "../../Project/sources/Shader.h"
-#include "../../Project/sources/Model.h"
+#include "../sources/Camera.h"
+#include "../sources/Shader.h"
+#include "../sources/Model.h"
 
 void processInput(GLFWwindow* window);
 void createOpenGLContext();
@@ -83,10 +83,10 @@ int main(int argc, char* argv[]) {
     setupDebug();
 
     // Creation of all the shaders
-    Shader shader("../../Project/shaders/commonObjects/commonObjects.vert",
-                  "../../Project/shaders/commonObjects/commonObjects.frag");
+    Shader shader("../shaders/commonObjects/commonObjects.vert",
+                  "../shaders/commonObjects/commonObjects.frag");
     // Creation of all the objects
-    const char *backPackModelPath("../../Project/models/backpack");
+    const char *backPackModelPath("../models/backpack");
     Model backpack(backPackModelPath);
 
     // TODO : solve errors shown by the debugger

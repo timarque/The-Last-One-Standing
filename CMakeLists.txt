@@ -1,6 +1,8 @@
 #project setup
 project(VR-project)
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
 #set the minimal version of cmake and the minimal version of the c++ language
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 set(CMAKE_CXX_STANDARD 14)     
@@ -20,11 +22,10 @@ target_include_directories(glad PUBLIC ${GLAD_INCLUDE})
 #for assimp library
 #find_package(assimp REQUIRED)
 #target_include_directories(assimp PUBLIC ${ASSIMP_INCLUDE_DIRS})
-include_directories("3rdParty/assimp/include")
-link_directories("3rdParty/assimp/lib")
+
 # Add Assimp library as a dependency
 #add_library(assimp STATIC IMPORTED)
-#set_target_properties(assimp PROPERTIES IMPORTED_LOCATION "3rdParty/assimp/lib/Debug/assimp-vc143-mtd.lib")
+#set_target_properties(assimp PROPERTIES IMPORTED_LOCATION "3rdParty/assimp/lib/Debug/assimp.lib")
 
 #for GLFW
 option(GLFW_BUILD_DOCS OFF)
@@ -32,12 +33,8 @@ option(GLFW_BUILD_EXAMPLES OFF)
 option(GLFW_BUILD_TESTS OFF)
 
 # Assimp
-find_package(assimp QUIET)
-if (NOT assimp_FOUND)
-    #if assimp is not found, we will use the sources from the submodules
-    add_subdirectory(3rdParty/assimp)
-    include_directories(3rdParty/assimp/include/)
-endif()
+include_directories("3rdParty/assimp/include")
+link_directories("3rdParty/assimp/lib")
 
 #Search for glfw in case it is installed
 find_package(glfw3 QUIET)
@@ -52,7 +49,7 @@ endif()
 include_directories(3rdParty/glad/include/
                     3rdParty/glm/
                     3rdParty/stb/
-                    3rdParty/assimp/)
+                    3rdParty/assimp/include/)
 
                  
 if(COMPILE_PROJECT)

@@ -12,9 +12,9 @@
 
 #include <map>
 
-#include "../sources/Camera.h"
-#include "../sources/Shader.h"
-#include "../sources/Model.h"
+#include "Camera.h"
+#include "Shader.h"
+#include "Model.h"
 
 void processInput(GLFWwindow* window);
 void createOpenGLContext();

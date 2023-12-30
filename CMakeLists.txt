@@ -36,6 +36,16 @@ option(GLFW_BUILD_TESTS OFF)
 include_directories("3rdParty/assimp/include")
 link_directories("3rdParty/assimp/lib")
 
+if (LINUX)
+    #Search for glfw in case it is installed
+    find_package(assimp QUIET)
+    if (NOT assimp_FOUND)
+        #if glfw is not found, we will use the sources from the submodules
+        add_subdirectory(3rdParty/assimp)
+        include_directories(3rdParty/assimp/include/)
+    endif()
+endif()
+
 #Search for glfw in case it is installed
 find_package(glfw3 QUIET)
 if (NOT glfw3_FOUND)

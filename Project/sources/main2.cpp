@@ -65,8 +65,9 @@ int main()
     glEnable(GL_DEPTH_TEST);
 
     Shader ourShader(PATH_TO_SHADERS "/backpack/shader.vert", PATH_TO_SHADERS "/backpack/shader.frag");
+    Shader shader(PATH_TO_SHADERS "/specularObjects/specularObjects.vert", PATH_TO_SHADERS "/specularObjects/specularObjects.frag");
 
-    Model ourModel(PATH_TO_OBJECTS  "/cube.obj");
+    Model ourModel(PATH_TO_OBJECTS  "/sphere_smooth.obj");
     Model floorModel(PATH_TO_OBJECTS  "/floor/floor.obj");
 
     int grid_size = 3;
@@ -74,7 +75,27 @@ int main()
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(grid_size - 1.0f, 2.0f, grid_size - 1.0f)); // translate it down so it's at the center of the scene
     model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// L'objet est super grand, on le déplace
+
+    // Tentative
+    glm::mat4 inverseModel = glm::transpose(glm::inverse(model));
+
+    glm::vec3 light_pos = glm::vec3(grid_size - 1.0f, 3.0f, grid_size - 1.0f);
+
+    float ambient = 0.1;
+    float diffuse = 0.5;
+    float specular = 0.8;
     
+    glm::vec3 materialColour = glm::vec3(0.5f, 0.6, 0.8);
+    shader.use();
+    shader.setFloat("shininess", 32.0f);
+    shader.setVec3("materialColour", materialColour);
+    shader.setFloat("light.ambient_strength", ambient);
+    shader.setFloat("light.diffuse_strength", diffuse);
+    shader.setFloat("light.specular_strength", specular);
+    shader.setFloat("light.constant", 1.0);
+    shader.setFloat("light.linear", 0.14);
+    shader.setFloat("light.quadratic", 0.07);
+
     camera.Position = glm::vec3(grid_size - 1.0f, 3.0f, grid_size - 1.0f);
     while (!glfwWindowShouldClose(window))
     {
@@ -86,19 +107,28 @@ int main()
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // don't forget to enable shader before setting uniforms
-        ourShader.use();
-
+        
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
-        ourShader.setMatrix4("projection", projection);
-        ourShader.setMatrix4("view", view);
+
+        // don't forget to enable shader before setting uniforms
+        shader.use();
+        shader.setMatrix4("M", model);
+        shader.setMatrix4("itM", inverseModel);
+        shader.setMatrix4("V", view);
+        shader.setMatrix4("P", projection);
+        shader.setVec3("u_view_pos", camera.Position);
+        // auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(currentFrame));
+        shader.setVec3("light.light_pos", light_pos);
+
+        ourModel.Draw(shader);
 
         // render the loaded model
+        ourShader.use();
         ourShader.setMatrix4("model", model);
-        ourModel.Draw(ourShader);
+        ourShader.setMatrix4("projection", projection);
+        ourShader.setMatrix4("view", view);
 
         
         glm::mat4 floor = glm::mat4(1.0f);

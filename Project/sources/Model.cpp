@@ -8,7 +8,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-
+#include "../../3rdParty/assimp/include/assimp/DefaultLogger.hpp"
 
 unsigned int TextureFromFile(const char *path, const std::string &directory) {
     std::string filename = std::string(path);
@@ -70,6 +70,7 @@ void Model::loadModel(std::string path) {
     directory = path.substr(0, path.find_last_of('/'));
 
     processNode(scene->mRootNode, scene);
+    Assimp::DefaultLogger::kill();
 }
 
 void Model::processNode(aiNode *node, const aiScene *scene) {

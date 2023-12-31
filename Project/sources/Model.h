@@ -18,8 +18,6 @@
 #include "../../3rdParty/assimp/include/assimp/postprocess.h"
 
 unsigned int TextureFromFile(const char *path, const std::string &directory);
-
-
 /**
  * Model class that loads a model from a file
  */

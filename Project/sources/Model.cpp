@@ -60,7 +60,7 @@ void Model::Draw(Shader &shader) {
 
 void Model::loadModel(std::string path) {
     Assimp::Importer import;
-    const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+    const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
@@ -87,7 +87,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
     std::vector<Texture> textures;
-
+   
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
         // process vertex positions, normals and texture coordinates
@@ -113,6 +113,14 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         }
         vertex.TexCoords = texCoords;
 
+        
+        glm::vec3 tangents;
+        tangents.x = mesh->mTangents[i].x;
+        tangents.y = mesh->mTangents[i].y;
+        tangents.z = mesh->mTangents[i].z;
+        vertex.Tangents = tangents;
+        vertex.Bitangent = glm::normalize(glm::cross(vertex.Normal, vertex.Tangents));
+
         vertices.push_back(vertex);
     }
 
@@ -131,8 +139,10 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
         std::vector<Texture> specularMaps = loadMaterialTextures(material,aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+        // le probleme vient probablement du fait que y a pas la texture normal dans material, je dois load la texture autrement que avec material du coup je pense
+        std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+        textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
     }
-
     return Mesh(vertices, indices, textures);
 }
 

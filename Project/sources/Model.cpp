@@ -184,3 +184,25 @@ void Model::updateFromPhysics()
     btQuaternion rotation = transform.getRotation();
     for (Mesh mesh: meshes) mesh.setTransform(position.x(), position.y(), position.z(), rotation.w(), rotation.x(), rotation.y(), rotation.z());
 }
+
+void Model::addShader(Shader &shader)
+{
+    shaders.push_back(&shader);
+}
+
+void Model::DrawWithShader(Shader &shader)
+{
+    for (unsigned int i = 0; i < meshes.size(); i++)
+    {
+        meshes[i].Draw(shader);
+    }
+}
+
+void Model::Draw()
+{
+    // Dessiner le modèle avec tous les shaders associés
+    for (Shader *shader : shaders)
+    {
+        DrawWithShader(*shader);
+    }
+}

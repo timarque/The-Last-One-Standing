@@ -66,6 +66,7 @@ void Mesh::Draw(Shader &shader) {
     glBindVertexArray(0);
 }
 
+
 void Mesh::setTransform(float posX, float posY, float posZ, float rotW, float rotX, float rotY, float rotZ)
 {
     // Met à jour la transformation du modèle en fonction de la position et de la rotation

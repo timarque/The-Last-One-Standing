@@ -172,24 +172,24 @@ int main()
 
         // ourModel.DrawWithShader(shader);
         btTransform transform;
-        btScalar *m;
+        glm::mat4 m;
         ourShader.use();
         ourShader.setMatrix4("projection", projection);
         ourShader.setMatrix4("view", view);
         
         sunM.physicsObject->getMotionState()->getWorldTransform(transform);
-        transform.getOpenGLMatrix(m);
-        ourShader.setMatrix4("model", glm::scale(btScalar2mat4(m), glm::vec3(0.5)));
+        transform.getOpenGLMatrix(glm::value_ptr(m));
+        ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
         sunM.DrawWithShader(ourShader);
 
         moonM.physicsObject->getMotionState()->getWorldTransform(transform);
-        transform.getOpenGLMatrix(m);
-        ourShader.setMatrix4("model", glm::scale(btScalar2mat4(m), glm::vec3(0.5)));
+        transform.getOpenGLMatrix(glm::value_ptr(m));
+        ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
         moonM.DrawWithShader(ourShader);
         
         earthM.physicsObject->getMotionState()->getWorldTransform(transform);
-        transform.getOpenGLMatrix(m);
-        ourShader.setMatrix4("model", glm::scale(btScalar2mat4(m), glm::vec3(0.5)));
+        transform.getOpenGLMatrix(glm::value_ptr(m));
+        ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
         earthM.DrawWithShader(ourShader);
 
         // sun = glm::translate(sun, glm::vec3(0.1 * cos(currentFrame), 0.0, 0.1 * sin(currentFrame)));

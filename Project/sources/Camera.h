@@ -143,6 +143,14 @@ public:
         if (Zoom > 45.0f)
             Zoom = 45.0f;
     }
+    
+    void LookAtModel(const glm::vec3 &targetPosition)
+    {
+        glm::vec3 direction = glm::normalize(targetPosition - this->Position);
+        this->Yaw = glm::degrees(atan2(direction.x, direction.z));
+        this->Pitch = glm::degrees(asin(direction.y));
+        this->updateCameraVectors();
+    }
 
 private:
     // Calculates the front vector from the Camera's (updated) Eular Angles

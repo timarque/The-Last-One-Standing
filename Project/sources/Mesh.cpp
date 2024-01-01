@@ -3,6 +3,9 @@
 //
 
 #include "Mesh.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 void Mesh::setupMesh() {
     glGenVertexArrays(1, &VAO);
@@ -61,4 +64,30 @@ void Mesh::Draw(Shader &shader) {
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+}
+
+void Mesh::setTransform(float posX, float posY, float posZ, float rotW, float rotX, float rotY, float rotZ)
+{
+    // Met à jour la transformation du modèle en fonction de la position et de la rotation
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(posX, posY, posZ));
+
+    // Attention : glm::quat utilise une convention wxyz, alors assure-toi que l'ordre est correct
+    glm::quat rotationQuaternion = glm::quat(rotW, rotX, rotY, rotZ);
+    glm::mat4 rotationMatrix = glm::mat4_cast(rotationQuaternion);
+
+    modelMatrix = modelMatrix * rotationMatrix;
+
+    // Mise à jour des positions des sommets
+    for (size_t i = 0; i < vertices.size(); ++i)
+    {
+        glm::vec4 vertexPosition = glm::vec4(vertices[i].Position, 1.0f);
+        glm::vec4 transformedPosition = modelMatrix * vertexPosition;
+        vertices[i].Position = glm::vec3(transformedPosition);
+    }
+
+    // Mise à jour du VBO (VertexBufferObject)
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

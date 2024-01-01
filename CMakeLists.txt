@@ -44,8 +44,13 @@ if (LINUX)
         add_subdirectory(3rdParty/assimp)
         include_directories(3rdParty/assimp/include/)
     endif()
+    find_package(Bullet REQUIRED)
+    if (NOT BULLET_FOUND)
+        #if glfw is not found, we will use the sources from the submodules
+        add_subdirectory(3rdParty/bullet)
+        include_directories(3rdParty/bullet/src/)
+    endif()
 endif()
-
 #Search for glfw in case it is installed
 find_package(glfw3 QUIET)
 if (NOT glfw3_FOUND)
@@ -59,7 +64,9 @@ endif()
 include_directories(3rdParty/glad/include/
                     3rdParty/glm/
                     3rdParty/stb/
-                    3rdParty/assimp/include/)
+                    3rdParty/assimp/include/
+                    /usr/include/bullet
+                    )
 
                  
 if(COMPILE_PROJECT)

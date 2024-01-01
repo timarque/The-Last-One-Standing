@@ -82,6 +82,8 @@ int main()
     btCollisionShape *shape = new btBoxShape(btVector3(1, 1, 1));
     ourModel.createPhysicsObject(dynamicsWorld, shape, 0.1, btVector3(1, 5, 0));
     
+    Model sunModel(PATH_TO_OBJECTS  "/sphere_smooth.obj");
+
     Model sphere(PATH_TO_OBJECTS  "/sphere_smooth.obj");
     btCollisionShape *sphere_shape = new btSphereShape(1);
     sphere.createPhysicsObject(dynamicsWorld, sphere_shape, 10, btVector3(0, 15, 1.5));
@@ -91,6 +93,7 @@ int main()
     floorModel.createPhysicsObject(dynamicsWorld, floor_shape, 0.0, btVector3(0, 0, 0));
 
     int grid_size = 60;
+    glm::vec3 light_pos = glm::vec3(5.0f, 5.0f, 5.0f);
 
     glm::mat4 model = glm::mat4(1.0f);
     // btTransform transform;
@@ -99,13 +102,16 @@ int main()
     // model = glm::translate(model, glm::vec3(grid_size - 1.0f, 2.0f, grid_size - 1.0f)); // translate it down so it's at the center of the scene
     // model = glm::translate(model, glm::vec3(position.x(), position.y(), position.z())); // translate it down so it's at the center of the scene
     model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// L'objet est super grand, on le déplace
+    
+    glm::mat4 sun = glm::mat4(1.0f);
+    sun = glm::translate(sun, light_pos);
+    glm::mat4 itMsun = glm::transpose(glm::inverse(sun));
 
     glm::mat4 floor = glm::mat4(1.0f);
 
     // Tentative
     glm::mat4 inverseModel = glm::transpose(glm::inverse(model));
 
-    glm::vec3 light_pos = glm::vec3(grid_size - 1.0f, 3.0f, grid_size - 1.0f);
 
     float ambient = 0.1;
     float diffuse = 0.5;
@@ -130,7 +136,7 @@ int main()
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-
+        
         processInput(window);
 
         glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
@@ -149,7 +155,18 @@ int main()
         // auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(currentFrame));
         shader.setVec3("light.light_pos", light_pos);
 
-        ourModel.Draw(shader);
+        ourModel.DrawWithShader(shader);
+        
+        shader.use();
+        shader.setMatrix4("M", sun);
+        shader.setMatrix4("itM", itMsun);
+        shader.setMatrix4("V", view);
+        shader.setMatrix4("P", projection);
+        shader.setVec3("u_view_pos", camera.Position);
+        // auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(currentFrame));
+        shader.setVec3("light.light_pos", light_pos);
+
+        sunModel.DrawWithShader(shader);
 
         // render the loaded model
         ourShader.use();
@@ -164,14 +181,14 @@ int main()
                 floor = glm::translate(floor, glm::vec3(-grid_size + 2.0f * i / grid_size, 0.0f, -grid_size));
             }
             ourShader.setMatrix4("model", floor);
-            floorModel.Draw(ourShader);
+            floorModel.DrawWithShader(ourShader);
         }
 
         ourShader.use();
         ourShader.setMatrix4("model", model);
         ourShader.setMatrix4("projection", projection);
         ourShader.setMatrix4("view", view);
-        sphere.Draw(ourShader);
+        sphere.DrawWithShader(ourShader);
 
         dynamicsWorld->stepSimulation(deltaTime, 10);
         ourModel.updateFromPhysics();

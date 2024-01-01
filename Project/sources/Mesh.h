@@ -41,7 +41,6 @@ class Mesh {
 private:
     //  render data
     unsigned int VAO, VBO, EBO;
-
     void setupMesh();
 
 public:
@@ -62,6 +61,7 @@ public:
      * Draw the mesh in the scene
      * @param shader used shader to draw the mesh
      */
+    
     void Draw(Shader &shader);
     void setTransform(float posX, float posY, float posZ, float rotW, float rotX, float rotY, float rotZ);
 };

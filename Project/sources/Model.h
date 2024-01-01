@@ -45,11 +45,19 @@ public:
     // Mettre à jour la transformation du modèle à partir de la physique
     void updateFromPhysics();
 
+    // Ajouter un shader au modèle
+    void addShader(Shader &shader);
+
+    // Dessiner le modèle avec un shader spécifié
+    void DrawWithShader(Shader &shader);
+    void Draw();
+
 private:
     // model data
     std::vector<Mesh> meshes;
     std::string directory;
     std::vector<Texture> textures_loaded;   // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
+    std::vector<Shader *> shaders;
 
     /**
      * Loads a model from a file

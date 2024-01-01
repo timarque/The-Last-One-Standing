@@ -92,7 +92,7 @@ int main()
     btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
     floorModel.createPhysicsObject(dynamicsWorld, floor_shape, 0.0, btVector3(0, 0, 0));
 
-    int grid_size = 60;
+    int grid_size = 40;
     glm::vec3 light_pos = glm::vec3(5.0f, 5.0f, 5.0f);
 
     glm::mat4 model = glm::mat4(1.0f);

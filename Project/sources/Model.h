@@ -17,6 +17,8 @@
 #include "../../3rdParty/assimp/include/assimp/scene.h"
 #include "../../3rdParty/assimp/include/assimp/postprocess.h"
 
+#include "../../3rdParty/bullet/src/btBulletDynamicsCommon.h"
+
 unsigned int TextureFromFile(const char *path, const std::string &directory);
 /**
  * Model class that loads a model from a file
@@ -29,12 +31,19 @@ public:
      * @param path to the model file
      */
     Model(std::string path);
+    btRigidBody *physicsObject;             // Ajouter un membre pour représenter l'objet physique associé au modèle
 
     /**
      * Draws the model in the 3D scene
      * @param shader to use to draw the model
      */
     void Draw(Shader &shader);
+
+    // Créer un objet physique associé au modèle dans le monde physique
+    void createPhysicsObject(btDiscreteDynamicsWorld *dynamicsWorld, btCollisionShape *shape, float mass, btVector3 origin);
+
+    // Mettre à jour la transformation du modèle à partir de la physique
+    void updateFromPhysics();
 
 private:
     // model data
@@ -71,6 +80,7 @@ private:
      * @return the loaded textures
      */
     std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
+
 };
 
 

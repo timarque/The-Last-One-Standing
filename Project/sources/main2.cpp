@@ -71,30 +71,30 @@ int main()
     dynamicsWorld->setGravity(btVector3(0, -9.8, 0)); // La gravité
 
     // Ajout d'objets physiques (rigides)
-    btCollisionShape *groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1); // Un plan au sol
-    btCollisionShape *boxShape = new btBoxShape(btVector3(1, 1, 1));               // Une boîte
+    // btCollisionShape *groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1); // Un plan au sol
+    // btCollisionShape *boxShape = new btBoxShape(btVector3(1, 1, 1));               // Une boîte
 
-    btTransform groundTransform, boxTransform;
-    groundTransform.setIdentity();
-    boxTransform.setIdentity();
+    // btTransform groundTransform, boxTransform;
+    // groundTransform.setIdentity();
+    // boxTransform.setIdentity();
 
-    groundTransform.setOrigin(btVector3(0, -1, 0)); // Position du sol
-    boxTransform.setOrigin(btVector3(0, 10, 0));    // Position de la boîte
+    // groundTransform.setOrigin(btVector3(0, -1, 0)); // Position du sol
+    // boxTransform.setOrigin(btVector3(0, 10, 0));    // Position de la boîte
 
-    btScalar mass = 1.0; // Masse de la boîte
-    btVector3 localInertia(0, 0, 0);
-    boxShape->calculateLocalInertia(mass, localInertia);
+    // btScalar mass = 1.0; // Masse de la boîte
+    // btVector3 localInertia(0, 0, 0);
+    // boxShape->calculateLocalInertia(mass, localInertia);
 
-    btDefaultMotionState *groundMotionState = new btDefaultMotionState(groundTransform);
-    btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
-    btRigidBody *groundRigidBody = new btRigidBody(groundRigidBodyCI);
+    // btDefaultMotionState *groundMotionState = new btDefaultMotionState(groundTransform);
+    // btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
+    // btRigidBody *groundRigidBody = new btRigidBody(groundRigidBodyCI);
 
-    btDefaultMotionState *boxMotionState = new btDefaultMotionState(boxTransform);
-    btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI(mass, boxMotionState, boxShape, localInertia);
-    btRigidBody *boxRigidBody = new btRigidBody(boxRigidBodyCI);
+    // btDefaultMotionState *boxMotionState = new btDefaultMotionState(boxTransform);
+    // btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI(mass, boxMotionState, boxShape, localInertia);
+    // btRigidBody *boxRigidBody = new btRigidBody(boxRigidBodyCI);
 
-    dynamicsWorld->addRigidBody(groundRigidBody);
-    dynamicsWorld->addRigidBody(boxRigidBody);
+    // dynamicsWorld->addRigidBody(groundRigidBody);
+    // dynamicsWorld->addRigidBody(boxRigidBody);
 
     // _____ FIN BULLET _____
 
@@ -105,13 +105,22 @@ int main()
     Shader ourShader(PATH_TO_SHADERS "/backpack/shader.vert", PATH_TO_SHADERS "/backpack/shader.frag");
     Shader shader(PATH_TO_SHADERS "/specularObjects/specularObjects.vert", PATH_TO_SHADERS "/specularObjects/specularObjects.frag");
 
-    Model ourModel(PATH_TO_OBJECTS  "/sphere_smooth.obj");
+    Model ourModel(PATH_TO_OBJECTS  "/cube.obj");
+    btCollisionShape *shape = new btBoxShape(btVector3(1, 1, 1));
+    ourModel.createPhysicsObject(dynamicsWorld, shape, 1.0, btVector3(0, 10, 0));
+
     Model floorModel(PATH_TO_OBJECTS  "/floor/floor.obj");
+    btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
+    floorModel.createPhysicsObject(dynamicsWorld, floor_shape, 0.0, btVector3(0, 0, 0));
 
     int grid_size = 3;
 
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(grid_size - 1.0f, 2.0f, grid_size - 1.0f)); // translate it down so it's at the center of the scene
+    // btTransform transform;
+    // ourModel.physicsObject->getMotionState()->getWorldTransform(transform);
+    // btVector3 position = transform.getOrigin();
+    // model = glm::translate(model, glm::vec3(grid_size - 1.0f, 2.0f, grid_size - 1.0f)); // translate it down so it's at the center of the scene
+    // model = glm::translate(model, glm::vec3(position.x(), position.y(), position.z())); // translate it down so it's at the center of the scene
     model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// L'objet est super grand, on le déplace
 
     // Tentative
@@ -134,7 +143,8 @@ int main()
     shader.setFloat("light.linear", 0.14);
     shader.setFloat("light.quadratic", 0.07);
 
-    camera.Position = glm::vec3(grid_size - 1.0f, 3.0f, grid_size - 1.0f);
+    camera.Position = glm::vec3(-3.0f, 1.0f, -3.0f);
+    camera.LookAtModel(glm::vec3(00.0, 1.0, 0.0));
     while (!glfwWindowShouldClose(window))
     {
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -143,7 +153,7 @@ int main()
 
         processInput(window);
 
-        glClearColor(0.0f, 0.2f, 0.2f, 1.0f);
+        glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         // view/projection transformations
@@ -169,20 +179,23 @@ int main()
 
         
         glm::mat4 floor = glm::mat4(1.0f);
-        floor = glm::translate(floor, glm::vec3(-grid_size, 0.0f, -grid_size));
+        // floor = glm::translate(floor, glm::vec3(-grid_size, 0.0f, -grid_size));
+        floor = glm::translate(floor, glm::vec3(0, 0, 0));
         
-        for (int i = 0; i < grid_size * grid_size; i++) {
-            if (i % grid_size != 0) floor = glm::translate(floor, glm::vec3(0.0f, 0.0f, 2.0f)); 
-            else {
-                floor = glm::mat4(1.0f);
-                // floor = glm::scale(floor, glm::vec3(1.0f, 1.0f, 1.0f));	
-                floor = glm::translate(floor, glm::vec3(2.0f * i/grid_size, 0.0f, 0.0f));
-            }
+        // for (int i = 0; i < grid_size * grid_size; i++) {
+        //     if (i % grid_size != 0) floor = glm::translate(floor, glm::vec3(0.0f, 0.0f, 2.0f)); 
+        //     else {
+        //         floor = glm::mat4(1.0f);
+        //         // floor = glm::scale(floor, glm::vec3(1.0f, 1.0f, 1.0f));	
+        //         floor = glm::translate(floor, glm::vec3(2.0f * i/grid_size, 0.0f, 0.0f));
+        //     }
             ourShader.setMatrix4("model", floor);
             floorModel.Draw(ourShader);
-        }
+        // }
 
         dynamicsWorld->stepSimulation(deltaTime, 10);
+        ourModel.updateFromPhysics();
+        // floorModel.updateFromPhysics();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

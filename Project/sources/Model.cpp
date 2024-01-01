@@ -8,7 +8,6 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include "../../3rdParty/assimp/include/assimp/DefaultLogger.hpp"
 
 unsigned int TextureFromFile(const char *path, const std::string &directory) {
     std::string filename = std::string(path);
@@ -70,7 +69,6 @@ void Model::loadModel(std::string path) {
     directory = path.substr(0, path.find_last_of('/'));
 
     processNode(scene->mRootNode, scene);
-    Assimp::DefaultLogger::kill();
 }
 
 void Model::processNode(aiNode *node, const aiScene *scene) {
@@ -161,4 +159,28 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType 
         }
     }
     return textures;
+}
+
+void Model::createPhysicsObject(btDiscreteDynamicsWorld *dynamicsWorld, btCollisionShape* collision_shape, float mass, btVector3 origin)
+{
+    btTransform transform;
+    transform.setIdentity();
+    transform.setOrigin(origin);
+
+    btDefaultMotionState *motionState = new btDefaultMotionState(transform);
+
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, collision_shape);
+    physicsObject = new btRigidBody(rbInfo);
+
+    dynamicsWorld->addRigidBody(physicsObject);
+}
+
+// Mettre à jour la transformation du modèle à partir de la physique
+void Model::updateFromPhysics()
+{
+    btTransform transform;
+    physicsObject->getMotionState()->getWorldTransform(transform);
+    btVector3 position = transform.getOrigin();
+    btQuaternion rotation = transform.getRotation();
+    for (Mesh mesh: meshes) mesh.setTransform(position.x(), position.y(), position.z(), rotation.w(), rotation.x(), rotation.y(), rotation.z());
 }

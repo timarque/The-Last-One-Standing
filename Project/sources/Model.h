@@ -52,11 +52,11 @@ public:
     void DrawWithShader(Shader &shader);
     void Draw();
 
+    std::vector<Texture> textures_loaded;   // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
 private:
     // model data
-    std::vector<Mesh> meshes;
     std::string directory;
-    std::vector<Texture> textures_loaded;   // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
+    std::vector<Mesh> meshes;
     std::vector<Shader *> shaders;
 
     /**

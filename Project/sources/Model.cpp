@@ -167,11 +167,18 @@ void Model::createPhysicsObject(btDiscreteDynamicsWorld *dynamicsWorld, btCollis
     transform.setIdentity();
     transform.setOrigin(origin);
 
+    btVector3 localInertia(1, 0, 0);
+    collision_shape->calculateLocalInertia(mass, localInertia);
+
+    // Ajuster l'inertie selon vos besoins
+
     btDefaultMotionState *motionState = new btDefaultMotionState(transform);
     
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, collision_shape);
     physicsObject = new btRigidBody(rbInfo);
     physicsObject->setRestitution(0.8);
+    physicsObject->setFriction(0.5f);
+    physicsObject->applyForce(btVector3(0, 0, -10), btVector3(1, 0, 0));
     dynamicsWorld->addRigidBody(physicsObject);
 }
 

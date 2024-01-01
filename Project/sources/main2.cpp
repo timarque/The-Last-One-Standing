@@ -8,6 +8,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Model.h"
+#include "Sphere.h"
 
 #include <iostream>
 
@@ -18,6 +19,15 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
+
+glm::mat4 btScalar2mat4(btScalar *matrix)
+{
+    return glm::mat4(
+        matrix[0], matrix[1], matrix[2], matrix[3],
+        matrix[4], matrix[5], matrix[6], matrix[7],
+        matrix[8], matrix[9], matrix[10], matrix[11],
+        matrix[12], matrix[13], matrix[14], matrix[15]);
+}
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -74,26 +84,31 @@ int main()
     // // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
     // stbi_set_flip_vertically_on_load(true);
     glEnable(GL_DEPTH_TEST);
-
+    
+    
     Shader ourShader(PATH_TO_SHADERS "/backpack/shader.vert", PATH_TO_SHADERS "/backpack/shader.frag");
     Shader shader(PATH_TO_SHADERS "/specularObjects/specularObjects.vert", PATH_TO_SHADERS "/specularObjects/specularObjects.frag");
+    Shader reflshader(PATH_TO_SHADERS "/reflective/reflective.vert", PATH_TO_SHADERS "/reflective/reflective.frag");
+    Shader ambiant(PATH_TO_SHADERS "/ambiant_light/ambiant.vert", PATH_TO_SHADERS "/ambiant_light/ambiant.frag");
 
-    Model ourModel(PATH_TO_OBJECTS  "/cube.obj");
-    btCollisionShape *shape = new btBoxShape(btVector3(1, 1, 1));
-    ourModel.createPhysicsObject(dynamicsWorld, shape, 0.1, btVector3(1, 5, 0));
+    // Model ourModel(PATH_TO_OBJECTS  "/cube.obj");
+    // btCollisionShape *shape = new btBoxShape(btVector3(1, 1, 1));
+    // ourModel.createPhysicsObject(dynamicsWorld, shape, 0.1, btVector3(1, 5, 0));
     
-    Model sunModel(PATH_TO_OBJECTS  "/sphere_smooth.obj");
+    Model earthM = generateSphere(PATH_TO_OBJECTS "/earth.obj", glm::vec3(0.0f, 1.5f, 0.01f), dynamicsWorld);
+    Model moonM = generateSphere(PATH_TO_OBJECTS "/moon.obj", glm::vec3(0.0f, 3.0f, -0.01f), dynamicsWorld);
+    Model sunM = generateSphere(PATH_TO_OBJECTS "/sun.obj", glm::vec3(0.0f, 5.0f, 0.0f), dynamicsWorld);
 
-    Model sphere(PATH_TO_OBJECTS  "/sphere_smooth.obj");
-    btCollisionShape *sphere_shape = new btSphereShape(1);
-    sphere.createPhysicsObject(dynamicsWorld, sphere_shape, 10, btVector3(0, 15, 1.5));
+    // Model sphere(PATH_TO_OBJECTS "/sun.obj");
+    // btCollisionShape *sphere_shape = new btSphereShape(1);
+    // sphere.createPhysicsObject(dynamicsWorld, sphere_shape, 10, btVector3(0, 15, 1.5));
 
     Model floorModel(PATH_TO_OBJECTS  "/floor/floor.obj");
     btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
     floorModel.createPhysicsObject(dynamicsWorld, floor_shape, 0.0, btVector3(0, 0, 0));
 
     int grid_size = 60;
-    glm::vec3 light_pos = glm::vec3(5.0f, 5.0f, 5.0f);
+    glm::vec3 light_pos = glm::vec3(0.0f, 3.0f, 0.0f);
 
     glm::mat4 model = glm::mat4(1.0f);
     // btTransform transform;
@@ -105,6 +120,7 @@ int main()
     
     glm::mat4 sun = glm::mat4(1.0f);
     sun = glm::translate(sun, light_pos);
+    sun = glm::scale(sun, glm::vec3(0.2f));
     glm::mat4 itMsun = glm::transpose(glm::inverse(sun));
 
     glm::mat4 floor = glm::mat4(1.0f);
@@ -146,27 +162,37 @@ int main()
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
         // don't forget to enable shader before setting uniforms
-        shader.use();
-        shader.setMatrix4("M", model);
-        shader.setMatrix4("itM", inverseModel);
-        shader.setMatrix4("V", view);
-        shader.setMatrix4("P", projection);
-        shader.setVec3("u_view_pos", camera.Position);
-        // auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(currentFrame));
-        shader.setVec3("light.light_pos", light_pos);
+        // shader.use();
+        // shader.setMatrix4("M", model);
+        // shader.setMatrix4("itM", inverseModel);
+        // shader.setMatrix4("V", view);
+        // shader.setMatrix4("P", projection);
+        // shader.setVec3("u_view_pos", camera.Position);
+        // shader.setVec3("light.light_pos", light_pos);
 
-        ourModel.DrawWithShader(shader);
+        // ourModel.DrawWithShader(shader);
+        btTransform transform;
+        btScalar *m;
+        ourShader.use();
+        ourShader.setMatrix4("projection", projection);
+        ourShader.setMatrix4("view", view);
         
-        shader.use();
-        shader.setMatrix4("M", sun);
-        shader.setMatrix4("itM", itMsun);
-        shader.setMatrix4("V", view);
-        shader.setMatrix4("P", projection);
-        shader.setVec3("u_view_pos", camera.Position);
-        // auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(currentFrame));
-        shader.setVec3("light.light_pos", light_pos);
+        sunM.physicsObject->getMotionState()->getWorldTransform(transform);
+        transform.getOpenGLMatrix(m);
+        ourShader.setMatrix4("model", glm::scale(btScalar2mat4(m), glm::vec3(0.5)));
+        sunM.DrawWithShader(ourShader);
 
-        sunModel.DrawWithShader(shader);
+        moonM.physicsObject->getMotionState()->getWorldTransform(transform);
+        transform.getOpenGLMatrix(m);
+        ourShader.setMatrix4("model", glm::scale(btScalar2mat4(m), glm::vec3(0.5)));
+        moonM.DrawWithShader(ourShader);
+        
+        earthM.physicsObject->getMotionState()->getWorldTransform(transform);
+        transform.getOpenGLMatrix(m);
+        ourShader.setMatrix4("model", glm::scale(btScalar2mat4(m), glm::vec3(0.5)));
+        earthM.DrawWithShader(ourShader);
+
+        // sun = glm::translate(sun, glm::vec3(0.1 * cos(currentFrame), 0.0, 0.1 * sin(currentFrame)));
 
         // render the loaded model
         ourShader.use();
@@ -184,16 +210,19 @@ int main()
             floorModel.DrawWithShader(ourShader);
         }
 
-        ourShader.use();
-        ourShader.setMatrix4("model", model);
-        ourShader.setMatrix4("projection", projection);
-        ourShader.setMatrix4("view", view);
-        sphere.DrawWithShader(ourShader);
+        // ourShader.use();
+        // ourShader.setMatrix4("model", model);
+        // ourShader.setMatrix4("projection", projection);
+        // ourShader.setMatrix4("view", view);
+        // sphere.DrawWithShader(ourShader);
 
         dynamicsWorld->stepSimulation(deltaTime, 10);
-        ourModel.updateFromPhysics();
-        sphere.updateFromPhysics();
+        // ourModel.updateFromPhysics();
+        // sphere.updateFromPhysics();
         floorModel.updateFromPhysics();
+        earthM.updateFromPhysics();
+        moonM.updateFromPhysics();
+        sunM.updateFromPhysics();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

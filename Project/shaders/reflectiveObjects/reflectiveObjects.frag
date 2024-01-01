@@ -1,4 +1,4 @@
-#version 400 core
+#version 330 core
 out vec4 FragColor;
 precision mediump float;
 in vec3 v_frag_coord;
@@ -11,3 +11,4 @@ void main() {
 	vec3 R = reflect(-V,N); 
 	FragColor = texture(cubemapSampler,R); 
 }
+

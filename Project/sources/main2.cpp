@@ -10,7 +10,9 @@
 #include "Model.h"
 
 #include <iostream>
-#include "../../3rdParty/assimp/include/assimp/DefaultLogger.hpp"
+
+#include "../../3rdParty/bullet/src/btBulletDynamicsCommon.h"
+// #include <btDynamicsWorld.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -59,9 +61,45 @@ int main()
         return -1;
     }
 
+    // _____ BULLET _____
+    // // Initialisation de Bullet Physics
+    btBroadphaseInterface *broadphase = new btDbvtBroadphase(); // Le big boss de Bullet
+    btDefaultCollisionConfiguration *collisionConfiguration = new btDefaultCollisionConfiguration(); // Configuration de la physique
+    btCollisionDispatcher *dispatcher = new btCollisionDispatcher(collisionConfiguration); // Que faire lorsqu'on a une collision
+    btSequentialImpulseConstraintSolver *solver = new btSequentialImpulseConstraintSolver(); // Solveurs pour résoudre les contraintes nécessaires à la physique blablabla vous irez lire la doc
+    btDiscreteDynamicsWorld *dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration); // On configure notre monde avec de la physique
+    dynamicsWorld->setGravity(btVector3(0, -9.8, 0)); // La gravité
+
+    // Ajout d'objets physiques (rigides)
+    btCollisionShape *groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1); // Un plan au sol
+    btCollisionShape *boxShape = new btBoxShape(btVector3(1, 1, 1));               // Une boîte
+
+    btTransform groundTransform, boxTransform;
+    groundTransform.setIdentity();
+    boxTransform.setIdentity();
+
+    groundTransform.setOrigin(btVector3(0, -1, 0)); // Position du sol
+    boxTransform.setOrigin(btVector3(0, 10, 0));    // Position de la boîte
+
+    btScalar mass = 1.0; // Masse de la boîte
+    btVector3 localInertia(0, 0, 0);
+    boxShape->calculateLocalInertia(mass, localInertia);
+
+    btDefaultMotionState *groundMotionState = new btDefaultMotionState(groundTransform);
+    btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
+    btRigidBody *groundRigidBody = new btRigidBody(groundRigidBodyCI);
+
+    btDefaultMotionState *boxMotionState = new btDefaultMotionState(boxTransform);
+    btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI(mass, boxMotionState, boxShape, localInertia);
+    btRigidBody *boxRigidBody = new btRigidBody(boxRigidBodyCI);
+
+    dynamicsWorld->addRigidBody(groundRigidBody);
+    dynamicsWorld->addRigidBody(boxRigidBody);
+
+    // _____ FIN BULLET _____
+
     // // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
     // stbi_set_flip_vertically_on_load(true);
-
     glEnable(GL_DEPTH_TEST);
 
     Shader ourShader(PATH_TO_SHADERS "/backpack/shader.vert", PATH_TO_SHADERS "/backpack/shader.frag");
@@ -105,13 +143,12 @@ int main()
 
         processInput(window);
 
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.0f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
-
         // don't forget to enable shader before setting uniforms
         shader.use();
         shader.setMatrix4("M", model);
@@ -144,13 +181,21 @@ int main()
             ourShader.setMatrix4("model", floor);
             floorModel.Draw(ourShader);
         }
-        
 
+        dynamicsWorld->stepSimulation(deltaTime, 10);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
     glfwTerminate();
+    // Nettoyage Bullet
+    // delete dynamicsWorld;
+    // delete solver;
+    // delete collisionConfiguration;
+    // delete dispatcher;
+    // delete broadphase;
+    // delete groundShape;
+    // delete boxShape;
     return 0;
 }
 

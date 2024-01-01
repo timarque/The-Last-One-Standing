@@ -69,33 +69,6 @@ int main()
     btSequentialImpulseConstraintSolver *solver = new btSequentialImpulseConstraintSolver(); // Solveurs pour résoudre les contraintes nécessaires à la physique blablabla vous irez lire la doc
     btDiscreteDynamicsWorld *dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration); // On configure notre monde avec de la physique
     dynamicsWorld->setGravity(btVector3(0, -9.8, 0)); // La gravité
-
-    // Ajout d'objets physiques (rigides)
-    // btCollisionShape *groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1); // Un plan au sol
-    // btCollisionShape *boxShape = new btBoxShape(btVector3(1, 1, 1));               // Une boîte
-
-    // btTransform groundTransform, boxTransform;
-    // groundTransform.setIdentity();
-    // boxTransform.setIdentity();
-
-    // groundTransform.setOrigin(btVector3(0, -1, 0)); // Position du sol
-    // boxTransform.setOrigin(btVector3(0, 10, 0));    // Position de la boîte
-
-    // btScalar mass = 1.0; // Masse de la boîte
-    // btVector3 localInertia(0, 0, 0);
-    // boxShape->calculateLocalInertia(mass, localInertia);
-
-    // btDefaultMotionState *groundMotionState = new btDefaultMotionState(groundTransform);
-    // btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, btVector3(0, 0, 0));
-    // btRigidBody *groundRigidBody = new btRigidBody(groundRigidBodyCI);
-
-    // btDefaultMotionState *boxMotionState = new btDefaultMotionState(boxTransform);
-    // btRigidBody::btRigidBodyConstructionInfo boxRigidBodyCI(mass, boxMotionState, boxShape, localInertia);
-    // btRigidBody *boxRigidBody = new btRigidBody(boxRigidBodyCI);
-
-    // dynamicsWorld->addRigidBody(groundRigidBody);
-    // dynamicsWorld->addRigidBody(boxRigidBody);
-
     // _____ FIN BULLET _____
 
     // // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).

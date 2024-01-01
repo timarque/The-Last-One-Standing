@@ -20,6 +20,8 @@ struct Vertex {
     glm::vec3 Position;     // position in the 3D space
     glm::vec3 Normal;       // normal vector (should point outside and be normalized)
     glm::vec2 TexCoords;    // indicates which part of the texture should be mapped to this vertex
+    glm::vec3 Tangents;
+    glm::vec3 Bitangent;
 };
 
 

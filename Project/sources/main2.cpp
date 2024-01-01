@@ -68,7 +68,7 @@ int main()
     btCollisionDispatcher *dispatcher = new btCollisionDispatcher(collisionConfiguration); // Que faire lorsqu'on a une collision
     btSequentialImpulseConstraintSolver *solver = new btSequentialImpulseConstraintSolver(); // Solveurs pour résoudre les contraintes nécessaires à la physique blablabla vous irez lire la doc
     btDiscreteDynamicsWorld *dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration); // On configure notre monde avec de la physique
-    dynamicsWorld->setGravity(btVector3(0, -9.8, 0)); // La gravité
+    dynamicsWorld->setGravity(btVector3(0, -9.81, 0)); // La gravité
     // _____ FIN BULLET _____
 
     // // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
@@ -80,13 +80,17 @@ int main()
 
     Model ourModel(PATH_TO_OBJECTS  "/cube.obj");
     btCollisionShape *shape = new btBoxShape(btVector3(1, 1, 1));
-    ourModel.createPhysicsObject(dynamicsWorld, shape, 1.0, btVector3(0, 10, 0));
+    ourModel.createPhysicsObject(dynamicsWorld, shape, 0.1, btVector3(1, 5, 0));
+    
+    Model sphere(PATH_TO_OBJECTS  "/sphere_smooth.obj");
+    btCollisionShape *sphere_shape = new btSphereShape(1);
+    sphere.createPhysicsObject(dynamicsWorld, sphere_shape, 10, btVector3(0, 15, 1.5));
 
     Model floorModel(PATH_TO_OBJECTS  "/floor/floor.obj");
     btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
     floorModel.createPhysicsObject(dynamicsWorld, floor_shape, 0.0, btVector3(0, 0, 0));
 
-    int grid_size = 3;
+    int grid_size = 60;
 
     glm::mat4 model = glm::mat4(1.0f);
     // btTransform transform;
@@ -95,6 +99,8 @@ int main()
     // model = glm::translate(model, glm::vec3(grid_size - 1.0f, 2.0f, grid_size - 1.0f)); // translate it down so it's at the center of the scene
     // model = glm::translate(model, glm::vec3(position.x(), position.y(), position.z())); // translate it down so it's at the center of the scene
     model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// L'objet est super grand, on le déplace
+
+    glm::mat4 floor = glm::mat4(1.0f);
 
     // Tentative
     glm::mat4 inverseModel = glm::transpose(glm::inverse(model));
@@ -117,7 +123,8 @@ int main()
     shader.setFloat("light.quadratic", 0.07);
 
     camera.Position = glm::vec3(-3.0f, 1.0f, -3.0f);
-    camera.LookAtModel(glm::vec3(00.0, 1.0, 0.0));
+    camera.LookAtModel(glm::vec3(0.0f, 1.0f, 0.0f));
+    
     while (!glfwWindowShouldClose(window))
     {
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -150,25 +157,26 @@ int main()
         ourShader.setMatrix4("projection", projection);
         ourShader.setMatrix4("view", view);
 
-        
-        glm::mat4 floor = glm::mat4(1.0f);
-        // floor = glm::translate(floor, glm::vec3(-grid_size, 0.0f, -grid_size));
-        floor = glm::translate(floor, glm::vec3(0, 0, 0));
-        
-        // for (int i = 0; i < grid_size * grid_size; i++) {
-        //     if (i % grid_size != 0) floor = glm::translate(floor, glm::vec3(0.0f, 0.0f, 2.0f)); 
-        //     else {
-        //         floor = glm::mat4(1.0f);
-        //         // floor = glm::scale(floor, glm::vec3(1.0f, 1.0f, 1.0f));	
-        //         floor = glm::translate(floor, glm::vec3(2.0f * i/grid_size, 0.0f, 0.0f));
-        //     }
+        for (int i = 0; i < grid_size * grid_size; i++) {
+            if (i % grid_size != 0) floor = glm::translate(floor, glm::vec3(0.0f, 0.0f, 2.0f)); 
+            else {
+                floor = glm::mat4(1.0f);
+                floor = glm::translate(floor, glm::vec3(-grid_size + 2.0f * i / grid_size, 0.0f, -grid_size));
+            }
             ourShader.setMatrix4("model", floor);
             floorModel.Draw(ourShader);
-        // }
+        }
+
+        ourShader.use();
+        ourShader.setMatrix4("model", model);
+        ourShader.setMatrix4("projection", projection);
+        ourShader.setMatrix4("view", view);
+        sphere.Draw(ourShader);
 
         dynamicsWorld->stepSimulation(deltaTime, 10);
         ourModel.updateFromPhysics();
-        // floorModel.updateFromPhysics();
+        sphere.updateFromPhysics();
+        floorModel.updateFromPhysics();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

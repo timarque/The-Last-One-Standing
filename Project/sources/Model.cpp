@@ -168,10 +168,10 @@ void Model::createPhysicsObject(btDiscreteDynamicsWorld *dynamicsWorld, btCollis
     transform.setOrigin(origin);
 
     btDefaultMotionState *motionState = new btDefaultMotionState(transform);
-
+    
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, collision_shape);
     physicsObject = new btRigidBody(rbInfo);
-
+    physicsObject->setRestitution(0.8);
     dynamicsWorld->addRigidBody(physicsObject);
 }
 

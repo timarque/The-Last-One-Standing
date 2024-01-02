@@ -27,7 +27,6 @@ uniform Light light;
 uniform float shininess;
 uniform vec3 materialColour;
 
-
 float specularCalculation(vec3 N, vec3 L, vec3 V){
 	vec3 R = reflect(-L, N);
 	float cosTheta = dot(R, V);
@@ -41,10 +40,10 @@ void main()
 	vec3 L = normalize(light.light_pos - v_frag_coord);
 	vec3 V = normalize(u_view_pos - v_frag_coord); 
 	float specular = specularCalculation(N, L, V);
-	float diffuse = light.diffuse_strength * max(dot(N,L), 0.0);
+	float diffuse = light.diffuse_strength * max(dot(N, L), 0.0);
 	float distance = length(light.light_pos - v_frag_coord);
-	float attenuation = 1 / (light.constant + light.linear * distance + light.quadratic * distance * distance);
-	float light = light.ambient_strength + attenuation * (diffuse + specular);
-	vec4 test = vec4(materialColour * vec3(light), 1.0);
-    FragColor = texture(texture_diffuse1, TexCoords) * light;
+	float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * distance * distance);
+	float lightIntensity = light.ambient_strength + attenuation * (diffuse + specular);
+	vec4 finalColor = texture(texture_diffuse1, TexCoords) * vec4(materialColour, 1.0);
+	FragColor = finalColor * lightIntensity;
 }

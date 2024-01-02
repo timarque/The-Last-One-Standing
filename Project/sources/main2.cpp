@@ -43,6 +43,11 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
+glm::vec3 carPosition = glm::vec3(0.0f);
+float carSpeed = 0.01f;
+bool posUpdated = false;
+bool jump = false;
+
 int main()
 {
     glfwInit();
@@ -95,10 +100,13 @@ int main()
     // Model ourModel(PATH_TO_OBJECTS  "/cube.obj");
     // btCollisionShape *shape = new btBoxShape(btVector3(1, 1, 1));
     // ourModel.createPhysicsObject(dynamicsWorld, shape, 0.1, btVector3(1, 5, 0));
+    Model ourModel(PATH_TO_OBJECTS  "/tank/tank.obj");
+    btCollisionShape *shape = new btBoxShape(btVector3(0.3, 0, 0.5));
+    ourModel.createPhysicsObject(dynamicsWorld, shape, 10, btVector3(0, 0, 0));
     
-    Model earthM = generateSphere(PATH_TO_OBJECTS "/earth/earth.obj", glm::vec3(0.0f, 1.5f, 0.01f), dynamicsWorld);
-    Model moonM = generateSphere(PATH_TO_OBJECTS "/moon.obj", glm::vec3(0.0f, 3.0f, -0.01f), dynamicsWorld);
-    Model sunM = generateSphere(PATH_TO_OBJECTS "/sun.obj", 0.33, 0.0, glm::vec3(0.0f, 5.0f, 0.0f), dynamicsWorld);
+    Model earthM = generateSphere(PATH_TO_OBJECTS "/earth/earth.obj", glm::vec3(0.0f, 5.0f, 0.0f), dynamicsWorld);
+    Model moonM = generateSphere(PATH_TO_OBJECTS "/moon.obj", glm::vec3(0.0f, 3.0f, 0.0f), dynamicsWorld);
+    Model sunM = generateSphere(PATH_TO_OBJECTS "/sun.obj", 0.33, 0.0, glm::vec3(0.0f, 15.0f, 0.0f), dynamicsWorld);
     Model lightM = generateSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", glm::vec3(0.0f, 0.0f, 0.0f), dynamicsWorld);
 
     // Model sphere(PATH_TO_OBJECTS "/sun.obj");
@@ -108,6 +116,7 @@ int main()
     Model floorModel(PATH_TO_OBJECTS  "/floor/floor.obj");
     btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
     floorModel.createPhysicsObject(dynamicsWorld, floor_shape, 0.0, btVector3(0, 0, 0));
+    
 
     int grid_size = 20;
     glm::vec3 light_pos = glm::vec3(0.0, 2.0, 0.0);
@@ -153,8 +162,8 @@ int main()
     ourShader.setFloat("light.diffuse_strength", diffuse);
     ourShader.setFloat("light.specular_strength", specular);
     ourShader.setFloat("light.constant", 1.0);
-    ourShader.setFloat("light.linear", 0.001);
-    ourShader.setFloat("light.quadratic", 0.0001);
+    ourShader.setFloat("light.linear", 0.1);
+    ourShader.setFloat("light.quadratic", 0.01);
 
     camera.Position = glm::vec3(-3.0f, 1.0f, -3.0f);
     camera.LookAtModel(glm::vec3(0.0f, 1.0f, 0.0f));
@@ -174,15 +183,7 @@ int main()
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
         // don't forget to enable shader before setting uniforms
-        // shader.use();
-        // shader.setMatrix4("M", model);
-        // shader.setMatrix4("itM", inverseModel);
-        // shader.setMatrix4("V", view);
-        // shader.setMatrix4("P", projection);
-        // shader.setVec3("u_view_pos", camera.Position);
-        // shader.setVec3("light.light_pos", light_pos);
 
-        // ourModel.DrawWithShader(shader);
         btTransform transform;
         glm::mat4 m;
         ourShader.use();
@@ -212,6 +213,17 @@ int main()
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
         ourShader.setMatrix4("itM", inverseModel);
         earthM.DrawWithShader(ourShader, 1);
+
+        if (posUpdated) ourModel.updatePosition(carPosition);
+        ourModel.physicsObject->getMotionState()->getWorldTransform(transform);
+        transform.getOpenGLMatrix(glm::value_ptr(m));
+        ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.2)));
+        if (jump)
+        {
+            ourModel.physicsObject->applyImpulse(btVector3(0.0f, 5.0f, 0.0f), ourModel.physicsObject->getCenterOfMassPosition());
+            jump = false;
+        }
+        ourModel.DrawWithShader(ourShader, 1);
 
         physical.use();
         physical.setMatrix4("M", model);
@@ -253,7 +265,7 @@ int main()
         // sphere.DrawWithShader(ourShader);
 
         dynamicsWorld->stepSimulation(deltaTime, 10);
-        // ourModel.updateFromPhysics();
+        ourModel.updateFromPhysics();
         // sphere.updateFromPhysics();
         floorModel.updateFromPhysics();
         earthM.updateFromPhysics();
@@ -266,19 +278,18 @@ int main()
 
     glfwTerminate();
     // Nettoyage Bullet
-    // delete dynamicsWorld;
-    // delete solver;
-    // delete collisionConfiguration;
-    // delete dispatcher;
-    // delete broadphase;
-    // delete groundShape;
-    // delete boxShape;
+    delete dynamicsWorld;
+    delete solver;
+    delete collisionConfiguration;
+    delete dispatcher;
+    delete broadphase;
     return 0;
 }
 
 
 void processInput(GLFWwindow *window)
 {
+    posUpdated = false;
     // 3. Use the cameras class to change the parameters of the camera
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -292,6 +303,31 @@ void processInput(GLFWwindow *window)
         camera.ProcessKeyboardMovement(FORWARD, 0.3);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         camera.ProcessKeyboardMovement(BACKWARD, 0.3);
+
+    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS){
+        carPosition.z += carSpeed;
+        posUpdated = true;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS){
+        carPosition.z -= carSpeed;
+        posUpdated = true;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS){
+        carPosition.x += carSpeed;
+        posUpdated = true;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS){
+        carPosition.x -= carSpeed;
+        posUpdated = true;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    {
+        jump = true;
+    }
 
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
         camera.ProcessKeyboardRotation(1, 0.0, 1);

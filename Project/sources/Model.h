@@ -55,6 +55,7 @@ public:
         physicsObject->activate();
     };
 
+    
     // Ajouter un shader au modèle
     void addShader(Shader &shader);
 

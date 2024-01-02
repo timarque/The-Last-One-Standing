@@ -45,6 +45,16 @@ public:
     // Mettre à jour la transformation du modèle à partir de la physique
     void updateFromPhysics();
 
+    void updatePosition(glm::vec3 position) {
+        btTransform newTransform; // Créez un objet btTransform pour stocker la nouvelle transformation
+        newTransform.setOrigin(btVector3(position.x, position.y, position.z));
+        btQuaternion currentRotation = physicsObject->getWorldTransform().getRotation();
+        newTransform.setRotation(currentRotation);
+        physicsObject->setWorldTransform(newTransform);
+        physicsObject->getMotionState()->setWorldTransform(newTransform);
+        physicsObject->activate();
+    };
+
     // Ajouter un shader au modèle
     void addShader(Shader &shader);
 

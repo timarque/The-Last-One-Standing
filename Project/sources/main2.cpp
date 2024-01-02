@@ -98,7 +98,7 @@ int main()
     
     Model earthM = generateSphere(PATH_TO_OBJECTS "/earth/earth.obj", glm::vec3(0.0f, 1.5f, 0.01f), dynamicsWorld);
     Model moonM = generateSphere(PATH_TO_OBJECTS "/moon.obj", glm::vec3(0.0f, 3.0f, -0.01f), dynamicsWorld);
-    Model sunM = generateSphere(PATH_TO_OBJECTS "/sun.obj", glm::vec3(0.0f, 5.0f, 0.0f), dynamicsWorld);
+    Model sunM = generateSphere(PATH_TO_OBJECTS "/sun.obj", 0.33, 0.0, glm::vec3(0.0f, 5.0f, 0.0f), dynamicsWorld);
     Model lightM = generateSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", glm::vec3(0.0f, 0.0f, 0.0f), dynamicsWorld);
 
     // Model sphere(PATH_TO_OBJECTS "/sun.obj");
@@ -110,7 +110,7 @@ int main()
     floorModel.createPhysicsObject(dynamicsWorld, floor_shape, 0.0, btVector3(0, 0, 0));
 
     int grid_size = 20;
-    glm::vec3 light_pos = glm::vec3(1.0, 2.0, 1.5);
+    glm::vec3 light_pos = glm::vec3(0.0, 2.0, 0.0);
 
     glm::mat4 model = glm::mat4(1.0f);
     // btTransform transform;
@@ -132,10 +132,10 @@ int main()
 
 
     float ambient = 0.1;
-    float diffuse = 0.5;
+    float diffuse = 2.0;
     float specular = 0.8;
     
-    glm::vec3 materialColour = glm::vec3(0.5f, 0.6, 0.8);
+    glm::vec3 materialColour = glm::vec3(0.5f, 0.6f, 0.8f);
     physical.use();
     physical.setFloat("shininess", 32.0f);
     physical.setVec3("materialColour", materialColour);
@@ -153,8 +153,8 @@ int main()
     ourShader.setFloat("light.diffuse_strength", diffuse);
     ourShader.setFloat("light.specular_strength", specular);
     ourShader.setFloat("light.constant", 1.0);
-    ourShader.setFloat("light.linear", 0.14);
-    ourShader.setFloat("light.quadratic", 0.07);
+    ourShader.setFloat("light.linear", 0.001);
+    ourShader.setFloat("light.quadratic", 0.0001);
 
     camera.Position = glm::vec3(-3.0f, 1.0f, -3.0f);
     camera.LookAtModel(glm::vec3(0.0f, 1.0f, 0.0f));
@@ -189,14 +189,17 @@ int main()
         ourShader.setMatrix4("projection", projection);
         ourShader.setMatrix4("view", view);
         ourShader.setVec3("u_view_pos", camera.Position);
-        auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(now));
+        auto delta = light_pos + glm::vec3(4 * std::sin(now / 2), 0.0,  4 * std::cos(now / 2));
         ourShader.setVec3("light.light_pos", delta);
-        
+
+        sunM.updatePosition(delta);
         sunM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
         ourShader.setMatrix4("itM", inverseModel);
+        ourShader.setFloat("light.ambient_strength", 1.0);
         sunM.DrawWithShader(ourShader, 1);
+        ourShader.setFloat("light.ambient_strength", ambient);
 
         moonM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
@@ -221,6 +224,7 @@ int main()
         lightM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
         physical.setMatrix4("M", glm::scale(m, glm::vec3(0.5)));
+        
         lightM.DrawWithShader(physical, 0); // pas besoin du param en plus mtn je pense mais je le garde car peut etre bien pr debug au cas ou 
 
 
@@ -280,14 +284,14 @@ void processInput(GLFWwindow *window)
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboardMovement(LEFT, 0.1);
+        camera.ProcessKeyboardMovement(LEFT, 0.3);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboardMovement(RIGHT, 0.1);
+        camera.ProcessKeyboardMovement(RIGHT, 0.3);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboardMovement(FORWARD, 0.1);
+        camera.ProcessKeyboardMovement(FORWARD, 0.3);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboardMovement(BACKWARD, 0.1);
+        camera.ProcessKeyboardMovement(BACKWARD, 0.3);
 
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
         camera.ProcessKeyboardRotation(1, 0.0, 1);

@@ -88,9 +88,9 @@ int main()
     
     Shader ourShader(PATH_TO_SHADERS "/backpack/shader.vert", PATH_TO_SHADERS "/backpack/shader.frag");
     Shader shader(PATH_TO_SHADERS "/specularObjects/specularObjects.vert", PATH_TO_SHADERS "/specularObjects/specularObjects.frag");
-    Shader reflshader(PATH_TO_SHADERS "/reflective/reflective.vert", PATH_TO_SHADERS "/reflective/reflective.frag");
+    Shader reflshader(PATH_TO_SHADERS "/reflectiveObjects/reflectiveObjects.vert", PATH_TO_SHADERS "/reflectiveObjects/reflectiveObjects.frag");
     Shader ambiant(PATH_TO_SHADERS "/ambiant_light/ambiant.vert", PATH_TO_SHADERS "/ambiant_light/ambiant.frag");
-    Shader physicalShader(PATH_TO_SHADERS "/physicalObjects/physicalObjects.vert", PATH_TO_SHADERS "/physicalObjects/physicalObjects.frag");
+    Shader physical(PATH_TO_SHADERS "/physicalObjects/physicalObjects.vert", PATH_TO_SHADERS "/physicalObjects/physicalObjects.frag");
 
     // Model ourModel(PATH_TO_OBJECTS  "/cube.obj");
     // btCollisionShape *shape = new btBoxShape(btVector3(1, 1, 1));
@@ -99,7 +99,7 @@ int main()
     Model earthM = generateSphere(PATH_TO_OBJECTS "/earth/earth.obj", glm::vec3(0.0f, 1.5f, 0.01f), dynamicsWorld);
     Model moonM = generateSphere(PATH_TO_OBJECTS "/moon.obj", glm::vec3(0.0f, 3.0f, -0.01f), dynamicsWorld);
     Model sunM = generateSphere(PATH_TO_OBJECTS "/sun.obj", glm::vec3(0.0f, 5.0f, 0.0f), dynamicsWorld);
-    Model lightM = generateSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", glm::vec3(4.0f, 5.0f, 0.0f), dynamicsWorld);
+    Model lightM = generateSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", glm::vec3(0.0f, 0.0f, 0.0f), dynamicsWorld);
 
     // Model sphere(PATH_TO_OBJECTS "/sun.obj");
     // btCollisionShape *sphere_shape = new btSphereShape(1);
@@ -110,7 +110,7 @@ int main()
     floorModel.createPhysicsObject(dynamicsWorld, floor_shape, 0.0, btVector3(0, 0, 0));
 
     int grid_size = 20;
-    glm::vec3 light_pos = glm::vec3(0.0f, 3.0f, 0.0f);
+    glm::vec3 light_pos = glm::vec3(1.0, 2.0, 1.5);
 
     glm::mat4 model = glm::mat4(1.0f);
     // btTransform transform;
@@ -136,15 +136,15 @@ int main()
     float specular = 0.8;
     
     glm::vec3 materialColour = glm::vec3(0.5f, 0.6, 0.8);
-    shader.use();
-    shader.setFloat("shininess", 32.0f);
-    shader.setVec3("materialColour", materialColour);
-    shader.setFloat("light.ambient_strength", ambient);
-    shader.setFloat("light.diffuse_strength", diffuse);
-    shader.setFloat("light.specular_strength", specular);
-    shader.setFloat("light.constant", 1.0);
-    shader.setFloat("light.linear", 0.14);
-    shader.setFloat("light.quadratic", 0.07);
+    physical.use();
+    physical.setFloat("shininess", 32.0f);
+    physical.setVec3("materialColour", materialColour);
+    physical.setFloat("light.ambient_strength", ambient);
+    physical.setFloat("light.diffuse_strength", diffuse);
+    physical.setFloat("light.specular_strength", specular);
+    physical.setFloat("light.constant", 1.0);
+    physical.setFloat("light.linear", 0.14);
+    physical.setFloat("light.quadratic", 0.07);
 
     camera.Position = glm::vec3(-3.0f, 1.0f, -3.0f);
     camera.LookAtModel(glm::vec3(0.0f, 1.0f, 0.0f));
@@ -194,27 +194,28 @@ int main()
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
         earthM.DrawWithShader(ourShader, 1);
 
-
-        physicalShader.use();
-        physicalShader.setMatrix4("M", model);
-        physicalShader.setMatrix4("iTM", inverseModel);
-        physicalShader.setMatrix4("P", projection);
-        physicalShader.setMatrix4("V", view);
-        physicalShader.setVec3("u_view_pos", camera.Position);
+        physical.use();
+        physical.setMatrix4("M", model);
+        physical.setMatrix4("itM", inverseModel);
+        physical.setMatrix4("V", view);
+        physical.setMatrix4("P", projection);
+        physical.setVec3("u_view_pos", camera.Position);
         auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(now));
-        physicalShader.setVec3("light.light_pos", delta);
+        physical.setVec3("light.light_pos", delta);
         
-
         lightM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
-        physicalShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
+        physical.setMatrix4("M", glm::scale(m, glm::vec3(0.5)));
+        lightM.DrawWithShader(physical, 0);
 
-        lightM.DrawWithShader(physicalShader, 0);
 
         // sun = glm::translate(sun, glm::vec3(0.1 * cos(currentFrame), 0.0, 0.1 * sin(currentFrame)));
 
         // render the loaded model
-
+        ourShader.use();
+        ourShader.setMatrix4("model", model);
+        ourShader.setMatrix4("projection", projection);
+        ourShader.setMatrix4("view", view);
 
         for (int i = 0; i < grid_size * grid_size; i++) {
             if (i % grid_size != 0) floor = glm::translate(floor, glm::vec3(0.0f, 0.0f, 2.0f)); 

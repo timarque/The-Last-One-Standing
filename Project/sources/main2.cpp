@@ -146,6 +146,16 @@ int main()
     physical.setFloat("light.linear", 0.14);
     physical.setFloat("light.quadratic", 0.07);
 
+    ourShader.use();
+    ourShader.setFloat("shininess", 32.0f);
+    ourShader.setVec3("materialColour", materialColour);
+    ourShader.setFloat("light.ambient_strength", ambient);
+    ourShader.setFloat("light.diffuse_strength", diffuse);
+    ourShader.setFloat("light.specular_strength", specular);
+    ourShader.setFloat("light.constant", 1.0);
+    ourShader.setFloat("light.linear", 0.14);
+    ourShader.setFloat("light.quadratic", 0.07);
+
     camera.Position = glm::vec3(-3.0f, 1.0f, -3.0f);
     camera.LookAtModel(glm::vec3(0.0f, 1.0f, 0.0f));
     
@@ -179,19 +189,23 @@ int main()
         ourShader.setMatrix4("projection", projection);
         ourShader.setMatrix4("view", view);
         
+        
         sunM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
+        ourShader.setMatrix4("itM", inverseModel);
         sunM.DrawWithShader(ourShader, 1);
 
         moonM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
+        ourShader.setMatrix4("itM", inverseModel);
         moonM.DrawWithShader(ourShader, 1);
         
         earthM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
+        ourShader.setMatrix4("itM", inverseModel);
         earthM.DrawWithShader(ourShader, 1);
 
         physical.use();
@@ -206,7 +220,7 @@ int main()
         lightM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
         physical.setMatrix4("M", glm::scale(m, glm::vec3(0.5)));
-        lightM.DrawWithShader(physical, 0);
+        lightM.DrawWithShader(physical, 0); // pas besoin du param en plus mtn je pense mais je le garde car peut etre bien pr debug au cas ou 
 
 
         // sun = glm::translate(sun, glm::vec3(0.1 * cos(currentFrame), 0.0, 0.1 * sin(currentFrame)));

@@ -45,8 +45,44 @@ public:
     // Mettre à jour la transformation du modèle à partir de la physique
     void updateFromPhysics();
 
+    glm::vec3 getPosition() {
+        btTransform worldTransform;
+        physicsObject->getMotionState()->getWorldTransform(worldTransform);
+        btVector3 position = worldTransform.getOrigin();
+        glm::vec3 modelCoordinates(position.x(), position.y(), position.z());
+        return modelCoordinates;
+    }
+
+    void moveForward(float speed, glm::vec3 forward_dir) {
+        moveForward(speed, btVector3(forward_dir.x, forward_dir.y, forward_dir.z));
+    }
+    
+    void moveForward(float speed, btVector3 forward_dir) {
+        btTransform worldTransform;
+        physicsObject->getMotionState()->getWorldTransform(worldTransform);
+        worldTransform.setOrigin(worldTransform.getOrigin() + speed * forward_dir);
+        physicsObject->getMotionState()->setWorldTransform(worldTransform);
+    }
+
+    void moveForward(float speed) {
+        btTransform worldTransform;
+        physicsObject->getMotionState()->getWorldTransform(worldTransform);
+        btVector3 forwardDir = worldTransform.getBasis().getColumn(2);
+        moveForward(speed, forwardDir);
+    }
+
+    void moveBackward(float speed) { moveForward(-speed); }
+
+    void rotate(float angleDegrees) {
+        btTransform worldTransform;
+        physicsObject->getMotionState()->getWorldTransform(worldTransform);
+        btQuaternion rotation(btVector3(0, 1, 0), btRadians(angleDegrees));
+        worldTransform.setRotation(rotation * worldTransform.getRotation());
+        physicsObject->getMotionState()->setWorldTransform(worldTransform);
+    }
+
     void updatePosition(glm::vec3 position) {
-        btTransform newTransform; // Créez un objet btTransform pour stocker la nouvelle transformation
+        btTransform newTransform;
         newTransform.setOrigin(btVector3(position.x, position.y, position.z));
         btQuaternion currentRotation = physicsObject->getWorldTransform().getRotation();
         newTransform.setRotation(currentRotation);

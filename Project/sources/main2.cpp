@@ -188,7 +188,9 @@ int main()
         ourShader.use();
         ourShader.setMatrix4("projection", projection);
         ourShader.setMatrix4("view", view);
-        
+        ourShader.setVec3("u_view_pos", camera.Position);
+        auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(now));
+        ourShader.setVec3("light.light_pos", delta);
         
         sunM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
@@ -214,7 +216,6 @@ int main()
         physical.setMatrix4("V", view);
         physical.setMatrix4("P", projection);
         physical.setVec3("u_view_pos", camera.Position);
-        auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(now));
         physical.setVec3("light.light_pos", delta);
         
         lightM.physicsObject->getMotionState()->getWorldTransform(transform);

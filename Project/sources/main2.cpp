@@ -90,14 +90,16 @@ int main()
     Shader shader(PATH_TO_SHADERS "/specularObjects/specularObjects.vert", PATH_TO_SHADERS "/specularObjects/specularObjects.frag");
     Shader reflshader(PATH_TO_SHADERS "/reflective/reflective.vert", PATH_TO_SHADERS "/reflective/reflective.frag");
     Shader ambiant(PATH_TO_SHADERS "/ambiant_light/ambiant.vert", PATH_TO_SHADERS "/ambiant_light/ambiant.frag");
+    Shader physicalShader(PATH_TO_SHADERS "/physicalObjects/physicalObjects.vert", PATH_TO_SHADERS "/physicalObjects/physicalObjects.frag");
 
     // Model ourModel(PATH_TO_OBJECTS  "/cube.obj");
     // btCollisionShape *shape = new btBoxShape(btVector3(1, 1, 1));
     // ourModel.createPhysicsObject(dynamicsWorld, shape, 0.1, btVector3(1, 5, 0));
     
-    Model earthM = generateSphere(PATH_TO_OBJECTS "/earth.obj", glm::vec3(0.0f, 1.5f, 0.01f), dynamicsWorld);
+    Model earthM = generateSphere(PATH_TO_OBJECTS "/earth/earth.obj", glm::vec3(0.0f, 1.5f, 0.01f), dynamicsWorld);
     Model moonM = generateSphere(PATH_TO_OBJECTS "/moon.obj", glm::vec3(0.0f, 3.0f, -0.01f), dynamicsWorld);
     Model sunM = generateSphere(PATH_TO_OBJECTS "/sun.obj", glm::vec3(0.0f, 5.0f, 0.0f), dynamicsWorld);
+    Model lightM = generateSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", glm::vec3(4.0f, 5.0f, 0.0f), dynamicsWorld);
 
     // Model sphere(PATH_TO_OBJECTS "/sun.obj");
     // btCollisionShape *sphere_shape = new btSphereShape(1);
@@ -107,7 +109,7 @@ int main()
     btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
     floorModel.createPhysicsObject(dynamicsWorld, floor_shape, 0.0, btVector3(0, 0, 0));
 
-    int grid_size = 60;
+    int grid_size = 20;
     glm::vec3 light_pos = glm::vec3(0.0f, 3.0f, 0.0f);
 
     glm::mat4 model = glm::mat4(1.0f);
@@ -152,7 +154,7 @@ int main()
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        
+        double now = glfwGetTime();
         processInput(window);
 
         glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
@@ -180,25 +182,39 @@ int main()
         sunM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
-        sunM.DrawWithShader(ourShader);
+        sunM.DrawWithShader(ourShader, 1);
 
         moonM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
-        moonM.DrawWithShader(ourShader);
+        moonM.DrawWithShader(ourShader, 1);
         
         earthM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
-        earthM.DrawWithShader(ourShader);
+        earthM.DrawWithShader(ourShader, 1);
+
+
+        physicalShader.use();
+        physicalShader.setMatrix4("M", model);
+        physicalShader.setMatrix4("iTM", inverseModel);
+        physicalShader.setMatrix4("P", projection);
+        physicalShader.setMatrix4("V", view);
+        physicalShader.setVec3("u_view_pos", camera.Position);
+        auto delta = light_pos + glm::vec3(0.0, 0.0, 2 * std::sin(now));
+        physicalShader.setVec3("light.light_pos", delta);
+        
+
+        lightM.physicsObject->getMotionState()->getWorldTransform(transform);
+        transform.getOpenGLMatrix(glm::value_ptr(m));
+        physicalShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
+
+        lightM.DrawWithShader(physicalShader, 0);
 
         // sun = glm::translate(sun, glm::vec3(0.1 * cos(currentFrame), 0.0, 0.1 * sin(currentFrame)));
 
         // render the loaded model
-        ourShader.use();
-        ourShader.setMatrix4("model", model);
-        ourShader.setMatrix4("projection", projection);
-        ourShader.setMatrix4("view", view);
+
 
         for (int i = 0; i < grid_size * grid_size; i++) {
             if (i % grid_size != 0) floor = glm::translate(floor, glm::vec3(0.0f, 0.0f, 2.0f)); 
@@ -207,7 +223,7 @@ int main()
                 floor = glm::translate(floor, glm::vec3(-grid_size + 2.0f * i / grid_size, 0.0f, -grid_size));
             }
             ourShader.setMatrix4("model", floor);
-            floorModel.DrawWithShader(ourShader);
+            floorModel.DrawWithShader(ourShader, 1);
         }
 
         // ourShader.use();
@@ -223,6 +239,7 @@ int main()
         earthM.updateFromPhysics();
         moonM.updateFromPhysics();
         sunM.updateFromPhysics();
+        lightM.updateFromPhysics();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

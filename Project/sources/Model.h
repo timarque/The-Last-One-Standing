@@ -49,7 +49,7 @@ public:
     void addShader(Shader &shader);
 
     // Dessiner le modèle avec un shader spécifié
-    void DrawWithShader(Shader &shader);
+    void DrawWithShader(Shader &shader, int apply);
     void Draw();
 
     std::vector<Texture> textures_loaded;   // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.

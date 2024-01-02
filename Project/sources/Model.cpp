@@ -12,7 +12,6 @@
 unsigned int TextureFromFile(const char *path, const std::string &directory) {
     std::string filename = std::string(path);
     filename = directory + '/' + filename;
-
     unsigned int textureID;
     glGenTextures(1, &textureID);
 
@@ -54,7 +53,7 @@ Model::Model(std::string path) {
 
 void Model::Draw(Shader &shader) {
     for(unsigned int i = 0; i < meshes.size(); i++) {
-        meshes[i].Draw(shader);
+        meshes[i].Draw(shader, 0);
     }
 }
 
@@ -207,11 +206,11 @@ void Model::addShader(Shader &shader)
     shaders.push_back(&shader);
 }
 
-void Model::DrawWithShader(Shader &shader)
+void Model::DrawWithShader(Shader &shader, int apply)
 {
     for (unsigned int i = 0; i < meshes.size(); i++)
     {
-        meshes[i].Draw(shader);
+        meshes[i].Draw(shader, apply);
     }
 }
 
@@ -220,6 +219,6 @@ void Model::Draw()
     // Dessiner le modèle avec tous les shaders associés
     for (Shader *shader : shaders)
     {
-        DrawWithShader(*shader);
+        DrawWithShader(*shader, 0);
     }
 }

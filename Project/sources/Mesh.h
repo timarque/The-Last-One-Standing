@@ -64,7 +64,7 @@ public:
      * @param shader used shader to draw the mesh
      */
     
-    void Draw(Shader &shader);
+    void Draw(Shader& shader, int apply);
     void setTransform(float posX, float posY, float posZ, float rotW, float rotX, float rotY, float rotZ);
 };
 

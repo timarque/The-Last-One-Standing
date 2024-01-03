@@ -13,11 +13,10 @@
 #include "Shader.h"
 #include "Mesh.h"
 
-#include "../../3rdParty/assimp/include/assimp/Importer.hpp"
-#include "../../3rdParty/assimp/include/assimp/scene.h"
-#include "../../3rdParty/assimp/include/assimp/postprocess.h"
-
-#include "../../3rdParty/bullet/src/btBulletDynamicsCommon.h"
+#include "assimp/Importer.hpp"
+#include "assimp/scene.h"
+#include "assimp/postprocess.h"
+#include "bullet/btBulletDynamicsCommon.h"
 
 unsigned int TextureFromFile(const char *path, const std::string &directory);
 /**

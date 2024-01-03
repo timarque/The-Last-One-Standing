@@ -174,37 +174,6 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType 
     return textures;
 }
 
-void Model::createPhysicsObject(btDiscreteDynamicsWorld *dynamicsWorld, btCollisionShape* collision_shape, float mass, btVector3 origin)
-{
-    btTransform transform;
-    transform.setIdentity();
-    transform.setOrigin(origin);
-
-    btVector3 localInertia(1, 0, 0);
-    collision_shape->calculateLocalInertia(mass, localInertia);
-
-    // Ajuster l'inertie selon vos besoins
-
-    btDefaultMotionState *motionState = new btDefaultMotionState(transform);
-    
-    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, collision_shape);
-    physicsObject = new btRigidBody(rbInfo);
-    physicsObject->setRestitution(0.8);
-    physicsObject->setFriction(0.5f);
-    physicsObject->applyForce(btVector3(0, 0, -10), btVector3(1, 0, 0));
-    dynamicsWorld->addRigidBody(physicsObject);
-}
-
-// Mettre à jour la transformation du modèle à partir de la physique
-void Model::updateFromPhysics()
-{
-    btTransform transform;
-    physicsObject->getMotionState()->getWorldTransform(transform);
-    btVector3 position = transform.getOrigin();
-    btQuaternion rotation = transform.getRotation();
-    for (Mesh mesh: meshes) mesh.setTransform(position.x(), position.y(), position.z(), rotation.w(), rotation.x(), rotation.y(), rotation.z());
-}
-
 void Model::addShader(Shader &shader)
 {
     shaders.push_back(&shader);

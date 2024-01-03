@@ -1,7 +1,7 @@
 project("project")
 # Changer le nom une fois qu'on en aura un
 
-set(SOURCES_MAIN "sources/main.cpp" "sources/Mesh.cpp" "sources/Model.cpp")
+set(SOURCES_MAIN "sources/main.cpp" "sources/Mesh.cpp" "sources/Model.cpp" "sources/PhysicModel.cpp")
 
 
 #These commands are there to specify the path to the folder containing the object and textures files as macro

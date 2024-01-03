@@ -8,6 +8,8 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Model.h"
+#include "PhysicsEngine.hpp"
+#include "PhysicModel.h"
 #include "Sphere.h"
 #include "CubeMap.h"
 
@@ -15,7 +17,7 @@
 
 #include "bullet/btBulletDynamicsCommon.h"
 
-// #include <btDynamicsWorld.h>
+// #include <btphysics.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -78,21 +80,12 @@ int main()
         return -1;
     }
 
-    // _____ BULLET _____
-    // // Initialisation de Bullet Physics
-    btBroadphaseInterface *broadphase = new btDbvtBroadphase(); // Le big boss de Bullet
-    btDefaultCollisionConfiguration *collisionConfiguration = new btDefaultCollisionConfiguration(); // Configuration de la physique
-    btCollisionDispatcher *dispatcher = new btCollisionDispatcher(collisionConfiguration); // Que faire lorsqu'on a une collision
-    btSequentialImpulseConstraintSolver *solver = new btSequentialImpulseConstraintSolver(); // Solveurs pour résoudre les contraintes nécessaires à la physique blablabla vous irez lire la doc
-    btDiscreteDynamicsWorld *dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration); // On configure notre monde avec de la physique
-    dynamicsWorld->setGravity(btVector3(0, -9.81, 0)); // La gravité
-    // _____ FIN BULLET _____
-
     // // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
     // stbi_set_flip_vertically_on_load(true);
     glEnable(GL_DEPTH_TEST);
-    
-    
+
+    PhysicsEngine physics(btVector3(0, -9.81, 0));
+
     Shader ourShader(PATH_TO_SHADERS "/backpack/shader.vert", PATH_TO_SHADERS "/backpack/shader.frag");
     Shader shader(PATH_TO_SHADERS "/specularObjects/specularObjects.vert", PATH_TO_SHADERS "/specularObjects/specularObjects.frag");
     Shader reflshader(PATH_TO_SHADERS "/reflectiveObjects/reflectiveObjects.vert", PATH_TO_SHADERS "/reflectiveObjects/reflectiveObjects.frag");
@@ -107,28 +100,28 @@ int main()
 
     // Model ourModel(PATH_TO_OBJECTS  "/cube.obj");
     // btCollisionShape *shape = new btBoxShape(btVector3(1, 1, 1));
-    // ourModel.createPhysicsObject(dynamicsWorld, shape, 0.1, btVector3(1, 5, 0));
-    Model ourModel(PATH_TO_OBJECTS  "/tank/tank.obj");
+    // ourModel.createPhysicsObject(physics, shape, 0.1, btVector3(1, 5, 0));
+    PhysicModel ourModel(PATH_TO_OBJECTS  "/tank/tank.obj");
     btCollisionShape *shape = new btBoxShape(btVector3(0.3, 0, 0.5));
-    ourModel.createPhysicsObject(dynamicsWorld, shape, 10, btVector3(0, 0, 0));
+    ourModel.createPhysicsObject(physics, shape, 10, btVector3(0, 0, 0));
     
-    Model earthM = generateSphere(PATH_TO_OBJECTS "/earth/earth.obj", glm::vec3(0.0f, 5.0f, 0.0f), dynamicsWorld);
-    Model moonM = generateSphere(PATH_TO_OBJECTS "/moon.obj", glm::vec3(0.0f, 3.0f, 0.0f), dynamicsWorld);
-    Model sunM = generateSphere(PATH_TO_OBJECTS "/sun.obj", 0.33, 0.0, glm::vec3(0.0f, 15.0f, 0.0f), dynamicsWorld);
-    Model lightM = generateSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", glm::vec3(0.0f, 0.0f, 0.0f), dynamicsWorld);
+    PhysicModel earthM = generatePhysicalSphere(PATH_TO_OBJECTS "/earth/earth.obj", glm::vec3(0.0f, 5.0f, 0.0f), physics);
+    PhysicModel moonM = generatePhysicalSphere(PATH_TO_OBJECTS "/moon.obj", glm::vec3(0.0f, 3.0f, 0.0f), physics);
+    PhysicModel sunM = generatePhysicalSphere(PATH_TO_OBJECTS "/sun.obj", 0.33, 0.0, glm::vec3(0.0f, 15.0f, 0.0f), physics);
+    PhysicModel lightM = generatePhysicalSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", glm::vec3(0.0f, 0.0f, 0.0f), physics);
 
-    Model heliport(PATH_TO_OBJECTS "/tank/heliport.obj");
+    PhysicModel heliport(PATH_TO_OBJECTS "/tank/heliport.obj");
     btCollisionShape *heliport_shape = new btBoxShape(btVector3(0.5, 0.5, 0.5));
-    heliport.createPhysicsObject(dynamicsWorld, heliport_shape, 2, btVector3(-2.0, 0.0, -2.0));
+    heliport.createPhysicsObject(physics, heliport_shape, 2, btVector3(-2.0, 0.0, -2.0));
 
 
     // Model sphere(PATH_TO_OBJECTS "/sun.obj");
     // btCollisionShape *sphere_shape = new btSphereShape(1);
-    // sphere.createPhysicsObject(dynamicsWorld, sphere_shape, 10, btVector3(0, 15, 1.5));
+    // sphere.createPhysicsObject(physics, sphere_shape, 10, btVector3(0, 15, 1.5));
 
-    Model floorModel(PATH_TO_OBJECTS  "/floor/floor.obj");
+    PhysicModel floorModel(PATH_TO_OBJECTS  "/floor/floor.obj");
     btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
-    floorModel.createPhysicsObject(dynamicsWorld, floor_shape, 0.0, btVector3(0, 0, 0));
+    floorModel.createPhysicsObject(physics, floor_shape, 0.0, btVector3(0, 0, 0));
     
 
     int grid_size = 20;
@@ -207,35 +200,30 @@ int main()
         ourShader.setVec3("light.light_pos", delta);
 
         sunM.updatePosition(delta);
-        sunM.physicsObject->getMotionState()->getWorldTransform(transform);
-        transform.getOpenGLMatrix(glm::value_ptr(m));
+        m = sunM.getOpenGLMatrix();
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
         ourShader.setFloat("light.ambient_strength", 1.0);
         sunM.DrawWithShader(ourShader, 1);
         ourShader.setFloat("light.ambient_strength", ambient);
 
-        moonM.physicsObject->getMotionState()->getWorldTransform(transform);
-        transform.getOpenGLMatrix(glm::value_ptr(m));
+        m = moonM.getOpenGLMatrix();
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
         moonM.DrawWithShader(ourShader, 1);
         
-        earthM.physicsObject->getMotionState()->getWorldTransform(transform);
-        transform.getOpenGLMatrix(glm::value_ptr(m));
+        m = earthM.getOpenGLMatrix();
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
         earthM.DrawWithShader(ourShader, 1);
 
-        heliport.physicsObject->getMotionState()->getWorldTransform(transform);
-        transform.getOpenGLMatrix(glm::value_ptr(m));
+        m = heliport.getOpenGLMatrix();
         ourShader.setMatrix4("model", m);
         heliport.DrawWithShader(ourShader, 1);
         
         if (posUpdated) ourModel.updatePosition(carPosition);
-        ourModel.physicsObject->getMotionState()->getWorldTransform(transform);
-        transform.getOpenGLMatrix(glm::value_ptr(m));
+        m = ourModel.getOpenGLMatrix();
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.2)));
         if (jump)
         {
-            ourModel.physicsObject->applyImpulse(btVector3(0.0f, 5.0f, 0.0f), ourModel.physicsObject->getCenterOfMassPosition());
+            ourModel.applyImpulse(btVector3(0.0f, 5.0f, 0.0f));
             jump = false;
         }
         ourModel.DrawWithShader(ourShader, 1);
@@ -248,8 +236,7 @@ int main()
         physical.setVec3("u_view_pos", camera.Position);
         physical.setVec3("light.light_pos", delta);
         
-        lightM.physicsObject->getMotionState()->getWorldTransform(transform);
-        transform.getOpenGLMatrix(glm::value_ptr(m));
+        m = lightM.getOpenGLMatrix();
         physical.setMatrix4("M", glm::scale(m, glm::vec3(0.5)));
         
         lightM.DrawWithShader(physical, 0); // pas besoin du param en plus mtn je pense mais je le garde car peut etre bien pr debug au cas ou 
@@ -279,7 +266,7 @@ int main()
         // ourShader.setMatrix4("view", view);
         // sphere.DrawWithShader(ourShader);
 
-        dynamicsWorld->stepSimulation(deltaTime, 10);
+        physics.simulate(deltaTime);
         ourModel.updateFromPhysics();
         // sphere.updateFromPhysics();
         floorModel.updateFromPhysics();
@@ -295,12 +282,6 @@ int main()
     }
 
     glfwTerminate();
-    // Nettoyage Bullet
-    delete dynamicsWorld;
-    delete solver;
-    delete collisionConfiguration;
-    delete dispatcher;
-    delete broadphase;
     return 0;
 }
 

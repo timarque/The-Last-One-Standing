@@ -1,10 +1,11 @@
-#version 400 core
-precision mediump float;
+#version 330 core
+out vec4 FragColor;
 
-out vec4 fragColor;
+in vec2 TexCoords;
 
-uniform vec3 color;
+uniform sampler2D texture_diffuse1;
 
-void main() {
- fragColor = vec4(color, 1.0);
+void main()
+{    
+    FragColor = texture(texture_diffuse1, TexCoords);
 }

@@ -9,6 +9,10 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+
 unsigned int TextureFromFile(const char *path, const std::string &directory) {
     std::string filename = std::string(path);
     filename = directory + '/' + filename;
@@ -47,6 +51,75 @@ unsigned int TextureFromFile(const char *path, const std::string &directory) {
     return textureID;
 }
 
+
+void Model::SetVertexBoneDataToDefault(Vertex& vertex) {
+    for (int i = 0; i < MAX_BONE_INFLUENCE; i++) // lets hope influence is correct 
+    {
+        vertex.m_BoneIDs[i] = -1;
+        vertex.m_Weights[i] = 0.0f;
+    }
+
+}
+
+void Model::SetVertexBoneData(Vertex& vertex, int boneID, float weight)
+{
+    for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
+    {
+        if (vertex.m_BoneIDs[i] < 0)
+        {
+            vertex.m_Weights[i] = weight;
+            vertex.m_BoneIDs[i] = boneID;
+            break;
+        }
+    }
+}
+
+void Model::ExtractBoneWeightForVertices(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene)
+{
+    auto& boneInfoMap = m_BoneInfoMap;
+    int& boneCount = m_BoneCounter;
+
+    for (int boneIndex = 0; boneIndex < mesh->mNumBones; ++boneIndex)
+    {
+        int boneID = -1;
+        std::string boneName = mesh->mBones[boneIndex]->mName.C_Str();
+        if (boneInfoMap.find(boneName) == boneInfoMap.end())
+        {
+            BoneInfo newBoneInfo;
+            newBoneInfo.id = boneCount;
+
+            const aiMatrix4x4& from = mesh->mBones[boneIndex]->mOffsetMatrix;
+            glm::mat4 to;
+            to[0][0] = from.a1; to[1][0] = from.a2; to[2][0] = from.a3; to[3][0] = from.a4;
+            to[0][1] = from.b1; to[1][1] = from.b2; to[2][1] = from.b3; to[3][1] = from.b4;
+            to[0][2] = from.c1; to[1][2] = from.c2; to[2][2] = from.c3; to[3][2] = from.c4;
+            to[0][3] = from.d1; to[1][3] = from.d2; to[2][3] = from.d3; to[3][3] = from.d4;
+            newBoneInfo.offset = to;
+
+            boneInfoMap[boneName] = newBoneInfo;
+            boneID = boneCount;
+            boneCount++;
+        }
+        else
+        {
+            boneID = boneInfoMap[boneName].id;
+        }
+        assert(boneID != -1);
+        auto weights = mesh->mBones[boneIndex]->mWeights;
+        int numWeights = mesh->mBones[boneIndex]->mNumWeights;
+
+        for (int weightIndex = 0; weightIndex < numWeights; ++weightIndex)
+        {
+            int vertexId = weights[weightIndex].mVertexId;
+            float weight = weights[weightIndex].mWeight;
+            assert(vertexId <= vertices.size());
+            SetVertexBoneData(vertices[vertexId], boneID, weight);
+        }
+    }
+}
+
+
+
 Model::Model(std::string path) {
     loadModel(path);
 }
@@ -59,7 +132,7 @@ void Model::Draw(Shader &shader) {
 
 void Model::loadModel(std::string path) {
     Assimp::Importer import;
-    const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+    const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate |aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
@@ -89,6 +162,8 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
    
     for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
         Vertex vertex;
+        SetVertexBoneDataToDefault(vertex);
+
         // process vertex positions, normals and texture coordinates
         glm::vec3 vector;
         vector.x = mesh->mVertices[i].x;
@@ -141,7 +216,12 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         // le probleme vient probablement du fait que y a pas la texture normal dans material, je dois load la texture autrement que avec material du coup je pense
         std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+        std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+        textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
     }
+
+    ExtractBoneWeightForVertices(vertices, mesh, scene);
+
     return Mesh(vertices, indices, textures);
 }
 
@@ -164,10 +244,10 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType 
             texture.type = typeName;
             texture.path = str.C_Str();
             textures.push_back(texture);
-            std::cout << "texture file: " << str.C_Str() << std::endl;
-            std::cout << "texture name: " << texture.type << std::endl;
-            std::cout << "texture id: " << texture.id << std::endl;
-            std::cout << "texture path: " << texture.path << std::endl;
+            //std::cout << "texture file: " << str.C_Str() << std::endl;
+            //std::cout << "texture name: " << texture.type << std::endl;
+            //std::cout << "texture id: " << texture.id << std::endl;
+            //std::cout << "texture path: " << texture.path << std::endl;
             textures_loaded.push_back(texture); // add to loaded textures
         }
     }

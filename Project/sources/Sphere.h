@@ -2,17 +2,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Model.h"
+#include "PhysicModel.h"
+#include "PhysicsEngine.hpp"
 
 #include <iostream>
 
-Model generateSphere(std::string path, float radius, float mass, glm::vec3 position, btDiscreteDynamicsWorld* world) {
-    Model sphere(path);
+PhysicModel generatePhysicalSphere(std::string path, float radius, float mass, glm::vec3 position, PhysicsEngine physics) {
+    PhysicModel sphere(path);
     btCollisionShape *sphere_shape = new btSphereShape(radius);
-    sphere.createPhysicsObject(world, sphere_shape, mass, btVector3(position.x, position.y, position.z));
+    sphere.createPhysicsObject(physics, sphere_shape, mass, btVector3(position.x, position.y, position.z));
     return sphere;
 }
 
-Model generateSphere(std::string path, glm::vec3 position, btDiscreteDynamicsWorld* world) {
-    return generateSphere(path, 0.33, 10, position, world);
+PhysicModel generatePhysicalSphere(std::string path, glm::vec3 position, PhysicsEngine physics) {
+    return generatePhysicalSphere(path, 0.33, 10, position, physics);
 }

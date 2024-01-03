@@ -17,7 +17,7 @@ find_package(OpenGL REQUIRED)
 #for glad library
 add_library( glad STATIC 3rdParty/glad/src/glad.c)
 set(GLAD_INCLUDE "3rdParty/glad/include")
-target_include_directories(glad PUBLIC ${GLAD_INCLUDE})
+target_include_directories(glad PUBLIC ${GLAD_INCLUDE})   
 
 #for assimp library
 #find_package(assimp REQUIRED)

@@ -6,6 +6,7 @@
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include "Animation.h"
+#include "Bone.h"
 
 class Animator
 {
@@ -77,4 +78,3 @@ private:
 	float m_DeltaTime;
 
 };
-

@@ -124,8 +124,8 @@ int main()
     heliport.createPhysicsObject(dynamicsWorld, heliport_shape, 2, btVector3(-2.0, 0.0, -2.0));
 
     // test animation
-    Model test(PATH_TO_OBJECTS "/test/dancing_vampire.dae");
-    Animation danceAnimation(PATH_TO_OBJECTS "/test/dancing_vampire.dae", &test);
+    Model test(PATH_TO_OBJECTS "/animation/model.dae");
+    Animation danceAnimation(PATH_TO_OBJECTS "/animation/model.dae", &test);
     Animator animator(&danceAnimation);
 
     // Model sphere(PATH_TO_OBJECTS "/sun.obj");
@@ -217,39 +217,47 @@ int main()
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
         ourShader.setFloat("light.ambient_strength", 1.0);
-        sunM.DrawWithShader(ourShader, 1);
+        //sunM.DrawWithShader(ourShader, 1);
         ourShader.setFloat("light.ambient_strength", ambient);
 
         moonM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
-        moonM.DrawWithShader(ourShader, 1);
+        //moonM.DrawWithShader(ourShader, 1);
         
         earthM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
-        earthM.DrawWithShader(ourShader, 1);
+        //earthM.DrawWithShader(ourShader, 1);
 
         heliport.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", m);
-        heliport.DrawWithShader(ourShader, 1);
+        //heliport.DrawWithShader(ourShader, 1);
+
+
+
 
         //test animations
-        ourShader.setMatrix4("projection", projection);
-        ourShader.setMatrix4("view", view);
+        ambiant.use();
+        ambiant.setMatrix4("projection", projection);
+        ambiant.setMatrix4("view", view);
 
         auto transforms = animator.GetFinalBoneMatrices();
-        for (int i = 0; i < transforms.size(); ++i)
-            ourShader.setMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
-
-
+        for (int i = 0; i < transforms.size(); ++i) {
+            ambiant.setMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
+        }
         // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, -0.4f, 0.0f)); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(.01f, .01f, .01f));	// it's a bit too big for our scene, so scale it down
-        ourShader.setMatrix4("model", model);
-        test.DrawWithShader(ourShader, 1);
+        model = glm::scale(model, glm::vec3(.5f, .5f, .5f));	// it's a bit too big for our scene, so scale it down
+        ambiant.setMatrix4("model", model);;
+        test.DrawWithShader(ambiant, 1);
+
+
+
+
+
 
         if (posUpdated) ourModel.updatePosition(carPosition);
         ourModel.physicsObject->getMotionState()->getWorldTransform(transform);
@@ -260,7 +268,7 @@ int main()
             ourModel.physicsObject->applyImpulse(btVector3(0.0f, 5.0f, 0.0f), ourModel.physicsObject->getCenterOfMassPosition());
             jump = false;
         }
-        ourModel.DrawWithShader(ourShader, 1);
+        //ourModel.DrawWithShader(ourShader, 1);
 
         physical.use();
         physical.setMatrix4("M", model);
@@ -274,7 +282,7 @@ int main()
         transform.getOpenGLMatrix(glm::value_ptr(m));
         physical.setMatrix4("M", glm::scale(m, glm::vec3(0.5)));
         
-        lightM.DrawWithShader(physical, 0); // pas besoin du param en plus mtn je pense mais je le garde car peut etre bien pr debug au cas ou 
+        //lightM.DrawWithShader(physical, 0); // pas besoin du param en plus mtn je pense mais je le garde car peut etre bien pr debug au cas ou 
 
 
         // sun = glm::translate(sun, glm::vec3(0.1 * cos(currentFrame), 0.0, 0.1 * sin(currentFrame)));
@@ -292,7 +300,7 @@ int main()
                 floor = glm::translate(floor, glm::vec3(-grid_size + 2.0f * i / grid_size, 0.0f, -grid_size));
             }
             ourShader.setMatrix4("model", floor);
-            floorModel.DrawWithShader(ourShader, 1);
+            //floorModel.DrawWithShader(ourShader, 1);
         }
 
         // ourShader.use();
@@ -310,7 +318,7 @@ int main()
         sunM.updateFromPhysics();
         lightM.updateFromPhysics();
 
-        cubeMap.draw(&camera);
+        //cubeMap.draw(&camera);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

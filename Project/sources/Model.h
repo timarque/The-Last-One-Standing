@@ -20,10 +20,6 @@
 #include "bullet/btBulletDynamicsCommon.h"
 
 unsigned int TextureFromFile(const char *path, const std::string &directory);
-/**
- * Model class that loads a model from a file
- */
-
 
 struct BoneInfo
 {
@@ -35,6 +31,10 @@ struct BoneInfo
 
 };
 
+
+/**
+ * Model class that loads a model from a file
+ */
 
 class Model {
 

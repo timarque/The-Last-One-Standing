@@ -4,9 +4,9 @@
 #include <map>
 #include <glm/glm.hpp>
 #include <assimp/scene.h>
+#include "Bone.h"
 #include <functional>
 #include "Model.h"
-#include "Bone.h"
 
 struct AssimpNodeData
 {
@@ -91,29 +91,7 @@ private:
 		assert(src);
 
 		dest.name = src->mName.data;
-		
-		glm::vec3 translation(src->mTransformation.a4, src->mTransformation.b4, src->mTransformation.c4);
-
-		glm::mat3 rotationMatrix(
-			src->mTransformation.a1, src->mTransformation.b1, src->mTransformation.c1,
-			src->mTransformation.a2, src->mTransformation.b2, src->mTransformation.c2,
-			src->mTransformation.a3, src->mTransformation.b3, src->mTransformation.c3
-		);
-
-		glm::quat rotation = glm::quat_cast(rotationMatrix);
-
-		glm::vec3 scaling(
-			glm::length(glm::vec3(src->mTransformation.a1, src->mTransformation.b1, src->mTransformation.c1)),
-			glm::length(glm::vec3(src->mTransformation.a2, src->mTransformation.b2, src->mTransformation.c2)),
-			glm::length(glm::vec3(src->mTransformation.a3, src->mTransformation.b3, src->mTransformation.c3))
-		);
-
-		// Creating a glm::mat4 using translation, rotation, and scaling
-		dest.transformation = glm::mat4(1.0f);
-		dest.transformation = glm::translate(dest.transformation, translation);
-		dest.transformation *= glm::mat4_cast(rotation);
-		dest.transformation = glm::scale(dest.transformation, scaling);
-
+		dest.transformation = AssimpGLMHelpers::ConvertMatrixToGLMFormat(src->mTransformation);
 		dest.childrenCount = src->mNumChildren;
 
 		for (int i = 0; i < src->mNumChildren; i++)
@@ -129,4 +107,3 @@ private:
 	AssimpNodeData m_RootNode;
 	std::map<std::string, BoneInfo> m_BoneInfoMap;
 };
-

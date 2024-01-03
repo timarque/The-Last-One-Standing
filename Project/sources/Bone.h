@@ -1,5 +1,6 @@
 #pragma once
 
+/* Container for bone data */
 
 #include <vector>
 #include <assimp/scene.h>
@@ -7,7 +8,7 @@
 #include <glm/glm.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
-
+#include "AssimpGLMHelpers.h"
 
 struct KeyPosition
 {
@@ -43,10 +44,7 @@ public:
 			aiVector3D aiPosition = channel->mPositionKeys[positionIndex].mValue;
 			float timeStamp = channel->mPositionKeys[positionIndex].mTime;
 			KeyPosition data;
-			glm::vec3 glmPosition(aiPosition.x, aiPosition.y, aiPosition.z);
-
-			// Now, you can use glmPosition as needed
-			data.position = glmPosition;
+			data.position = AssimpGLMHelpers::GetGLMVec(aiPosition);
 			data.timeStamp = timeStamp;
 			m_Positions.push_back(data);
 		}
@@ -57,13 +55,7 @@ public:
 			aiQuaternion aiOrientation = channel->mRotationKeys[rotationIndex].mValue;
 			float timeStamp = channel->mRotationKeys[rotationIndex].mTime;
 			KeyRotation data;
-			glm::quat glmOrientation(aiOrientation.w, aiOrientation.x, aiOrientation.y, aiOrientation.z);
-
-			// Normalize the quaternion to ensure it's valid
-			glmOrientation = glm::normalize(glmOrientation);
-
-			// Now, you can use glmOrientation as needed
-			data.orientation = glmOrientation;
+			data.orientation = AssimpGLMHelpers::GetGLMQuat(aiOrientation);
 			data.timeStamp = timeStamp;
 			m_Rotations.push_back(data);
 		}
@@ -74,10 +66,7 @@ public:
 			aiVector3D scale = channel->mScalingKeys[keyIndex].mValue;
 			float timeStamp = channel->mScalingKeys[keyIndex].mTime;
 			KeyScale data;
-			glm::vec3 glmScale(scale.x, scale.y, scale.z);
-
-			// Now, you can use glmScale as needed
-			data.scale = glmScale;
+			data.scale = AssimpGLMHelpers::GetGLMVec(scale);
 			data.timeStamp = timeStamp;
 			m_Scales.push_back(data);
 		}
@@ -196,4 +185,3 @@ private:
 	std::string m_Name;
 	int m_ID;
 };
-

@@ -8,7 +8,6 @@
 #include <glm/glm.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
-#include "AssimpGLMHelpers.h"
 
 struct KeyPosition
 {
@@ -44,7 +43,7 @@ public:
 			aiVector3D aiPosition = channel->mPositionKeys[positionIndex].mValue;
 			float timeStamp = channel->mPositionKeys[positionIndex].mTime;
 			KeyPosition data;
-			data.position = AssimpGLMHelpers::GetGLMVec(aiPosition);
+			data.position = glm::vec3(aiPosition.x, aiPosition.y, aiPosition.z);
 			data.timeStamp = timeStamp;
 			m_Positions.push_back(data);
 		}
@@ -55,7 +54,7 @@ public:
 			aiQuaternion aiOrientation = channel->mRotationKeys[rotationIndex].mValue;
 			float timeStamp = channel->mRotationKeys[rotationIndex].mTime;
 			KeyRotation data;
-			data.orientation = AssimpGLMHelpers::GetGLMQuat(aiOrientation);
+			data.orientation = glm::quat(aiOrientation.w, aiOrientation.x, aiOrientation.y, aiOrientation.z);
 			data.timeStamp = timeStamp;
 			m_Rotations.push_back(data);
 		}
@@ -66,7 +65,7 @@ public:
 			aiVector3D scale = channel->mScalingKeys[keyIndex].mValue;
 			float timeStamp = channel->mScalingKeys[keyIndex].mTime;
 			KeyScale data;
-			data.scale = AssimpGLMHelpers::GetGLMVec(scale);
+			data.scale = glm::vec3(scale.x, scale.y, scale.z);
 			data.timeStamp = timeStamp;
 			m_Scales.push_back(data);
 		}

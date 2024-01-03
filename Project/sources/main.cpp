@@ -124,8 +124,8 @@ int main()
     heliport.createPhysicsObject(dynamicsWorld, heliport_shape, 2, btVector3(-2.0, 0.0, -2.0));
 
     // test animation
-    Model test(PATH_TO_OBJECTS "/animation/model.dae");
-    Animation danceAnimation(PATH_TO_OBJECTS "/animation/model.dae", &test);
+    Model test(PATH_TO_OBJECTS "/test/dancing_vampire.dae");
+    Animation danceAnimation(PATH_TO_OBJECTS "/test/dancing_vampire.dae", &test);
     Animator animator(&danceAnimation);
 
     // Model sphere(PATH_TO_OBJECTS "/sun.obj");
@@ -197,6 +197,7 @@ int main()
 
         glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        animator.UpdateAnimation(deltaTime);
         
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -217,28 +218,26 @@ int main()
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
         ourShader.setFloat("light.ambient_strength", 1.0);
-        //sunM.DrawWithShader(ourShader, 1);
+        sunM.DrawWithShader(ourShader, 1);
         ourShader.setFloat("light.ambient_strength", ambient);
 
         moonM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
-        //moonM.DrawWithShader(ourShader, 1);
+        moonM.DrawWithShader(ourShader, 1);
         
         earthM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
-        //earthM.DrawWithShader(ourShader, 1);
+        earthM.DrawWithShader(ourShader, 1);
 
         heliport.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", m);
-        //heliport.DrawWithShader(ourShader, 1);
+        heliport.DrawWithShader(ourShader, 1);
 
 
-
-
-        //test animations
+        // animated model
         ambiant.use();
         ambiant.setMatrix4("projection", projection);
         ambiant.setMatrix4("view", view);
@@ -249,13 +248,10 @@ int main()
         }
         // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, -0.4f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::translate(model, glm::vec3(10.0f, 0.0f, 10.0f)); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(.5f, .5f, .5f));	// it's a bit too big for our scene, so scale it down
         ambiant.setMatrix4("model", model);;
         test.DrawWithShader(ambiant, 1);
-
-
-
 
 
 
@@ -282,7 +278,7 @@ int main()
         transform.getOpenGLMatrix(glm::value_ptr(m));
         physical.setMatrix4("M", glm::scale(m, glm::vec3(0.5)));
         
-        //lightM.DrawWithShader(physical, 0); // pas besoin du param en plus mtn je pense mais je le garde car peut etre bien pr debug au cas ou 
+        lightM.DrawWithShader(physical, 0); // pas besoin du param en plus mtn je pense mais je le garde car peut etre bien pr debug au cas ou 
 
 
         // sun = glm::translate(sun, glm::vec3(0.1 * cos(currentFrame), 0.0, 0.1 * sin(currentFrame)));
@@ -300,7 +296,7 @@ int main()
                 floor = glm::translate(floor, glm::vec3(-grid_size + 2.0f * i / grid_size, 0.0f, -grid_size));
             }
             ourShader.setMatrix4("model", floor);
-            //floorModel.DrawWithShader(ourShader, 1);
+            floorModel.DrawWithShader(ourShader, 1);
         }
 
         // ourShader.use();

@@ -96,7 +96,7 @@ int main()
     Shader reflshader(PATH_TO_SHADERS "/reflectiveObjects/reflectiveObjects.vert", PATH_TO_SHADERS "/reflectiveObjects/reflectiveObjects.frag");
     Shader ambiant(PATH_TO_SHADERS "/ambiant_light/ambiant.vert", PATH_TO_SHADERS "/ambiant_light/ambiant.frag");
     Shader physical(PATH_TO_SHADERS "/physicalObjects/physicalObjects.vert", PATH_TO_SHADERS "/physicalObjects/physicalObjects.frag");
-
+    
     // Model ourModel(PATH_TO_OBJECTS  "/cube.obj");
     // btCollisionShape *shape = new btBoxShape(btVector3(1, 1, 1));
     // ourModel.createPhysicsObject(dynamicsWorld, shape, 0.1, btVector3(1, 5, 0));
@@ -108,6 +108,11 @@ int main()
     Model moonM = generateSphere(PATH_TO_OBJECTS "/moon.obj", glm::vec3(0.0f, 3.0f, 0.0f), dynamicsWorld);
     Model sunM = generateSphere(PATH_TO_OBJECTS "/sun.obj", 0.33, 0.0, glm::vec3(0.0f, 15.0f, 0.0f), dynamicsWorld);
     Model lightM = generateSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", glm::vec3(0.0f, 0.0f, 0.0f), dynamicsWorld);
+
+    Model heliport(PATH_TO_OBJECTS "/tank/heliport.obj");
+    btCollisionShape *heliport_shape = new btBoxShape(btVector3(0.5, 0.5, 0.5));
+    heliport.createPhysicsObject(dynamicsWorld, heliport_shape, 2, btVector3(-2.0, 0.0, -2.0));
+
 
     // Model sphere(PATH_TO_OBJECTS "/sun.obj");
     // btCollisionShape *sphere_shape = new btSphereShape(1);
@@ -197,7 +202,6 @@ int main()
         sunM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
-        ourShader.setMatrix4("itM", inverseModel);
         ourShader.setFloat("light.ambient_strength", 1.0);
         sunM.DrawWithShader(ourShader, 1);
         ourShader.setFloat("light.ambient_strength", ambient);
@@ -205,15 +209,18 @@ int main()
         moonM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
-        ourShader.setMatrix4("itM", inverseModel);
         moonM.DrawWithShader(ourShader, 1);
         
         earthM.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
-        ourShader.setMatrix4("itM", inverseModel);
         earthM.DrawWithShader(ourShader, 1);
 
+        heliport.physicsObject->getMotionState()->getWorldTransform(transform);
+        transform.getOpenGLMatrix(glm::value_ptr(m));
+        ourShader.setMatrix4("model", m);
+        heliport.DrawWithShader(ourShader, 1);
+        
         if (posUpdated) ourModel.updatePosition(carPosition);
         ourModel.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));

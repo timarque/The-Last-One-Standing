@@ -8,12 +8,11 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Model.h"
-#include "PhysicsEngine.hpp"
-#include "PhysicModel.h"
 #include "Sphere.h"
 #include "CubeMap.h"
 #include "Animator.h"
-
+#include "PhysicModel.h"
+#include "PhysicsEngine.hpp"
 
 #include <iostream>
 
@@ -106,7 +105,7 @@ int main()
     PhysicModel ourModel(PATH_TO_OBJECTS  "/tank/tank.obj");
     btCollisionShape *shape = new btBoxShape(btVector3(0.3, 0, 0.5));
     ourModel.createPhysicsObject(physics, shape, 10, btVector3(0, 0, 0));
-    
+
     PhysicModel earthM = generatePhysicalSphere(PATH_TO_OBJECTS "/earth/earth.obj", glm::vec3(0.0f, 5.0f, 0.0f), physics);
     PhysicModel moonM = generatePhysicalSphere(PATH_TO_OBJECTS "/moon.obj", glm::vec3(0.0f, 3.0f, 0.0f), physics);
     PhysicModel sunM = generatePhysicalSphere(PATH_TO_OBJECTS "/sun.obj", 0.33, 0.0, glm::vec3(0.0f, 15.0f, 0.0f), physics);

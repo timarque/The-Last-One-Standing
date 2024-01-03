@@ -7,7 +7,7 @@ find_package(glfw3 CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 find_package(Bullet CONFIG REQUIRED)
 
-set(SOURCES_MAIN "Project/sources/main.cpp" "Project/sources/Mesh.cpp" "Project/sources/Model.cpp")
+set(SOURCES_MAIN "Project/sources/main.cpp" "Project/sources/Mesh.cpp" "Project/sources/Model.cpp" "Project/sources/PhysicModel.cpp")
 
 add_compile_definitions(PATH_TO_OBJECTS="${CMAKE_CURRENT_SOURCE_DIR}/Project/objects")
 add_compile_definitions(PATH_TO_SHADERS="${CMAKE_CURRENT_SOURCE_DIR}/Project/shaders")

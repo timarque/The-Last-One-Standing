@@ -13,6 +13,7 @@
 #include "glm/vec2.hpp"
 #include "Shader.h"
 
+#define MAX_BONE_INFLUENCE 5
 /**
  * Vertex data structure
  */
@@ -22,6 +23,10 @@ struct Vertex {
     glm::vec2 TexCoords;    // indicates which part of the texture should be mapped to this vertex
     glm::vec3 Tangents;
     glm::vec3 Bitangent;
+    //bone indexes which will influence this vertex
+    int m_BoneIDs[MAX_BONE_INFLUENCE];
+    //weights from each bone
+    float m_Weights[MAX_BONE_INFLUENCE];
 };
 
 

@@ -12,6 +12,7 @@
 #include <iostream>
 #include "Shader.h"
 #include "Mesh.h"
+#include <map>
 
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
@@ -22,9 +23,24 @@ unsigned int TextureFromFile(const char *path, const std::string &directory);
 /**
  * Model class that loads a model from a file
  */
+
+
+struct BoneInfo
+{
+    /*id is index in finalBoneMatrices*/
+    int id;
+
+    /*offset matrix transforms vertex from model space to bone space*/
+    glm::mat4 offset;
+
+};
+
+
 class Model {
 
 public:
+    auto& GetBoneInfoMap() { return m_BoneInfoMap; }
+    int& GetBoneCount() { return m_BoneCounter; }
     /**
      * Constructor of a Model
      * @param path to the model file
@@ -104,6 +120,8 @@ private:
     std::string directory;
     std::vector<Mesh> meshes;
     std::vector<Shader *> shaders;
+    std::map<std::string, BoneInfo> m_BoneInfoMap;
+    int m_BoneCounter = 0;
 
     /**
      * Loads a model from a file
@@ -134,6 +152,10 @@ private:
      * @return the loaded textures
      */
     std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
+
+    void SetVertexBoneDataToDefault(Vertex& vertex);
+    void SetVertexBoneData(Vertex& vertex, int boneID, float weight);
+    void ExtractBoneWeightForVertices(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene);
 
 };
 

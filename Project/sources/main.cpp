@@ -10,6 +10,8 @@
 #include "Model.h"
 #include "Sphere.h"
 #include "CubeMap.h"
+#include "Animator.h"
+
 
 #include <iostream>
 
@@ -121,6 +123,10 @@ int main()
     btCollisionShape *heliport_shape = new btBoxShape(btVector3(0.5, 0.5, 0.5));
     heliport.createPhysicsObject(dynamicsWorld, heliport_shape, 2, btVector3(-2.0, 0.0, -2.0));
 
+    // test animation
+    Model test(PATH_TO_OBJECTS "/test/dancing_vampire.dae");
+    Animation danceAnimation(PATH_TO_OBJECTS "/test/dancing_vampire.dae", &test);
+    Animator animator(&danceAnimation);
 
     // Model sphere(PATH_TO_OBJECTS "/sun.obj");
     // btCollisionShape *sphere_shape = new btSphereShape(1);
@@ -228,7 +234,23 @@ int main()
         transform.getOpenGLMatrix(glm::value_ptr(m));
         ourShader.setMatrix4("model", m);
         heliport.DrawWithShader(ourShader, 1);
-        
+
+        //test animations
+        ourShader.setMatrix4("projection", projection);
+        ourShader.setMatrix4("view", view);
+
+        auto transforms = animator.GetFinalBoneMatrices();
+        for (int i = 0; i < transforms.size(); ++i)
+            ourShader.setMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
+
+
+        // render the loaded model
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, -0.4f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(.01f, .01f, .01f));	// it's a bit too big for our scene, so scale it down
+        ourShader.setMatrix4("model", model);
+        test.DrawWithShader(ourShader, 1);
+
         if (posUpdated) ourModel.updatePosition(carPosition);
         ourModel.physicsObject->getMotionState()->getWorldTransform(transform);
         transform.getOpenGLMatrix(glm::value_ptr(m));

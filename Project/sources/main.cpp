@@ -10,8 +10,10 @@
 #include "Model.h"
 #include "PhysicsEngine.hpp"
 #include "PhysicModel.h"
+#include "TankModel.hpp"
 #include "Sphere.h"
 #include "CubeMap.h"
+#include "debugObject.hpp"
 
 #include <iostream>
 
@@ -46,11 +48,6 @@ bool firstMouse = true;
 // timing
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-
-glm::vec3 carPosition = glm::vec3(0.0f);
-float carSpeed = 0.01f;
-bool posUpdated = false;
-bool jump = false;
 
 int main()
 {
@@ -92,7 +89,12 @@ int main()
     Shader ambiant(PATH_TO_SHADERS "/ambiant_light/ambiant.vert", PATH_TO_SHADERS "/ambiant_light/ambiant.frag");
     Shader physical(PATH_TO_SHADERS "/physicalObjects/physicalObjects.vert", PATH_TO_SHADERS "/physicalObjects/physicalObjects.frag");
     Shader cubeMapShader(PATH_TO_SHADERS "/skybox/skybox.vert", PATH_TO_SHADERS "/skybox/skybox.frag");
+    Shader debugShader(PATH_TO_SHADERS "/debug/debug.vert", PATH_TO_SHADERS "/debug/debug.frag");
 
+    //* Bullet Physics Rendering Debug Tool
+    DebugDrawer *debugDrawer = new DebugDrawer(debugShader.ID);
+    physics.getWorld()->setDebugDrawer(debugDrawer);
+    
     // Cube map
     CubeMap cubeMap(PATH_TO_OBJECTS "/cube.obj", &cubeMapShader);
     std::string cubeMapTexturePath = PATH_TO_TEXTURES "/skybox/";
@@ -101,18 +103,20 @@ int main()
     // Model ourModel(PATH_TO_OBJECTS  "/cube.obj");
     // btCollisionShape *shape = new btBoxShape(btVector3(1, 1, 1));
     // ourModel.createPhysicsObject(physics, shape, 0.1, btVector3(1, 5, 0));
-    PhysicModel ourModel(PATH_TO_OBJECTS  "/tank/tank.obj");
-    btCollisionShape *shape = new btBoxShape(btVector3(0.3, 0, 0.5));
-    ourModel.createPhysicsObject(physics, shape, 10, btVector3(0, 0, 0));
+    TankModel tankModel(PATH_TO_OBJECTS  "/tank/tank.obj");
+    btCollisionShape *shape = new btBoxShape(btVector3(0.0, 0.0, 0.0));
+    // shape->setLocalScaling(btVector3(0.5, 0.5, 0.5));
+    tankModel.createPhysicsObject(physics, shape, 10, btVector3(-2.0, 0, -2.0));
+
     
     PhysicModel earthM = generatePhysicalSphere(PATH_TO_OBJECTS "/earth/earth.obj", glm::vec3(0.0f, 5.0f, 0.0f), physics);
     PhysicModel moonM = generatePhysicalSphere(PATH_TO_OBJECTS "/moon.obj", glm::vec3(0.0f, 3.0f, 0.0f), physics);
     PhysicModel sunM = generatePhysicalSphere(PATH_TO_OBJECTS "/sun.obj", 0.33, 0.0, glm::vec3(0.0f, 15.0f, 0.0f), physics);
     PhysicModel lightM = generatePhysicalSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", glm::vec3(0.0f, 0.0f, 0.0f), physics);
 
-    PhysicModel heliport(PATH_TO_OBJECTS "/tank/heliport.obj");
-    btCollisionShape *heliport_shape = new btBoxShape(btVector3(0.5, 0.5, 0.5));
-    heliport.createPhysicsObject(physics, heliport_shape, 2, btVector3(-2.0, 0.0, -2.0));
+    // PhysicModel heliport(PATH_TO_OBJECTS "/tank/heliport.obj");
+    // btCollisionShape *heliport_shape = new btBoxShape(btVector3(0.5, 0.5, 0.5));
+    // heliport.createPhysicsObject(physics, heliport_shape, 2, btVector3(-2.0, 0.0, -2.0));
 
 
     // Model sphere(PATH_TO_OBJECTS "/sun.obj");
@@ -129,16 +133,16 @@ int main()
 
     glm::mat4 model = glm::mat4(1.0f);
     // btTransform transform;
-    // ourModel.physicsObject->getMotionState()->getWorldTransform(transform);
+    // tankModel.physicsObject->getMotionState()->getWorldTransform(transform);
     // btVector3 position = transform.getOrigin();
     // model = glm::translate(model, glm::vec3(grid_size - 1.0f, 2.0f, grid_size - 1.0f)); // translate it down so it's at the center of the scene
     // model = glm::translate(model, glm::vec3(position.x(), position.y(), position.z())); // translate it down so it's at the center of the scene
-    model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// L'objet est super grand, on le déplace
+    // model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// L'objet est super grand, on le déplace
     
     glm::mat4 sun = glm::mat4(1.0f);
-    sun = glm::translate(sun, light_pos);
-    sun = glm::scale(sun, glm::vec3(0.2f));
-    glm::mat4 itMsun = glm::transpose(glm::inverse(sun));
+    // sun = glm::translate(sun, light_pos);
+    // sun = glm::scale(sun, glm::vec3(0.2f));
+    // glm::mat4 itMsun = glm::transpose(glm::inverse(sun));
 
     glm::mat4 floor = glm::mat4(1.0f);
 
@@ -190,7 +194,7 @@ int main()
         glm::mat4 view = camera.GetViewMatrix();
         // don't forget to enable shader before setting uniforms
 
-        btTransform transform;
+
         glm::mat4 m;
         ourShader.use();
         ourShader.setMatrix4("projection", projection);
@@ -198,35 +202,42 @@ int main()
         ourShader.setVec3("u_view_pos", camera.Position);
         auto delta = light_pos + glm::vec3(4 * std::sin(now / 2), 0.0,  4 * std::cos(now / 2));
         ourShader.setVec3("light.light_pos", delta);
+        
+        physics.getWorld()->debugDrawWorld();
+        debugDrawer->flushLines();
 
         sunM.updatePosition(delta);
         m = sunM.getOpenGLMatrix();
-        ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
+        ourShader.setMatrix4("model", m);
         ourShader.setFloat("light.ambient_strength", 1.0);
         sunM.DrawWithShader(ourShader, 1);
         ourShader.setFloat("light.ambient_strength", ambient);
 
         m = moonM.getOpenGLMatrix();
-        ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
+        ourShader.setMatrix4("model", m);
         moonM.DrawWithShader(ourShader, 1);
         
         m = earthM.getOpenGLMatrix();
-        ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
+        ourShader.setMatrix4("model", m);
         earthM.DrawWithShader(ourShader, 1);
 
-        m = heliport.getOpenGLMatrix();
-        ourShader.setMatrix4("model", m);
-        heliport.DrawWithShader(ourShader, 1);
+        // m = heliport.getOpenGLMatrix();
+        // ourShader.setMatrix4("model", m);
+        // heliport.DrawWithShader(ourShader, 1);
         
-        if (posUpdated) ourModel.updatePosition(carPosition);
-        m = ourModel.getOpenGLMatrix();
-        ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.2)));
-        if (jump)
-        {
-            ourModel.applyImpulse(btVector3(0.0f, 5.0f, 0.0f));
-            jump = false;
-        }
-        ourModel.DrawWithShader(ourShader, 1);
+        tankModel.update(window, deltaTime);
+        
+        m = tankModel.getOpenGLMatrix();
+        ourShader.setMatrix4("model", m);
+        tankModel.DrawWithShader(ourShader, 1);
+
+        // camera.LookAtModel(tankBoxModel.getPosition());
+
+        // debugShader.setMatrix4("projection", projection);
+        debugShader.setMatrix4("view", view);
+        debugShader.setMatrix4("projection", projection);
+        // debugShader.setMatrix4();
+
 
         physical.use();
         physical.setMatrix4("M", model);
@@ -237,7 +248,7 @@ int main()
         physical.setVec3("light.light_pos", delta);
         
         m = lightM.getOpenGLMatrix();
-        physical.setMatrix4("M", glm::scale(m, glm::vec3(0.5)));
+        physical.setMatrix4("M", m);
         
         lightM.DrawWithShader(physical, 0); // pas besoin du param en plus mtn je pense mais je le garde car peut etre bien pr debug au cas ou 
 
@@ -266,8 +277,9 @@ int main()
         // ourShader.setMatrix4("view", view);
         // sphere.DrawWithShader(ourShader);
 
+
         physics.simulate(deltaTime);
-        ourModel.updateFromPhysics();
+        tankModel.updateFromPhysics();
         // sphere.updateFromPhysics();
         floorModel.updateFromPhysics();
         earthM.updateFromPhysics();
@@ -288,7 +300,6 @@ int main()
 
 void processInput(GLFWwindow *window)
 {
-    posUpdated = false;
     // 3. Use the cameras class to change the parameters of the camera
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -302,31 +313,6 @@ void processInput(GLFWwindow *window)
         camera.ProcessKeyboardMovement(FORWARD, 0.3);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         camera.ProcessKeyboardMovement(BACKWARD, 0.3);
-
-    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS){
-        carPosition.z += carSpeed;
-        posUpdated = true;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS){
-        carPosition.z -= carSpeed;
-        posUpdated = true;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS){
-        carPosition.x += carSpeed;
-        posUpdated = true;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS){
-        carPosition.x -= carSpeed;
-        posUpdated = true;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-    {
-        jump = true;
-    }
 
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
         camera.ProcessKeyboardRotation(1, 0.0, 1);

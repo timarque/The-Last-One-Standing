@@ -48,13 +48,30 @@ void PhysicModel::moveForward(float speed, glm::vec3 forward_dir)
     moveForward(speed, btVector3(forward_dir.x, forward_dir.y, forward_dir.z));
 }
 
+//void PhysicModel::moveForward(float speed, btVector3 forward_dir)
+//{
+//    btTransform worldTransform;
+//    physicsObject->getMotionState()->getWorldTransform(worldTransform);
+//    worldTransform.setOrigin(worldTransform.getOrigin() + speed * forward_dir);
+//    physicsObject->getMotionState()->setWorldTransform(worldTransform);
+//}
+
 void PhysicModel::moveForward(float speed, btVector3 forward_dir)
 {
-    btTransform worldTransform;
-    physicsObject->getMotionState()->getWorldTransform(worldTransform);
-    worldTransform.setOrigin(worldTransform.getOrigin() + speed * forward_dir);
-    physicsObject->getMotionState()->setWorldTransform(worldTransform);
+    // Get the rigid body's current velocity
+    btVector3 currentVelocity = physicsObject->getLinearVelocity();
+
+    // Calculate the desired velocity based on the speed and forward direction
+    btVector3 desiredVelocity = speed * forward_dir + btVector3(1.0, 1.0, 1.0);
+
+    // Calculate the change in velocity needed
+    btVector3 velocityChange = desiredVelocity - currentVelocity;
+    std::cout << "velocity " << velocityChange.x() << " " << velocityChange.y() << " " << velocityChange.z() << " " << std::endl;
+
+    // Apply central impulse to the object to achieve the desired velocity
+    physicsObject->applyCentralImpulse(velocityChange);
 }
+
 
 void PhysicModel::moveForward(float speed)
 {

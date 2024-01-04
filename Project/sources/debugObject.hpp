@@ -15,7 +15,7 @@ private:
 
 public:
     DebugDrawer(GLuint shaderProgram)
-        : m_debugMode(btIDebugDraw::DBG_DrawWireframe), lineShaderProgram(shaderProgram)
+        : m_debugMode(btIDebugDraw::DBG_DrawAabb), lineShaderProgram(shaderProgram)
     {
         // Setup the VAO and VBO for debug drawing
         glGenVertexArrays(1, &VAO);

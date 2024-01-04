@@ -15,5 +15,5 @@ PhysicModel generatePhysicalSphere(std::string path, float radius, float mass, g
 }
 
 PhysicModel generatePhysicalSphere(std::string path, glm::vec3 position, PhysicsEngine physics) {
-    return generatePhysicalSphere(path, 0.33, 10, position, physics);
+    return generatePhysicalSphere(path, 1, 10, position, physics);
 }

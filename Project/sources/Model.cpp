@@ -124,6 +124,12 @@ Model::Model(std::string path) {
     loadModel(path);
 }
 
+Model::Model(std::string path, bool norms, bool tangs) {
+    this->norms = norms;
+    this->tangs = tangs;
+    loadModel(path);
+}
+
 void Model::Draw(Shader &shader) {
     for(unsigned int i = 0; i < meshes.size(); i++) {
         meshes[i].Draw(shader, 0);
@@ -170,12 +176,13 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         vector.y = mesh->mVertices[i].y;
         vector.z = mesh->mVertices[i].z;
         vertex.Position = vector;
-
-        glm::vec3 normal;
-        normal.x = mesh->mNormals[i].x;
-        normal.y = mesh->mNormals[i].y;
-        normal.z = mesh->mNormals[i].z;
-        vertex.Normal = normal;
+        if (norms) {
+            glm::vec3 normal;
+            normal.x = mesh->mNormals[i].x;
+            normal.y = mesh->mNormals[i].y;
+            normal.z = mesh->mNormals[i].z;
+            vertex.Normal = normal;
+        }
 
         glm::vec2 texCoords;
         if (mesh->mTextureCoords[0]) {  // if the mesh contains texture coordinates
@@ -187,13 +194,14 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         }
         vertex.TexCoords = texCoords;
 
-        
-        glm::vec3 tangents;
-        tangents.x = mesh->mTangents[i].x;
-        tangents.y = mesh->mTangents[i].y;
-        tangents.z = mesh->mTangents[i].z;
-        vertex.Tangents = tangents;
-        vertex.Bitangent = glm::normalize(glm::cross(vertex.Normal, vertex.Tangents));
+        if (tangs) {
+            glm::vec3 tangents;
+            tangents.x = mesh->mTangents[i].x;
+            tangents.y = mesh->mTangents[i].y;
+            tangents.z = mesh->mTangents[i].z;
+            vertex.Tangents = tangents;
+            vertex.Bitangent = glm::normalize(glm::cross(vertex.Normal, vertex.Tangents));
+        }
 
         vertices.push_back(vertex);
     }

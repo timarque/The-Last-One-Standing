@@ -42,7 +42,7 @@ public:
 		{
 			aiVector3D aiPosition = channel->mPositionKeys[positionIndex].mValue;
 			float timeStamp = channel->mPositionKeys[positionIndex].mTime;
-			KeyPosition data;
+			KeyPosition data{};
 			data.position = glm::vec3(aiPosition.x, aiPosition.y, aiPosition.z);
 			data.timeStamp = timeStamp;
 			m_Positions.push_back(data);
@@ -53,7 +53,7 @@ public:
 		{
 			aiQuaternion aiOrientation = channel->mRotationKeys[rotationIndex].mValue;
 			float timeStamp = channel->mRotationKeys[rotationIndex].mTime;
-			KeyRotation data;
+			KeyRotation data{};
 			data.orientation = glm::quat(aiOrientation.w, aiOrientation.x, aiOrientation.y, aiOrientation.z);
 			data.timeStamp = timeStamp;
 			m_Rotations.push_back(data);
@@ -64,7 +64,7 @@ public:
 		{
 			aiVector3D scale = channel->mScalingKeys[keyIndex].mValue;
 			float timeStamp = channel->mScalingKeys[keyIndex].mTime;
-			KeyScale data;
+			KeyScale data{};
 			data.scale = glm::vec3(scale.x, scale.y, scale.z);
 			data.timeStamp = timeStamp;
 			m_Scales.push_back(data);
@@ -78,9 +78,9 @@ public:
 		glm::mat4 scale = InterpolateScaling(animationTime);
 		m_LocalTransform = translation * rotation * scale;
 	}
-	glm::mat4 GetLocalTransform() { return m_LocalTransform; }
+	glm::mat4 GetLocalTransform() const { return m_LocalTransform; }
 	std::string GetBoneName() const { return m_Name; }
-	int GetBoneID() { return m_ID; }
+	int GetBoneID() const { return m_ID; }
 
 
 
@@ -125,7 +125,7 @@ private:
 		scaleFactor = midWayLength / framesDiff;
 		return scaleFactor;
 	}
-
+	// Interpolating is: we have usually 3 or 4 poses so we interpolate between to make it look smooth
 	glm::mat4 InterpolatePosition(float animationTime)
 	{
 		if (1 == m_NumPositions)

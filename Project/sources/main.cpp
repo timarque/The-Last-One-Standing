@@ -13,6 +13,7 @@
 #include "Animator.h"
 #include "PhysicModel.h"
 #include "PhysicsEngine.hpp"
+#include "ParticleSource.h"
 
 #include <iostream>
 
@@ -90,7 +91,7 @@ int main()
     Shader ourShader(PATH_TO_SHADERS "/backpack/shader.vert", PATH_TO_SHADERS "/backpack/shader.frag");
     Shader shader(PATH_TO_SHADERS "/specularObjects/specularObjects.vert", PATH_TO_SHADERS "/specularObjects/specularObjects.frag");
     Shader reflshader(PATH_TO_SHADERS "/reflectiveObjects/reflectiveObjects.vert", PATH_TO_SHADERS "/reflectiveObjects/reflectiveObjects.frag");
-    Shader ambiant(PATH_TO_SHADERS "/ambiant_light/ambiant.vert", PATH_TO_SHADERS "/ambiant_light/ambiant.frag");
+    Shader animationShader(PATH_TO_SHADERS "/animation/animation.vert", PATH_TO_SHADERS "/animation/animation.frag");
     Shader physical(PATH_TO_SHADERS "/physicalObjects/physicalObjects.vert", PATH_TO_SHADERS "/physicalObjects/physicalObjects.frag");
     Shader cubeMapShader(PATH_TO_SHADERS "/skybox/skybox.vert", PATH_TO_SHADERS "/skybox/skybox.frag");
 
@@ -115,10 +116,22 @@ int main()
     btCollisionShape *heliport_shape = new btBoxShape(btVector3(0.5, 0.5, 0.5));
     heliport.createPhysicsObject(physics, heliport_shape, 2, btVector3(-2.0, 0.0, -2.0));
 
-    // test animation
-    Model test(PATH_TO_OBJECTS "/test/dancing_vampire.dae");
-    Animation danceAnimation(PATH_TO_OBJECTS "/test/dancing_vampire.dae", &test);
+    // animated models
+    Model vampire_dancing(PATH_TO_OBJECTS "/test/dancing_vampire.dae");
+    Animation danceAnimation(PATH_TO_OBJECTS "/test/dancing_vampire.dae", &vampire_dancing); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
     Animator animator(&danceAnimation);
+    
+    //test particles, overload du constructeur model pour pas prendre en compte normals et tangent car particules n en a pas 
+    Model particle(PATH_TO_OBJECTS "/particle.obj", false, false);
+    Shader particleShader(PATH_TO_SHADERS "/particles/part.vert", PATH_TO_SHADERS "/particles/part.frag");
+
+    std::vector<ParticleSource> particleSources;
+    glm::vec3 particlepos = glm::vec3(10.0f, 2.0f, 0.0f);
+    glm::vec3 particleColor = glm::vec3(1.0f, 1.0f, 1.0f);
+    glm::vec3 planeDirection = glm::vec3(1.0f, 0.0f, 0.0f);
+    glm::vec3 xDirection = glm::vec3(1.0f, 0.0f, 0.0f);
+
+    // test particles
 
     // Model sphere(PATH_TO_OBJECTS "/sun.obj");
     // btCollisionShape *sphere_shape = new btSphereShape(1);
@@ -156,6 +169,7 @@ int main()
     float specular = 0.8;
     
     glm::vec3 materialColour = glm::vec3(0.5f, 0.6f, 0.8f);
+    // enlever ca quand on en aura plus besoin 
     physical.use();
     physical.setFloat("shininess", 32.0f);
     physical.setVec3("materialColour", materialColour);
@@ -225,21 +239,49 @@ int main()
         heliport.DrawWithShader(ourShader, 1);
 
 
+        // Particle test
+        particleShader.use();
+
+        std::size_t max = 100;
+        std::size_t particlenumber = particleSources.size();
+        if (particlenumber < max) {
+            ParticleSource ps = ParticleSource(particlepos, particleColor, particleColor);
+            particleSources.push_back(ps);
+        }
+        for (unsigned int i = 0; i < particleSources.size(); i++) {
+            particleSources[i].updateParticles();
+            for (Particle p : particleSources[i].getParticles()) {
+                GLfloat dotResult = glm::dot(planeDirection, xDirection);
+                float theta = glm::acos(dotResult);
+                if (planeDirection.z > 0) {
+                    theta *= -1;
+                }
+                particleShader.setMatrix4("projection", projection);
+                particleShader.setMatrix4("view", view);
+                model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+                particleShader.setMatrix4("model", model);
+                particleShader.setVec3("lightColor", p.color.x, p.color.y, p.color.z);
+                particle.DrawWithShader(particleShader, 1);
+            }
+        }
+
+
+
         // animated model
-        ambiant.use();
-        ambiant.setMatrix4("projection", projection);
-        ambiant.setMatrix4("view", view);
+        animationShader.use();
+        animationShader.setMatrix4("projection", projection);
+        animationShader.setMatrix4("view", view);
 
         auto transforms = animator.GetFinalBoneMatrices();
         for (int i = 0; i < transforms.size(); ++i) {
-            ambiant.setMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
+            animationShader.setMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
         }
         // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(10.0f, 0.0f, 10.0f)); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(.5f, .5f, .5f));	// it's a bit too big for our scene, so scale it down
-        ambiant.setMatrix4("model", model);;
-        test.DrawWithShader(ambiant, 1);
+        animationShader.setMatrix4("model", model);;
+        vampire_dancing.DrawWithShader(animationShader, 1);
 
 
 
@@ -300,7 +342,7 @@ int main()
         sunM.updateFromPhysics();
         lightM.updateFromPhysics();
 
-        //cubeMap.draw(&camera);
+        cubeMap.draw(&camera);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

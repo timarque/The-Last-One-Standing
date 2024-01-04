@@ -30,6 +30,7 @@ void main()
             totalPosition = vec4(pos,1.0f);
             break;
         }
+        // I think this is the skinning
         vec4 localPosition = finalBonesMatrices[boneIds[i]] * vec4(pos,1.0f);
         totalPosition += localPosition * weights[i];
         vec3 localNormal = mat3(finalBonesMatrices[boneIds[i]]) * norm;

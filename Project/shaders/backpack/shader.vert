@@ -11,7 +11,6 @@ out vec3 v_normal;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-uniform mat4 itM;
 
 
 void main(){

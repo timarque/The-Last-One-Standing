@@ -47,6 +47,8 @@ public:
      */
     Model(std::string path);
 
+    Model(std::string path, bool norms, bool tangs);
+
     /**
      * Draws the model in the 3D scene
      * @param shader to use to draw the model
@@ -69,6 +71,8 @@ protected:
     std::vector<Shader *> shaders;
     std::map<std::string, BoneInfo> m_BoneInfoMap;
     int m_BoneCounter = 0;
+    bool norms = true;
+    bool tangs = true;
 
     /**
      * Loads a model from a file

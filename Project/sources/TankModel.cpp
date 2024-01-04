@@ -99,11 +99,11 @@ void TankModel::update(GLFWwindow *window, float deltaTime)
 
     if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) {
         std::cout << "Acceleration" << std::endl;
-        moveForward(0.01);
+        moveForward(1);
         // this->applyEngineForce(2.0);
     } else if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
         std::cout << "Deceleration" << std::endl;
-        moveBackward(0.01);
+        moveBackward(1);
         // this->applyEngineForce(-0.2);
     } else {
         // this->applyEngineForce(0);

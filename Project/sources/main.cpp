@@ -104,15 +104,15 @@ int main()
     // btCollisionShape *shape = new btBoxShape(btVector3(1, 1, 1));
     // ourModel.createPhysicsObject(physics, shape, 0.1, btVector3(1, 5, 0));
     TankModel tankModel(PATH_TO_OBJECTS  "/tank/tank.obj");
-    btCollisionShape *shape = new btBoxShape(btVector3(0.0, 0.0, 0.0));
+    btCollisionShape *shape = new btBoxShape(btVector3(1.0, 1.0, 1.0));
     // shape->setLocalScaling(btVector3(0.5, 0.5, 0.5));
-    tankModel.createPhysicsObject(physics, shape, 10, btVector3(-2.0, 0, -2.0));
+    tankModel.createPhysicsObject(physics, shape, 1, btVector3(-2.0, 10.0, -2.0));
 
     
-    PhysicModel earthM = generatePhysicalSphere(PATH_TO_OBJECTS "/earth/earth.obj", glm::vec3(0.0f, 5.0f, 0.0f), physics);
-    PhysicModel moonM = generatePhysicalSphere(PATH_TO_OBJECTS "/moon.obj", glm::vec3(0.0f, 3.0f, 0.0f), physics);
+    PhysicModel earthM = generatePhysicalSphere(PATH_TO_OBJECTS "/earth/earth.obj", glm::vec3(-5.0f, 5.0f, 0.0f), physics);
+    PhysicModel moonM = generatePhysicalSphere(PATH_TO_OBJECTS "/moon.obj", glm::vec3(5.0f, 3.0f, 0.0f), physics);
     PhysicModel sunM = generatePhysicalSphere(PATH_TO_OBJECTS "/sun.obj", 0.33, 0.0, glm::vec3(0.0f, 15.0f, 0.0f), physics);
-    PhysicModel lightM = generatePhysicalSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", glm::vec3(0.0f, 0.0f, 0.0f), physics);
+    PhysicModel lightM = generatePhysicalSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", glm::vec3(10.0f, 0.0f, 10.0f), physics);
 
     // PhysicModel heliport(PATH_TO_OBJECTS "/tank/heliport.obj");
     // btCollisionShape *heliport_shape = new btBoxShape(btVector3(0.5, 0.5, 0.5));
@@ -124,7 +124,7 @@ int main()
     // sphere.createPhysicsObject(physics, sphere_shape, 10, btVector3(0, 15, 1.5));
 
     PhysicModel floorModel(PATH_TO_OBJECTS  "/floor/floor.obj");
-    btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
+    btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0.0, 1.0, 0.0), 0);
     floorModel.createPhysicsObject(physics, floor_shape, 0.0, btVector3(0, 0, 0));
     
 
@@ -202,6 +202,10 @@ int main()
         ourShader.setVec3("u_view_pos", camera.Position);
         auto delta = light_pos + glm::vec3(4 * std::sin(now / 2), 0.0,  4 * std::cos(now / 2));
         ourShader.setVec3("light.light_pos", delta);
+
+        debugShader.use();
+        debugShader.setMatrix4("view", view);
+        debugShader.setMatrix4("projection", projection);
         
         physics.getWorld()->debugDrawWorld();
         debugDrawer->flushLines();
@@ -234,6 +238,7 @@ int main()
         // camera.LookAtModel(tankBoxModel.getPosition());
 
         // debugShader.setMatrix4("projection", projection);
+        debugShader.use();
         debugShader.setMatrix4("view", view);
         debugShader.setMatrix4("projection", projection);
         // debugShader.setMatrix4();

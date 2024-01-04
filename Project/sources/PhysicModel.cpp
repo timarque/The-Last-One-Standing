@@ -9,7 +9,6 @@ void PhysicModel::createPhysicsObject(PhysicsEngine physics, btCollisionShape *c
     btVector3 localInertia(0, 0, 0);
     collision_shape->calculateLocalInertia(mass, localInertia);
     // Ajuster l'inertie selon vos besoins
-
     btTransform transform;
     transform.setIdentity();
     transform.setOrigin(origin);
@@ -62,13 +61,13 @@ void PhysicModel::moveForward(float speed, btVector3 forward_dir)
     btVector3 currentVelocity = physicsObject->getLinearVelocity();
 
     // Calculate the desired velocity based on the speed and forward direction
-    btVector3 desiredVelocity = speed * forward_dir + btVector3(1.0, 1.0, 1.0);
+    btVector3 desiredVelocity = speed * forward_dir ;
 
     // Calculate the change in velocity needed
     btVector3 velocityChange = desiredVelocity - currentVelocity;
-    std::cout << "velocity " << velocityChange.x() << " " << velocityChange.y() << " " << velocityChange.z() << " " << std::endl;
 
     // Apply central impulse to the object to achieve the desired velocity
+    physicsObject->activate(); // Wake up the object
     physicsObject->applyCentralImpulse(velocityChange);
 }
 

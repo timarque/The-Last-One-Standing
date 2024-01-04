@@ -104,9 +104,9 @@ int main()
     // btCollisionShape *shape = new btBoxShape(btVector3(1, 1, 1));
     // ourModel.createPhysicsObject(physics, shape, 0.1, btVector3(1, 5, 0));
     TankModel tankModel(PATH_TO_OBJECTS  "/tank/tank.obj");
-    btCollisionShape *shape = new btBoxShape(btVector3(1.0, 1.0, 1.0));
+    btCollisionShape *shape = new btBoxShape(btVector3(.5, .5, .5));
     // shape->setLocalScaling(btVector3(0.5, 0.5, 0.5));
-    tankModel.createPhysicsObject(physics, shape, 1, btVector3(-2.0, 10.0, -2.0));
+    tankModel.createPhysicsObject(physics, shape, 1, btVector3(0.0, 0.0, 0.0));
 
     
     PhysicModel earthM = generatePhysicalSphere(PATH_TO_OBJECTS "/earth/earth.obj", glm::vec3(-5.0f, 5.0f, 0.0f), physics);
@@ -195,7 +195,6 @@ int main()
         // don't forget to enable shader before setting uniforms
 
 
-        glm::mat4 m;
         ourShader.use();
         ourShader.setMatrix4("projection", projection);
         ourShader.setMatrix4("view", view);
@@ -203,26 +202,16 @@ int main()
         auto delta = light_pos + glm::vec3(4 * std::sin(now / 2), 0.0,  4 * std::cos(now / 2));
         ourShader.setVec3("light.light_pos", delta);
 
-        debugShader.use();
-        debugShader.setMatrix4("view", view);
-        debugShader.setMatrix4("projection", projection);
-        
-        physics.getWorld()->debugDrawWorld();
-        debugDrawer->flushLines();
-
         sunM.updatePosition(delta);
-        m = sunM.getOpenGLMatrix();
-        ourShader.setMatrix4("model", m);
+        ourShader.setMatrix4("model", sunM.getOpenGLMatrix());
         ourShader.setFloat("light.ambient_strength", 1.0);
-        sunM.DrawWithShader(ourShader, 1);
-        ourShader.setFloat("light.ambient_strength", ambient);
+        //sunM.DrawWithShader(ourShader, 1);
 
-        m = moonM.getOpenGLMatrix();
-        ourShader.setMatrix4("model", m);
-        moonM.DrawWithShader(ourShader, 1);
+        ourShader.setFloat("light.ambient_strength", ambient);
+        ourShader.setMatrix4("model", moonM.getOpenGLMatrix());
+        //moonM.DrawWithShader(ourShader, 1);
         
-        m = earthM.getOpenGLMatrix();
-        ourShader.setMatrix4("model", m);
+        ourShader.setMatrix4("model", earthM.getOpenGLMatrix());
         earthM.DrawWithShader(ourShader, 1);
 
         // m = heliport.getOpenGLMatrix();
@@ -231,18 +220,10 @@ int main()
         
         tankModel.update(window, deltaTime);
         
-        m = tankModel.getOpenGLMatrix();
-        ourShader.setMatrix4("model", m);
+        ourShader.setMatrix4("model", tankModel.getOpenGLMatrix());
         tankModel.DrawWithShader(ourShader, 1);
 
         // camera.LookAtModel(tankBoxModel.getPosition());
-
-        // debugShader.setMatrix4("projection", projection);
-        debugShader.use();
-        debugShader.setMatrix4("view", view);
-        debugShader.setMatrix4("projection", projection);
-        // debugShader.setMatrix4();
-
 
         physical.use();
         physical.setMatrix4("M", model);
@@ -252,8 +233,7 @@ int main()
         physical.setVec3("u_view_pos", camera.Position);
         physical.setVec3("light.light_pos", delta);
         
-        m = lightM.getOpenGLMatrix();
-        physical.setMatrix4("M", m);
+        physical.setMatrix4("M", lightM.getOpenGLMatrix());
         
         lightM.DrawWithShader(physical, 0); // pas besoin du param en plus mtn je pense mais je le garde car peut etre bien pr debug au cas ou 
 
@@ -275,6 +255,14 @@ int main()
             ourShader.setMatrix4("model", floor);
             floorModel.DrawWithShader(ourShader, 1);
         }
+
+        debugShader.use();
+        debugShader.setMatrix4("view", view);
+        debugShader.setMatrix4("projection", projection);
+
+        physics.getWorld()->debugDrawWorld();
+        debugDrawer->flushLines();
+
 
         // ourShader.use();
         // ourShader.setMatrix4("model", model);

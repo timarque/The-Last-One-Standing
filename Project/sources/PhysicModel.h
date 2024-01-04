@@ -5,10 +5,13 @@
 #include "Model.h"
 #include "PhysicsEngine.hpp"
 #include "bullet/btBulletDynamicsCommon.h"
+#include <memory>
 
 class PhysicModel : public Model {
 protected:
-    btRigidBody *physicsObject; // Ajouter un membre pour représenter l'objet physique associé au modèle
+    std::unique_ptr<btRigidBody> physicsObject;
+    std::unique_ptr<btCollisionShape> mShape;
+    std::unique_ptr<btDefaultMotionState> mMotionState;
 public:
     PhysicModel(std::string path) : Model(path) {};
     // Créer un objet physique associé au modèle dans le monde physique

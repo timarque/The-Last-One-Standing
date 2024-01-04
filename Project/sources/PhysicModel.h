@@ -21,6 +21,10 @@ public:
 
     glm::vec3 getPosition();
 
+    btTransform getTransform() { return physicsObject->getWorldTransform(); }
+    glm::mat4 getRotation();
+    glm::mat4 getModelMatrix(glm::vec3 scale);
+
     void moveForward(float speed, glm::vec3 forward_dir);
     void moveForward(float speed, btVector3 forward_dir);
     void moveForward(float speed);

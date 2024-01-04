@@ -83,13 +83,10 @@ int main()
 
     PhysicsEngine physics(btVector3(0, -9.81, 0));
 
-    Shader ourShader(PATH_TO_SHADERS "/backpack/shader.vert", PATH_TO_SHADERS "/backpack/shader.frag");
-    Shader shader(PATH_TO_SHADERS "/specularObjects/specularObjects.vert", PATH_TO_SHADERS "/specularObjects/specularObjects.frag");
-    Shader reflshader(PATH_TO_SHADERS "/reflectiveObjects/reflectiveObjects.vert", PATH_TO_SHADERS "/reflectiveObjects/reflectiveObjects.frag");
-    Shader ambiant(PATH_TO_SHADERS "/ambiant_light/ambiant.vert", PATH_TO_SHADERS "/ambiant_light/ambiant.frag");
-    Shader physical(PATH_TO_SHADERS "/physicalObjects/physicalObjects.vert", PATH_TO_SHADERS "/physicalObjects/physicalObjects.frag");
-    Shader cubeMapShader(PATH_TO_SHADERS "/skybox/skybox.vert", PATH_TO_SHADERS "/skybox/skybox.frag");
+    // Shaders
+    Shader shader(PATH_TO_SHADERS "/backpack/shader.vert", PATH_TO_SHADERS "/backpack/shader.frag");
     Shader debugShader(PATH_TO_SHADERS "/debug/debug.vert", PATH_TO_SHADERS "/debug/debug.frag");
+    Shader cubeMapShader(PATH_TO_SHADERS "/skybox/skybox.vert", PATH_TO_SHADERS "/skybox/skybox.frag");
 
     //* Bullet Physics Rendering Debug Tool
     DebugDrawer *debugDrawer = new DebugDrawer(debugShader.ID);
@@ -100,84 +97,39 @@ int main()
     std::string cubeMapTexturePath = PATH_TO_TEXTURES "/skybox/";
     cubeMap.addTexture(&cubeMapTexturePath);
 
-    // Model ourModel(PATH_TO_OBJECTS  "/cube.obj");
-    // btCollisionShape *shape = new btBoxShape(btVector3(1, 1, 1));
-    // ourModel.createPhysicsObject(physics, shape, 0.1, btVector3(1, 5, 0));
     TankModel tankModel(PATH_TO_OBJECTS  "/tank/tank.obj");
-    btCollisionShape *shape = new btBoxShape(btVector3(.5, .5, .5));
-    // shape->setLocalScaling(btVector3(0.5, 0.5, 0.5));
+    btCollisionShape *shape = new btBoxShape(btVector3(0.7, 0.7, 0.7));
     tankModel.createPhysicsObject(physics, shape, 1, btVector3(0.0, 0.0, 0.0));
-
     
-    PhysicModel earthM = generatePhysicalSphere(PATH_TO_OBJECTS "/earth/earth.obj", glm::vec3(-5.0f, 5.0f, 0.0f), physics);
-    PhysicModel moonM = generatePhysicalSphere(PATH_TO_OBJECTS "/moon.obj", glm::vec3(5.0f, 3.0f, 0.0f), physics);
-    PhysicModel sunM = generatePhysicalSphere(PATH_TO_OBJECTS "/sun.obj", 0.33, 0.0, glm::vec3(0.0f, 15.0f, 0.0f), physics);
-    PhysicModel lightM = generatePhysicalSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", glm::vec3(10.0f, 0.0f, 10.0f), physics);
-
-    // PhysicModel heliport(PATH_TO_OBJECTS "/tank/heliport.obj");
-    // btCollisionShape *heliport_shape = new btBoxShape(btVector3(0.5, 0.5, 0.5));
-    // heliport.createPhysicsObject(physics, heliport_shape, 2, btVector3(-2.0, 0.0, -2.0));
-
-
-    // Model sphere(PATH_TO_OBJECTS "/sun.obj");
-    // btCollisionShape *sphere_shape = new btSphereShape(1);
-    // sphere.createPhysicsObject(physics, sphere_shape, 10, btVector3(0, 15, 1.5));
-
     PhysicModel floorModel(PATH_TO_OBJECTS  "/floor/floor.obj");
     btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0.0, 1.0, 0.0), 0);
     floorModel.createPhysicsObject(physics, floor_shape, 0.0, btVector3(0, 0, 0));
     
-
     int grid_size = 20;
+
     glm::vec3 light_pos = glm::vec3(0.0, 2.0, 0.0);
-
-    glm::mat4 model = glm::mat4(1.0f);
-    // btTransform transform;
-    // tankModel.physicsObject->getMotionState()->getWorldTransform(transform);
-    // btVector3 position = transform.getOrigin();
-    // model = glm::translate(model, glm::vec3(grid_size - 1.0f, 2.0f, grid_size - 1.0f)); // translate it down so it's at the center of the scene
-    // model = glm::translate(model, glm::vec3(position.x(), position.y(), position.z())); // translate it down so it's at the center of the scene
-    // model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// L'objet est super grand, on le déplace
     
-    glm::mat4 sun = glm::mat4(1.0f);
-    // sun = glm::translate(sun, light_pos);
-    // sun = glm::scale(sun, glm::vec3(0.2f));
-    // glm::mat4 itMsun = glm::transpose(glm::inverse(sun));
-
     glm::mat4 floor = glm::mat4(1.0f);
-
-    // Tentative
-    glm::mat4 inverseModel = glm::transpose(glm::inverse(model));
-
 
     float ambient = 0.1;
     float diffuse = 2.0;
     float specular = 0.8;
     
     glm::vec3 materialColour = glm::vec3(0.5f, 0.6f, 0.8f);
-    physical.use();
-    physical.setFloat("shininess", 32.0f);
-    physical.setVec3("materialColour", materialColour);
-    physical.setFloat("light.ambient_strength", ambient);
-    physical.setFloat("light.diffuse_strength", diffuse);
-    physical.setFloat("light.specular_strength", specular);
-    physical.setFloat("light.constant", 1.0);
-    physical.setFloat("light.linear", 0.14);
-    physical.setFloat("light.quadratic", 0.07);
 
-    ourShader.use();
-    ourShader.setFloat("shininess", 32.0f);
-    ourShader.setVec3("materialColour", materialColour);
-    ourShader.setFloat("light.ambient_strength", ambient);
-    ourShader.setFloat("light.diffuse_strength", diffuse);
-    ourShader.setFloat("light.specular_strength", specular);
-    ourShader.setFloat("light.constant", 1.0);
-    ourShader.setFloat("light.linear", 0.1);
-    ourShader.setFloat("light.quadratic", 0.01);
+    shader.use();
+    shader.setFloat("shininess", 32.0f);
+    shader.setVec3("materialColour", materialColour);
+    shader.setFloat("light.ambient_strength", ambient);
+    shader.setFloat("light.diffuse_strength", diffuse);
+    shader.setFloat("light.specular_strength", specular);
+    shader.setFloat("light.constant", 1.0);
+    shader.setFloat("light.linear", 0.1);
+    shader.setFloat("light.quadratic", 0.01);
 
-    camera.Position = glm::vec3(-3.0f, 1.0f, -3.0f);
-    camera.LookAtModel(glm::vec3(0.0f, 1.0f, 0.0f));
-    
+    camera.Position = glm::vec3(2.0f, 2.0f, 2.0f);
+    camera.LookAtModel(glm::vec3(0.0f, 0.0f, 0.0f));
+
     while (!glfwWindowShouldClose(window))
     {
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -192,59 +144,18 @@ int main()
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
-        // don't forget to enable shader before setting uniforms
+        auto current_pos_light = light_pos + glm::vec3(4 * std::sin(now / 2), 0.0,  4 * std::cos(now / 2));
 
+        shader.use();
+        shader.setVec3("u_view_pos", camera.Position);
+        shader.setVec3("light.light_pos", current_pos_light);
 
-        ourShader.use();
-        ourShader.setMatrix4("projection", projection);
-        ourShader.setMatrix4("view", view);
-        ourShader.setVec3("u_view_pos", camera.Position);
-        auto delta = light_pos + glm::vec3(4 * std::sin(now / 2), 0.0,  4 * std::cos(now / 2));
-        ourShader.setVec3("light.light_pos", delta);
-
-        sunM.updatePosition(delta);
-        ourShader.setMatrix4("model", sunM.getOpenGLMatrix());
-        ourShader.setFloat("light.ambient_strength", 1.0);
-        //sunM.DrawWithShader(ourShader, 1);
-
-        ourShader.setFloat("light.ambient_strength", ambient);
-        ourShader.setMatrix4("model", moonM.getOpenGLMatrix());
-        //moonM.DrawWithShader(ourShader, 1);
-        
-        ourShader.setMatrix4("model", earthM.getOpenGLMatrix());
-        earthM.DrawWithShader(ourShader, 1);
-
-        // m = heliport.getOpenGLMatrix();
-        // ourShader.setMatrix4("model", m);
-        // heliport.DrawWithShader(ourShader, 1);
-        
         tankModel.update(window, deltaTime);
-        
-        ourShader.setMatrix4("model", tankModel.getOpenGLMatrix());
-        tankModel.DrawWithShader(ourShader, 1);
 
-        // camera.LookAtModel(tankBoxModel.getPosition());
-
-        physical.use();
-        physical.setMatrix4("M", model);
-        physical.setMatrix4("itM", inverseModel);
-        physical.setMatrix4("V", view);
-        physical.setMatrix4("P", projection);
-        physical.setVec3("u_view_pos", camera.Position);
-        physical.setVec3("light.light_pos", delta);
-        
-        physical.setMatrix4("M", lightM.getOpenGLMatrix());
-        
-        lightM.DrawWithShader(physical, 0); // pas besoin du param en plus mtn je pense mais je le garde car peut etre bien pr debug au cas ou 
-
-
-        // sun = glm::translate(sun, glm::vec3(0.1 * cos(currentFrame), 0.0, 0.1 * sin(currentFrame)));
-
-        // render the loaded model
-        ourShader.use();
-        ourShader.setMatrix4("model", model);
-        ourShader.setMatrix4("projection", projection);
-        ourShader.setMatrix4("view", view);
+        shader.setMatrix4("model", tankModel.getModelMatrix(glm::vec3(1.0f)));
+        shader.setMatrix4("projection", projection);
+        shader.setMatrix4("view", view);
+        tankModel.DrawWithShader(shader, 1);
 
         for (int i = 0; i < grid_size * grid_size; i++) {
             if (i % grid_size != 0) floor = glm::translate(floor, glm::vec3(0.0f, 0.0f, 2.0f)); 
@@ -252,8 +163,8 @@ int main()
                 floor = glm::mat4(1.0f);
                 floor = glm::translate(floor, glm::vec3(-grid_size + 2.0f * i / grid_size, 0.0f, -grid_size));
             }
-            ourShader.setMatrix4("model", floor);
-            floorModel.DrawWithShader(ourShader, 1);
+            shader.setMatrix4("model", floor);
+            floorModel.DrawWithShader(shader, 1);
         }
 
         debugShader.use();
@@ -272,13 +183,9 @@ int main()
 
 
         physics.simulate(deltaTime);
-        tankModel.updateFromPhysics();
-        // sphere.updateFromPhysics();
-        floorModel.updateFromPhysics();
-        earthM.updateFromPhysics();
-        moonM.updateFromPhysics();
-        sunM.updateFromPhysics();
-        lightM.updateFromPhysics();
+        // tankModel.updateFromPhysics();
+        // // sphere.updateFromPhysics();
+        // floorModel.updateFromPhysics();
 
         cubeMap.draw(&camera);
 

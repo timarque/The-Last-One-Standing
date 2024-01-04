@@ -26,8 +26,7 @@ void PhysicModel::createPhysicsObject(PhysicsEngine physics, btCollisionShape *c
 // Mettre à jour la transformation du modèle à partir de la physique
 void PhysicModel::updateFromPhysics()
 {
-    btTransform transform;
-    physicsObject->getMotionState()->getWorldTransform(transform);
+    btTransform transform = getTransform();
     btVector3 position = transform.getOrigin();
     btQuaternion rotation = transform.getRotation();
     for (Mesh mesh : meshes)
@@ -35,11 +34,24 @@ void PhysicModel::updateFromPhysics()
 }
 
 glm::vec3 PhysicModel::getPosition() {
-    btTransform worldTransform;
-    physicsObject->getMotionState()->getWorldTransform(worldTransform);
+    btTransform worldTransform = getTransform();
+    float y = dynamic_cast<btBoxShape *>(physicsObject->getCollisionShape())->getHalfExtentsWithoutMargin().y();
     btVector3 position = worldTransform.getOrigin();
-    glm::vec3 modelCoordinates(position.x(), position.y(), position.z());
+    glm::vec3 modelCoordinates(position.x(), position.y() - y, position.z());
+    // std::cout << modelCoordinates.x << " " << modelCoordinates.y << " " << modelCoordinates.z << std::endl;
     return modelCoordinates;
+}
+
+glm::mat4 PhysicModel::getRotation() {
+    btTransform worldTransform = getTransform();
+    btQuaternion rotation = worldTransform.getRotation();
+    glm::mat4 modelRotation(glm::quat(rotation.w(), rotation.x(), rotation.y(), rotation.z()));
+    // std::cout << modelRotation.x << " " << modelRotation.y << " " << modelRotation.z << std::endl;
+    return modelRotation;
+}
+
+glm::mat4 PhysicModel::getModelMatrix(glm::vec3 scale) {
+    return glm::translate(glm::mat4(1.0f), getPosition()) * getRotation();
 }
 
 void PhysicModel::moveForward(float speed, glm::vec3 forward_dir)
@@ -47,35 +59,19 @@ void PhysicModel::moveForward(float speed, glm::vec3 forward_dir)
     moveForward(speed, btVector3(forward_dir.x, forward_dir.y, forward_dir.z));
 }
 
-//void PhysicModel::moveForward(float speed, btVector3 forward_dir)
-//{
-//    btTransform worldTransform;
-//    physicsObject->getMotionState()->getWorldTransform(worldTransform);
-//    worldTransform.setOrigin(worldTransform.getOrigin() + speed * forward_dir);
-//    physicsObject->getMotionState()->setWorldTransform(worldTransform);
-//}
-
 void PhysicModel::moveForward(float speed, btVector3 forward_dir)
 {
-    // Get the rigid body's current velocity
     btVector3 currentVelocity = physicsObject->getLinearVelocity();
-
-    // Calculate the desired velocity based on the speed and forward direction
     btVector3 desiredVelocity = speed * forward_dir ;
-
-    // Calculate the change in velocity needed
     btVector3 velocityChange = desiredVelocity - currentVelocity;
-
-    // Apply central impulse to the object to achieve the desired velocity
-    physicsObject->activate(); // Wake up the object
+    physicsObject->activate();
     physicsObject->applyCentralImpulse(velocityChange);
 }
 
 
 void PhysicModel::moveForward(float speed)
 {
-    btTransform worldTransform;
-    physicsObject->getMotionState()->getWorldTransform(worldTransform);
+    btTransform worldTransform = getTransform();
     btVector3 forwardDir = worldTransform.getBasis().getColumn(2);
     moveForward(speed, forwardDir);
 }
@@ -84,8 +80,7 @@ void PhysicModel::moveBackward(float speed) { moveForward(-speed); }
 
 void PhysicModel::rotate(float angleDegrees)
 {
-    btTransform worldTransform;
-    physicsObject->getMotionState()->getWorldTransform(worldTransform);
+    btTransform worldTransform = getTransform();
     btQuaternion rotation(btVector3(0, 1, 0), btRadians(angleDegrees));
     worldTransform.setRotation(rotation * worldTransform.getRotation());
     physicsObject->getMotionState()->setWorldTransform(worldTransform);
@@ -103,8 +98,7 @@ void PhysicModel::updatePosition(glm::vec3 position)
 
 glm::mat4 PhysicModel::getOpenGLMatrix() {
     glm::mat4 m;
-    btTransform transform;
-    physicsObject->getMotionState()->getWorldTransform(transform);
+    btTransform transform = getTransform();
     transform.getOpenGLMatrix(glm::value_ptr(m));
     return m;
 }

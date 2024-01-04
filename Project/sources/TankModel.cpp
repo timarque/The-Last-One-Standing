@@ -94,7 +94,7 @@ void TankModel::update(GLFWwindow *window, float deltaTime)
     // Keys for driving car
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
         std::cout << "Jump" << std::endl;
-        applyImpulse(btVector3(0.0f, 5.0f, 0.0f));
+        applyImpulse(btVector3(0.0f, 0.2f, 0.0f));
     }
 
     if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) {

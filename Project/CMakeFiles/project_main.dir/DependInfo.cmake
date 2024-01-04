@@ -10,6 +10,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/Mesh.cpp" "Project/CMakeFiles/project_main.dir/sources/Mesh.cpp.o" "gcc" "Project/CMakeFiles/project_main.dir/sources/Mesh.cpp.o.d"
   "/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/Model.cpp" "Project/CMakeFiles/project_main.dir/sources/Model.cpp.o" "gcc" "Project/CMakeFiles/project_main.dir/sources/Model.cpp.o.d"
+  "/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/PhysicModel.cpp" "Project/CMakeFiles/project_main.dir/sources/PhysicModel.cpp.o" "gcc" "Project/CMakeFiles/project_main.dir/sources/PhysicModel.cpp.o.d"
+  "/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/TankModel.cpp" "Project/CMakeFiles/project_main.dir/sources/TankModel.cpp.o" "gcc" "Project/CMakeFiles/project_main.dir/sources/TankModel.cpp.o.d"
+  "/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/debugObject.cpp" "Project/CMakeFiles/project_main.dir/sources/debugObject.cpp.o" "gcc" "Project/CMakeFiles/project_main.dir/sources/debugObject.cpp.o.d"
   "/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/sources/main.cpp" "Project/CMakeFiles/project_main.dir/sources/main.cpp.o" "gcc" "Project/CMakeFiles/project_main.dir/sources/main.cpp.o.d"
   )
 

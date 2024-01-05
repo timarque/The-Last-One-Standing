@@ -99,28 +99,14 @@ bool TankModel::update(GLFWwindow *window, float deltaTime)
     }
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        std::cout << "Acceleration" << std::endl;
         moveForward(1);
-        // this->applyEngineForce(2.0);
     } else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        std::cout << "Deceleration" << std::endl;
         moveBackward(1);
-        // this->applyEngineForce(-0.2);
-    } else {
-        // this->applyEngineForce(0);
     }
 
     if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
-        std::cout << "Acceleration" << std::endl;
         moveForward(2.0);
-        // this->applyEngineForce(2.0);
     }
-
-    // if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-    //     rotate((float)(+ 1 * deltaTime * 20));
-    // } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-    //     rotate((float)(- 1 * deltaTime * 20));
-    // }
 
     if (lastMouseX == 0, lastMouseY) {
         // Initialisation de la position du curseur
@@ -130,12 +116,20 @@ bool TankModel::update(GLFWwindow *window, float deltaTime)
 
     double mouseX, mouseY;
     glfwGetCursorPos(window, &mouseX, &mouseY);
+    
+    // rotation horizontale
     double deltaX = mouseX - lastMouseX;
-    // double deltaY = mouseY - lastMouseY;
     float rotationSpeed = 0.01f;
     rotate((float)(-deltaX * rotationSpeed));
-    heightView = -mouseY / 600/2; // 600 = SCR_HEIGHT TODO: Rendre ça paramétrable
     lastMouseX = mouseX;
+    
+    // Rotation verticale
+    double deltaY = mouseY - lastMouseY;
+    
+    heightView -= deltaY/(6000);
+    if (heightView > 2.5) heightView = 2.5;
+    if (heightView < 0) heightView = 0.0;
+    
     lastMouseY = mouseY;
 
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {

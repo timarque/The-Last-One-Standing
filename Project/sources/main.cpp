@@ -189,7 +189,7 @@ int main()
         if (shot) {
             PhysicModel bullet = generatePhysicalSphere(PATH_TO_OBJECTS "/tank/ball.obj", 0.2, 10, tankModel.getPosition() + glm::vec3(forward_pos.x(), 0.7, forward_pos.z()), physics);
 
-            bullet.applyImpulse((forward_pos + btVector3(0.0, tankModel.getHeightView(), 0.0)) * btVector3(500.f, 0.0, 500.f));
+            bullet.applyImpulse((forward_pos + btVector3(0.0, camera.Position.y, 0.0)) * btVector3(500.f, 0.0, 500.f));
             bullets.push_back(std::move(bullet));
         }
         for (int i = 0; i < bullets.size(); i++) {

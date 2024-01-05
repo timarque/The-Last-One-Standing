@@ -80,7 +80,6 @@ public:
         glm::vec3 lookAtOffset = glm::vec3(0.0, 0.0, 5.0);
         glm::vec4 rotatedLookAtOffset = tankRotationMatrix * glm::vec4(lookAtOffset, 1.0f);
         glm::vec3 lookAtPosition = tankPosition + glm::vec3(rotatedLookAtOffset);
-        std::cout << "Hauteur de vue: " << model->getHeightView() << std::endl;
         glm::vec3 targetPosition = glm::vec3(lookAtPosition.x, model->getHeightView(), lookAtPosition.z);
         return glm::lookAt(Position, targetPosition, Up);
     }

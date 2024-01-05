@@ -116,13 +116,11 @@ bool TankModel::update(GLFWwindow *window, float deltaTime)
         // this->applyEngineForce(2.0);
     }
 
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        std::cout << "steering a" << std::endl;
-        rotate((float)(+ 1 * deltaTime * 20));
-    } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        std::cout << "steering d" << std::endl;
-        rotate((float)(- 1 * deltaTime * 20));
-    }
+    // if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+    //     rotate((float)(+ 1 * deltaTime * 20));
+    // } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+    //     rotate((float)(- 1 * deltaTime * 20));
+    // }
 
     if (lastMouseX == 0, lastMouseY) {
         // Initialisation de la position du curseur
@@ -134,7 +132,7 @@ bool TankModel::update(GLFWwindow *window, float deltaTime)
     glfwGetCursorPos(window, &mouseX, &mouseY);
     double deltaX = mouseX - lastMouseX;
     // double deltaY = mouseY - lastMouseY;
-    float rotationSpeed = 0.03f;
+    float rotationSpeed = 0.01f;
     rotate((float)(-deltaX * rotationSpeed));
     heightView = -mouseY / 600/2; // 600 = SCR_HEIGHT TODO: Rendre ça paramétrable
     lastMouseX = mouseX;

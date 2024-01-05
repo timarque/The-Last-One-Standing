@@ -100,7 +100,7 @@ int main()
 
     TankModel tankModel(PATH_TO_OBJECTS  "/tank/tank.obj");
     btCollisionShape *shape = new btBoxShape(btVector3(0.7, 0.7, 0.7));
-    tankModel.createPhysicsObject(physics, shape, 1, btVector3(0.0, 2.0, 0.0));
+    tankModel.createPhysicsObject(physics, shape, 1, btVector3(0.0, 2.0, -10.0));
 
     // PhysicModel* platform = new PhysicModel(PATH_TO_OBJECTS "/tank/platform.dae");
     // btCollisionShape* shape_deploy = new btBoxShape(btVector3(0.8, 0.3, 0.8));
@@ -122,10 +122,10 @@ int main()
     // Animator animslender(&slenderanimation);
 
     std::vector<TankModel*> ennemies;
-    for (size_t i = 0; i < 10; i++) {
+    for (int i = -5; i < 5; i++) {
         TankModel *tankEnemy = new TankModel(PATH_TO_OBJECTS  "/tank/enemy.obj");
         btCollisionShape *shapeEnemy1 = new btBoxShape(btVector3(0.6, 0.7, 0.7));
-        tankEnemy->createPhysicsObject(physics, shapeEnemy1, 1, btVector3(0.0, static_cast<float>(i), 3.0));
+        tankEnemy->createPhysicsObject(physics, shapeEnemy1, 1, btVector3(i*2, abs(i)*2, 3.0));
         ennemies.push_back(std::move(tankEnemy));
     }
 
@@ -187,8 +187,9 @@ int main()
         bool shot = tankModel.update(window, deltaTime);
         btVector3 forward_pos = tankModel.getForward();
         if (shot) {
-            PhysicModel bullet = generatePhysicalSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", tankModel.getPosition() + glm::vec3(forward_pos.x() * 1.0, 0.1, forward_pos.z() * 1.0), physics);
-            bullet.applyImpulse(forward_pos * btVector3(500.f, tankModel.getHeightView(), 500.f));
+            PhysicModel bullet = generatePhysicalSphere(PATH_TO_OBJECTS "/tank/ball.obj", 0.2, 10, tankModel.getPosition() + glm::vec3(forward_pos.x(), 0.7, forward_pos.z()), physics);
+
+            bullet.applyImpulse((forward_pos + btVector3(0.0, tankModel.getHeightView(), 0.0)) * btVector3(500.f, 0.0, 500.f));
             bullets.push_back(std::move(bullet));
         }
         for (int i = 0; i < bullets.size(); i++) {

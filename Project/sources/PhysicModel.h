@@ -9,10 +9,12 @@
 
 class PhysicModel : public Model {
 protected:
-    std::unique_ptr<btRigidBody> physicsObject;
     std::unique_ptr<btCollisionShape> mShape;
     std::unique_ptr<btDefaultMotionState> mMotionState;
 public:
+
+    std::unique_ptr<btRigidBody> physicsObject;
+    std::unique_ptr<btCollisionObject> physicsCol;
     PhysicModel(std::string path) : Model(path) {};
     // Créer un objet physique associé au modèle dans le monde physique
     void createPhysicsObject(PhysicsEngine physics, btCollisionShape *shape, float mass, btVector3 origin);

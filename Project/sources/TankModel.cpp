@@ -97,11 +97,11 @@ void TankModel::update(GLFWwindow *window, float deltaTime)
         applyImpulse(btVector3(0.0f, 0.2f, 0.0f));
     }
 
-    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         std::cout << "Acceleration" << std::endl;
         moveForward(1);
         // this->applyEngineForce(2.0);
-    } else if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
+    } else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
         std::cout << "Deceleration" << std::endl;
         moveBackward(1);
         // this->applyEngineForce(-0.2);
@@ -109,10 +109,16 @@ void TankModel::update(GLFWwindow *window, float deltaTime)
         // this->applyEngineForce(0);
     }
 
-    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
+        std::cout << "Acceleration" << std::endl;
+        moveForward(2.0);
+        // this->applyEngineForce(2.0);
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         std::cout << "steering a" << std::endl;
         rotate((float)(+ 1 * deltaTime * 20));
-    } else if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+    } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         std::cout << "steering d" << std::endl;
         rotate((float)(- 1 * deltaTime * 20));
     } else {

@@ -83,7 +83,7 @@ void PhysicModel::rotate(float angleDegrees)
     btTransform worldTransform = getTransform();
     btQuaternion rotation(btVector3(0, 1, 0), btRadians(angleDegrees));
     worldTransform.setRotation(rotation * worldTransform.getRotation());
-    physicsObject->getMotionState()->setWorldTransform(worldTransform);
+    physicsObject->setWorldTransform(worldTransform);
 }
 
 void PhysicModel::updatePosition(glm::vec3 position)
@@ -93,7 +93,6 @@ void PhysicModel::updatePosition(glm::vec3 position)
     btQuaternion currentRotation = physicsObject->getWorldTransform().getRotation();
     newTransform.setRotation(currentRotation);
     physicsObject->setWorldTransform(newTransform);
-    physicsObject->getMotionState()->setWorldTransform(newTransform);
 };
 
 glm::mat4 PhysicModel::getOpenGLMatrix() {

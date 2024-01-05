@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <memory>
 
 #include "Shader.h"
 #include "Camera.h"
@@ -95,7 +96,7 @@ int main()
     
     // Cube map
     CubeMap cubeMap(PATH_TO_OBJECTS "/cube.obj", &cubeMapShader);
-    std::string cubeMapTexturePath = PATH_TO_TEXTURES "/skybox/";
+    std::string cubeMapTexturePath = PATH_TO_TEXTURES "/box/";
     cubeMap.addTexture(&cubeMapTexturePath);
 
     TankModel tankModel(PATH_TO_OBJECTS  "/tank/tank.obj");
@@ -305,7 +306,7 @@ int main()
         // // sphere.updateFromPhysics();
         // floorModel.updateFromPhysics();
 
-        cubeMap.draw(&camera);
+        cubeMap.draw(view, projection);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

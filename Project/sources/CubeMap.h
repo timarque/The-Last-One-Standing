@@ -56,16 +56,18 @@ public:
     /**
      * Draws the cubeMap in the window
      */
-    void draw(Camera *camera) override {
+    void draw(glm::mat4 view, glm::mat4 projection)
+    {
         shader->use();
-        shader->setMatrix4("V", camera->GetViewMatrix());
-        shader->setMatrix4("P", camera->GetProjectionMatrix());
+        shader->setMatrix4("V", view);
+        shader->setMatrix4("P", projection);
         shader->setInt("cubemapTexture", 0);
 
         glDepthFunc(GL_LEQUAL);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTextureID);
-        Object::draw(camera);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, this->getTexture());
+        glBindVertexArray(this->VAO);
+        glDrawArrays(GL_TRIANGLES, 0, this->numVertices);
         glDepthFunc(GL_LESS);
     }
 

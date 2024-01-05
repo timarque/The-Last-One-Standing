@@ -2,7 +2,7 @@
 #define VR_PROJECT_PHYSIC_ENGINE
 
 #include "bullet/btBulletDynamicsCommon.h"
-
+#include <memory>
 
 struct PhysicsEngine {
     btBroadphaseInterface *broadphase;

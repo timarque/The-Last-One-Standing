@@ -126,7 +126,7 @@ bool TankModel::update(GLFWwindow *window, float deltaTime)
     // Rotation verticale
     double deltaY = mouseY - lastMouseY;
     
-    heightView -= deltaY/(6000);
+    heightView -= deltaY/(600);
     if (heightView > 2.5) heightView = 2.5;
     if (heightView < 0) heightView = 0.0;
     

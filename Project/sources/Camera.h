@@ -69,7 +69,7 @@ public:
     {
         return glm::lookAt(this->Position, this->Position + this->Front, this->Up);
     }
-    
+
     glm::mat4 GetViewMatrix(TankModel* model) {
         glm::vec3 tankPosition = model->getPosition();
         glm::vec3 cameraOffset = glm::vec3(0.0, 3.5, -4.0);

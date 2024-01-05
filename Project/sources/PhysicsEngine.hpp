@@ -26,7 +26,7 @@ struct PhysicsEngine {
 
     bool checkCollisions(const std::unique_ptr<btRigidBody>& bullet, const std::unique_ptr<btRigidBody>& tank) {
         btVector3 from = bullet->getWorldTransform().getOrigin();
-        btVector3 to = tank->getWorldTransform().getOrigin() * 0.6f;
+        btVector3 to = from + bullet->getLinearVelocity().normalized() * 1.f;
 
         btCollisionWorld::ClosestRayResultCallback rayCallback(from, to);
         dynamicsWorld->rayTest(from, to, rayCallback);

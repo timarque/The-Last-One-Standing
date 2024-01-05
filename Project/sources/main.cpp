@@ -125,7 +125,7 @@ int main()
     for (int i = -5; i < 5; i++) {
         TankModel *tankEnemy = new TankModel(PATH_TO_OBJECTS  "/tank/enemy.obj");
         btCollisionShape *shapeEnemy1 = new btBoxShape(btVector3(0.6, 0.7, 0.7));
-        tankEnemy->createPhysicsObject(physics, shapeEnemy1, 1, btVector3(i*2, abs(i)*2, 3.0));
+        tankEnemy->createPhysicsObject(physics, shapeEnemy1, 0, btVector3(i*2, 0.7, 3.0));
         tankEnemy->physicsObject.get()->setUserIndex(i+5);
         ennemies.push_back(std::move(tankEnemy));
     }

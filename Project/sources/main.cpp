@@ -116,6 +116,10 @@ int main()
     Animator anim(&deployanimation);
 
     
+    TankModel tankEnemyModel(PATH_TO_OBJECTS  "/tank/enemy.obj");
+    btCollisionShape *shapeEnemy = new btBoxShape(btVector3(0.6, 0.7, 0.7));
+    tankEnemyModel.createPhysicsObject(physics, shapeEnemy, 1, btVector3(0.0, 0.0, 3.0));
+    
     PhysicModel floorModel(PATH_TO_OBJECTS  "/floor/floor.obj");
     btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0.0, 1.0, 0.0), 0);
     floorModel.createPhysicsObject(physics, floor_shape, 0.0, btVector3(0, 0, 0));
@@ -142,9 +146,6 @@ int main()
     shader.setFloat("light.linear", 0.1);
     shader.setFloat("light.quadratic", 0.01);
 
-    camera.Position = glm::vec3(2.0f, 2.0f, 2.0f);
-    camera.LookAtModel(glm::vec3(0.0f, 0.0f, 0.0f));
-
     while (!glfwWindowShouldClose(window))
     {
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -152,6 +153,10 @@ int main()
         lastFrame = currentFrame;
         double now = glfwGetTime();
         processInput(window);
+        camera.Position = tankModel.getPosition() + glm::vec3(0.0, 3.0, -3.0);
+        // glm::mat4 view = glm::translate(glm::mat4(1.0f), tankModel.getPosition() + glm::vec3(0.0, 2.0, -5.0));
+        // view = glm::rotate(view, atan2(-tankModel.getRotation()[2][0], -tankModel.getRotation()[0][0]), glm::vec3(0.0f, 1.0f, 0.0f));
+        // view = glm::inverse(view);
 
         glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -160,6 +165,7 @@ int main()
         
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        // glm::mat4 view = glm::lookAt(camera.Position, tankModel.getPosition() + glm::vec3(0.0, 1.5, 0.0), glm::vec3(0.0f, 1.0f, 0.0f));
         glm::mat4 view = camera.GetViewMatrix();
         auto current_pos_light = light_pos + glm::vec3(4 * std::sin(now / 2), 0.0,  4 * std::cos(now / 2));
 
@@ -196,6 +202,11 @@ int main()
         shader.setMatrix4("projection", projection);
         shader.setMatrix4("view", view);
         tankModel.DrawWithShader(shader, 1);
+
+        shader.setMatrix4("model", glm::rotate(tankEnemyModel.getModelMatrix(glm::vec3(1.0f)), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0)));
+        shader.setMatrix4("projection", projection);
+        shader.setMatrix4("view", view);
+        tankEnemyModel.DrawWithShader(shader, 1);
 
         for (int i = 0; i < grid_size * grid_size; i++) {
             if (i % grid_size != 0) floor = glm::translate(floor, glm::vec3(0.0f, 0.0f, 2.0f)); 

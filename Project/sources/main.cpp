@@ -77,52 +77,61 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
+    std::cout << 0 << std::endl;
 
     // // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
     // stbi_set_flip_vertically_on_load(true);
     glEnable(GL_DEPTH_TEST);
 
+    std::cout << 1 << std::endl;
     PhysicsEngine physics(btVector3(0, -9.81, 0));
-
     // Shaders
     Shader shader(PATH_TO_SHADERS "/backpack/shader.vert", PATH_TO_SHADERS "/backpack/shader.frag");
     Shader debugShader(PATH_TO_SHADERS "/debug/debug.vert", PATH_TO_SHADERS "/debug/debug.frag");
     Shader cubeMapShader(PATH_TO_SHADERS "/skybox/skybox.vert", PATH_TO_SHADERS "/skybox/skybox.frag");
     Shader animationShader(PATH_TO_SHADERS "/animation/animation.vert", PATH_TO_SHADERS "/animation/animation.frag");
+    std::cout << 2 << std::endl;
 
     //* Bullet Physics Rendering Debug Tool
     DebugDrawer *debugDrawer = new DebugDrawer(debugShader.ID);
     physics.getWorld()->setDebugDrawer(debugDrawer);
+    std::cout << 3 << std::endl;
     
     // Cube map
     CubeMap cubeMap(PATH_TO_OBJECTS "/cube.obj", &cubeMapShader);
     std::string cubeMapTexturePath = PATH_TO_TEXTURES "/skybox/";
     cubeMap.addTexture(&cubeMapTexturePath);
+    std::cout << 4 << std::endl;
 
     TankModel tankModel(PATH_TO_OBJECTS  "/tank/tank.obj");
     btCollisionShape *shape = new btBoxShape(btVector3(0.7, 0.7, 0.7));
     tankModel.createPhysicsObject(physics, shape, 1, btVector3(0.0, 2.0, 0.0));
+    std::cout << 5 << std::endl;
 
 
     // animated model
-    Model vampire_dancing(PATH_TO_OBJECTS "/animation/dancing_vampire.dae");
-    Animation danceAnimation(PATH_TO_OBJECTS "/animation/dancing_vampire.dae", &vampire_dancing); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
-    Animator animator(&danceAnimation);
+    Model *vampire_dancing = new Model(PATH_TO_OBJECTS "/animation/dancing_vampire.dae");
+    Animation *danceAnimation = new Animation(PATH_TO_OBJECTS "/animation/dancing_vampire.dae", vampire_dancing); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
+    Animator animator(danceAnimation);
+    std::cout << 6 << std::endl;
 
-    PhysicModel platform(PATH_TO_OBJECTS "/tank/platform.dae");
+    PhysicModel *platform = new PhysicModel(PATH_TO_OBJECTS "/tank/platform.dae");
     btCollisionShape* shape_deploy = new btBoxShape(btVector3(0.8, 0.3, 0.8));
-    platform.createPhysicsObject(physics, shape_deploy, 100, btVector3(0.0, 0.0, 0.0));
-    Animation deployanimation(PATH_TO_OBJECTS "/tank/platform.dae", &platform); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
-    Animator anim(&deployanimation);
+    platform->createPhysicsObject(physics, shape_deploy, 100, btVector3(0.0, 0.0, 0.0));
+    Animation *deployanimation = new Animation(PATH_TO_OBJECTS "/tank/platform.dae", platform); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
+    Animator anim(deployanimation);
+    std::cout << 7 << std::endl;
 
     
     TankModel tankEnemyModel(PATH_TO_OBJECTS  "/tank/enemy.obj");
     btCollisionShape *shapeEnemy = new btBoxShape(btVector3(0.6, 0.7, 0.7));
     tankEnemyModel.createPhysicsObject(physics, shapeEnemy, 1, btVector3(0.0, 0.0, 3.0));
+    std::cout << 8 << std::endl;
     
     PhysicModel floorModel(PATH_TO_OBJECTS  "/floor/floor.obj");
     btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0.0, 1.0, 0.0), 0);
     floorModel.createPhysicsObject(physics, floor_shape, 0.0, btVector3(0, 0, 0));
+    std::cout << 9 << std::endl;
     
     int grid_size = 20;
 
@@ -180,7 +189,7 @@ int main()
         model = glm::translate(model, glm::vec3(-10.0f, 0.0f, -10.0f)); // translate it down so it's at the center of the scene
         model = glm::scale(model, glm::vec3(.5f, .5f, .5f));	// it's a bit too big for our scene, so scale it down
         animationShader.setMatrix4("model", model);;
-        vampire_dancing.DrawWithShader(animationShader, 1);
+        vampire_dancing->DrawWithShader(animationShader, 1);
 
         auto transforms_deploy = anim.GetFinalBoneMatrices();
         for (int i = 0; i < transforms_deploy.size(); ++i) {
@@ -190,7 +199,7 @@ int main()
         model_deploy = glm::translate(model_deploy, glm::vec3(-0.0f, 0.0f, -0.0f)); // translate it down so it's at the center of the scene
         model_deploy = glm::scale(model_deploy, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
         animationShader.setMatrix4("model", model_deploy);;
-        platform.DrawWithShader(animationShader, 1);
+        platform->DrawWithShader(animationShader, 1);
 
         shader.use();
         shader.setVec3("u_view_pos", camera.Position);

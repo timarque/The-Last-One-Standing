@@ -79,8 +79,9 @@
 //     return glm::vec3(0.0f);
 // }
 
-void TankModel::update(GLFWwindow *window, float deltaTime)
+bool TankModel::update(GLFWwindow *window, float deltaTime)
 {
+    bool shot = false;
     // Key for resetting car position and position
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
         std::cout << "Reset position" << std::endl;
@@ -121,9 +122,32 @@ void TankModel::update(GLFWwindow *window, float deltaTime)
     } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         std::cout << "steering d" << std::endl;
         rotate((float)(- 1 * deltaTime * 20));
-    } else {
-        // this->setSteering(float((1 - 10 * deltaTime) * this->mSteering));
     }
+
+    if (lastMouseX == 0, lastMouseY) {
+        // Initialisation de la position du curseur
+        double lastMouseX, lastMouseY;
+        glfwGetCursorPos(window, &lastMouseX, &lastMouseY);
+    }
+
+    double mouseX, mouseY;
+    glfwGetCursorPos(window, &mouseX, &mouseY);
+    double deltaX = mouseX - lastMouseX;
+    // double deltaY = mouseY - lastMouseY;
+    float rotationSpeed = 0.03f;
+    rotate((float)(-deltaX * rotationSpeed));
+    heightView = -mouseY / 600/2; // 600 = SCR_HEIGHT TODO: Rendre ça paramétrable
+    lastMouseX = mouseX;
+    lastMouseY = mouseY;
+
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        if (get_reload_time_left(glfwGetTime()) > this->reload_time) {
+            std::cout << "shoot" << std::endl;
+            set_reload_time_start(glfwGetTime());
+            shot = true;
+        }
+    }
+    return shot;
 }
 
 // glm::mat4 TankModel::getOpenGLMatrix() {

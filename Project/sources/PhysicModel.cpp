@@ -17,8 +17,8 @@ void PhysicModel::createPhysicsObject(PhysicsEngine physics, btCollisionShape *c
 
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, collision_shape);
     physicsObject = std::make_unique<btRigidBody>(*new btRigidBody(rbInfo));
-    physicsObject->setRestitution(0.8);
-    physicsObject->setFriction(0.5f);
+    physicsObject->setRestitution(0.3);
+    physicsObject->setFriction(0.2f);
     physics.getWorld()->addRigidBody(physicsObject.get());
     physicsObject->activate();
 }

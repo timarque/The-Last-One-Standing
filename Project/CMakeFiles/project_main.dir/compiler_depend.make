@@ -803,6 +803,15 @@ Project/CMakeFiles/project_main.dir/sources/Model.cpp.o: Project/sources/Model.c
   /usr/include/c++/12/sstream \
   /usr/include/c++/12/bits/sstream.tcc \
   Project/sources/Mesh.h \
+  /usr/include/c++/12/map \
+  /usr/include/c++/12/bits/stl_tree.h \
+  /usr/include/c++/12/ext/aligned_buffer.h \
+  /usr/include/c++/12/bits/node_handle.h \
+  /usr/include/c++/12/bits/stl_map.h \
+  /usr/include/c++/12/tuple \
+  /usr/include/c++/12/bits/uses_allocator.h \
+  /usr/include/c++/12/bits/stl_multimap.h \
+  /usr/include/c++/12/bits/erase_if.h \
   3rdParty/assimp/include/assimp/Importer.hpp \
   3rdParty/assimp/include/assimp/types.h \
   /usr/include/string.h \
@@ -838,15 +847,10 @@ Project/CMakeFiles/project_main.dir/sources/Model.cpp.o: Project/sources/Model.c
   3rdParty/assimp/include/assimp/mesh.h \
   3rdParty/assimp/include/assimp/aabb.h \
   /usr/include/c++/12/unordered_set \
-  /usr/include/c++/12/ext/aligned_buffer.h \
   /usr/include/c++/12/bits/hashtable.h \
   /usr/include/c++/12/bits/hashtable_policy.h \
-  /usr/include/c++/12/tuple \
-  /usr/include/c++/12/bits/uses_allocator.h \
   /usr/include/c++/12/bits/enable_special_members.h \
-  /usr/include/c++/12/bits/node_handle.h \
   /usr/include/c++/12/bits/unordered_set.h \
-  /usr/include/c++/12/bits/erase_if.h \
   3rdParty/assimp/include/assimp/light.h \
   3rdParty/assimp/include/assimp/camera.h \
   3rdParty/assimp/include/assimp/material.h \
@@ -989,7 +993,45 @@ Project/CMakeFiles/project_main.dir/sources/Model.cpp.o: Project/sources/Model.c
   /usr/lib/gcc/x86_64-redhat-linux/12/include/emmintrin.h \
   /usr/lib/gcc/x86_64-redhat-linux/12/include/xmmintrin.h \
   /usr/lib/gcc/x86_64-redhat-linux/12/include/mmintrin.h \
-  /usr/lib/gcc/x86_64-redhat-linux/12/include/mm_malloc.h
+  /usr/lib/gcc/x86_64-redhat-linux/12/include/mm_malloc.h \
+  3rdParty/glm/glm/gtc/matrix_transform.hpp \
+  3rdParty/glm/glm/ext/matrix_projection.hpp \
+  3rdParty/glm/glm/gtc/constants.hpp \
+  3rdParty/glm/glm/ext/scalar_constants.hpp \
+  3rdParty/glm/glm/detail/setup.hpp \
+  3rdParty/glm/glm/ext/scalar_constants.inl \
+  3rdParty/glm/glm/gtc/constants.inl \
+  3rdParty/glm/glm/ext/matrix_projection.inl \
+  3rdParty/glm/glm/ext/matrix_clip_space.hpp \
+  3rdParty/glm/glm/ext/matrix_clip_space.inl \
+  3rdParty/glm/glm/ext/matrix_transform.hpp \
+  3rdParty/glm/glm/ext/matrix_transform.inl \
+  3rdParty/glm/glm/gtc/matrix_transform.inl \
+  3rdParty/glm/glm/gtc/quaternion.hpp \
+  3rdParty/glm/glm/ext/vector_relational.hpp \
+  3rdParty/glm/glm/ext/vector_relational.inl \
+  3rdParty/glm/glm/detail/type_float.hpp \
+  3rdParty/glm/glm/detail/setup.hpp \
+  3rdParty/glm/glm/ext/quaternion_common.hpp \
+  3rdParty/glm/glm/ext/quaternion_geometric.hpp \
+  3rdParty/glm/glm/ext/quaternion_geometric.inl \
+  3rdParty/glm/glm/ext/quaternion_common.inl \
+  3rdParty/glm/glm/ext/quaternion_float.hpp \
+  3rdParty/glm/glm/detail/type_quat.hpp \
+  3rdParty/glm/glm/ext/quaternion_relational.hpp \
+  3rdParty/glm/glm/ext/quaternion_relational.inl \
+  3rdParty/glm/glm/detail/type_quat.inl \
+  3rdParty/glm/glm/ext/quaternion_float_precision.hpp \
+  3rdParty/glm/glm/ext/quaternion_double.hpp \
+  3rdParty/glm/glm/ext/quaternion_double_precision.hpp \
+  3rdParty/glm/glm/ext/quaternion_trigonometric.hpp \
+  3rdParty/glm/glm/ext/quaternion_trigonometric.inl \
+  3rdParty/glm/glm/ext/quaternion_transform.hpp \
+  3rdParty/glm/glm/ext/quaternion_transform.inl \
+  3rdParty/glm/glm/gtc/quaternion.inl \
+  3rdParty/glm/glm/gtc/epsilon.hpp \
+  3rdParty/glm/glm/detail/setup.hpp \
+  3rdParty/glm/glm/gtc/epsilon.inl
 
 Project/CMakeFiles/project_main.dir/sources/PhysicModel.cpp.o: Project/sources/PhysicModel.cpp \
   /usr/include/stdc-predef.h \
@@ -1375,6 +1417,15 @@ Project/CMakeFiles/project_main.dir/sources/PhysicModel.cpp.o: Project/sources/P
   /usr/include/c++/12/sstream \
   /usr/include/c++/12/bits/sstream.tcc \
   Project/sources/Mesh.h \
+  /usr/include/c++/12/map \
+  /usr/include/c++/12/bits/stl_tree.h \
+  /usr/include/c++/12/ext/aligned_buffer.h \
+  /usr/include/c++/12/bits/node_handle.h \
+  /usr/include/c++/12/bits/stl_map.h \
+  /usr/include/c++/12/tuple \
+  /usr/include/c++/12/bits/uses_allocator.h \
+  /usr/include/c++/12/bits/stl_multimap.h \
+  /usr/include/c++/12/bits/erase_if.h \
   3rdParty/assimp/include/assimp/Importer.hpp \
   3rdParty/assimp/include/assimp/types.h \
   /usr/include/string.h \
@@ -1410,15 +1461,10 @@ Project/CMakeFiles/project_main.dir/sources/PhysicModel.cpp.o: Project/sources/P
   3rdParty/assimp/include/assimp/mesh.h \
   3rdParty/assimp/include/assimp/aabb.h \
   /usr/include/c++/12/unordered_set \
-  /usr/include/c++/12/ext/aligned_buffer.h \
   /usr/include/c++/12/bits/hashtable.h \
   /usr/include/c++/12/bits/hashtable_policy.h \
-  /usr/include/c++/12/tuple \
-  /usr/include/c++/12/bits/uses_allocator.h \
   /usr/include/c++/12/bits/enable_special_members.h \
-  /usr/include/c++/12/bits/node_handle.h \
   /usr/include/c++/12/bits/unordered_set.h \
-  /usr/include/c++/12/bits/erase_if.h \
   3rdParty/assimp/include/assimp/light.h \
   3rdParty/assimp/include/assimp/camera.h \
   3rdParty/assimp/include/assimp/material.h \
@@ -2010,6 +2056,15 @@ Project/CMakeFiles/project_main.dir/sources/TankModel.cpp.o: Project/sources/Tan
   /usr/include/c++/12/sstream \
   /usr/include/c++/12/bits/sstream.tcc \
   Project/sources/Mesh.h \
+  /usr/include/c++/12/map \
+  /usr/include/c++/12/bits/stl_tree.h \
+  /usr/include/c++/12/ext/aligned_buffer.h \
+  /usr/include/c++/12/bits/node_handle.h \
+  /usr/include/c++/12/bits/stl_map.h \
+  /usr/include/c++/12/tuple \
+  /usr/include/c++/12/bits/uses_allocator.h \
+  /usr/include/c++/12/bits/stl_multimap.h \
+  /usr/include/c++/12/bits/erase_if.h \
   3rdParty/assimp/include/assimp/Importer.hpp \
   3rdParty/assimp/include/assimp/types.h \
   /usr/include/string.h \
@@ -2045,15 +2100,10 @@ Project/CMakeFiles/project_main.dir/sources/TankModel.cpp.o: Project/sources/Tan
   3rdParty/assimp/include/assimp/mesh.h \
   3rdParty/assimp/include/assimp/aabb.h \
   /usr/include/c++/12/unordered_set \
-  /usr/include/c++/12/ext/aligned_buffer.h \
   /usr/include/c++/12/bits/hashtable.h \
   /usr/include/c++/12/bits/hashtable_policy.h \
-  /usr/include/c++/12/tuple \
-  /usr/include/c++/12/bits/uses_allocator.h \
   /usr/include/c++/12/bits/enable_special_members.h \
-  /usr/include/c++/12/bits/node_handle.h \
   /usr/include/c++/12/bits/unordered_set.h \
-  /usr/include/c++/12/bits/erase_if.h \
   3rdParty/assimp/include/assimp/light.h \
   3rdParty/assimp/include/assimp/camera.h \
   3rdParty/assimp/include/assimp/material.h \
@@ -2703,6 +2753,15 @@ Project/CMakeFiles/project_main.dir/sources/main.cpp.o: Project/sources/main.cpp
   /usr/include/c++/12/bits/stl_bvector.h \
   /usr/include/c++/12/bits/vector.tcc \
   Project/sources/Mesh.h \
+  /usr/include/c++/12/map \
+  /usr/include/c++/12/bits/stl_tree.h \
+  /usr/include/c++/12/ext/aligned_buffer.h \
+  /usr/include/c++/12/bits/node_handle.h \
+  /usr/include/c++/12/bits/stl_map.h \
+  /usr/include/c++/12/tuple \
+  /usr/include/c++/12/bits/uses_allocator.h \
+  /usr/include/c++/12/bits/stl_multimap.h \
+  /usr/include/c++/12/bits/erase_if.h \
   3rdParty/assimp/include/assimp/Importer.hpp \
   3rdParty/assimp/include/assimp/types.h \
   3rdParty/assimp/include/assimp/defs.h \
@@ -2735,15 +2794,10 @@ Project/CMakeFiles/project_main.dir/sources/main.cpp.o: Project/sources/main.cpp
   3rdParty/assimp/include/assimp/mesh.h \
   3rdParty/assimp/include/assimp/aabb.h \
   /usr/include/c++/12/unordered_set \
-  /usr/include/c++/12/ext/aligned_buffer.h \
   /usr/include/c++/12/bits/hashtable.h \
   /usr/include/c++/12/bits/hashtable_policy.h \
-  /usr/include/c++/12/tuple \
-  /usr/include/c++/12/bits/uses_allocator.h \
   /usr/include/c++/12/bits/enable_special_members.h \
-  /usr/include/c++/12/bits/node_handle.h \
   /usr/include/c++/12/bits/unordered_set.h \
-  /usr/include/c++/12/bits/erase_if.h \
   3rdParty/assimp/include/assimp/light.h \
   3rdParty/assimp/include/assimp/camera.h \
   3rdParty/assimp/include/assimp/material.h \
@@ -2902,22 +2956,61 @@ Project/CMakeFiles/project_main.dir/sources/main.cpp.o: Project/sources/main.cpp
   Project/sources/TankModel.hpp \
   Project/sources/Sphere.h \
   Project/sources/CubeMap.h \
-  /usr/include/c++/12/map \
-  /usr/include/c++/12/bits/stl_tree.h \
-  /usr/include/c++/12/bits/stl_map.h \
-  /usr/include/c++/12/bits/stl_multimap.h \
   Project/sources/Object.h \
   Project/sources/debugObject.hpp \
-  /usr/include/bullet/btBulletDynamicsCommon.h
+  /usr/include/bullet/btBulletDynamicsCommon.h \
+  Project/sources/Animator.h \
+  Project/sources/Animation.h \
+  Project/sources/Bone.h \
+  /usr/include/c++/12/list \
+  /usr/include/c++/12/bits/stl_list.h \
+  /usr/include/c++/12/bits/list.tcc \
+  3rdParty/glm/glm/gtx/quaternion.hpp \
+  3rdParty/glm/glm/ext/quaternion_exponential.hpp \
+  3rdParty/glm/glm/ext/quaternion_exponential.inl \
+  3rdParty/glm/glm/gtx/norm.hpp \
+  3rdParty/glm/glm/gtx/component_wise.hpp \
+  3rdParty/glm/glm/detail/setup.hpp \
+  3rdParty/glm/glm/gtx/component_wise.inl \
+  3rdParty/glm/glm/gtx/norm.inl \
+  3rdParty/glm/glm/gtx/quaternion.inl \
+  /usr/include/c++/12/functional \
+  /usr/include/c++/12/bits/std_function.h \
+  /usr/include/c++/12/unordered_map \
+  /usr/include/c++/12/bits/unordered_map.h \
+  /usr/include/c++/12/array \
+  /usr/include/c++/12/compare
 
+
+/usr/include/c++/12/compare:
+
+/usr/include/c++/12/array:
+
+/usr/include/c++/12/functional:
+
+3rdParty/glm/glm/gtx/quaternion.inl:
+
+3rdParty/glm/glm/gtx/norm.inl:
+
+3rdParty/glm/glm/gtx/component_wise.inl:
+
+3rdParty/glm/glm/gtx/component_wise.hpp:
+
+3rdParty/glm/glm/ext/quaternion_exponential.hpp:
+
+3rdParty/glm/glm/gtx/quaternion.hpp:
+
+/usr/include/c++/12/bits/list.tcc:
+
+/usr/include/c++/12/bits/stl_list.h:
+
+Project/sources/Bone.h:
+
+Project/sources/Animation.h:
 
 Project/sources/debugObject.hpp:
 
 Project/sources/Object.h:
-
-/usr/include/c++/12/bits/stl_multimap.h:
-
-/usr/include/c++/12/map:
 
 Project/sources/Sphere.h:
 
@@ -2984,6 +3077,12 @@ Project/sources/PhysicModel.cpp:
 /usr/include/bullet/BulletDynamics/ConstraintSolver/btJacobianEntry.h:
 
 /usr/include/bullet/BulletDynamics/ConstraintSolver/btPoint2PointConstraint.h:
+
+/usr/include/bullet/BulletDynamics/Dynamics/btSimpleDynamicsWorld.h:
+
+/usr/include/bullet/LinearMath/btThreads.h:
+
+/usr/include/bullet/BulletDynamics/Dynamics/btDynamicsWorld.h:
 
 3rdParty/glm/glm/detail/type_mat3x2.inl:
 
@@ -3173,6 +3272,8 @@ Project/sources/Shader.h:
 
 3rdParty/glm/glm/ext/vector_uint2_sized.hpp:
 
+Project/sources/Animator.h:
+
 /usr/lib/gcc/x86_64-redhat-linux/12/include/emmintrin.h:
 
 /usr/include/c++/12/ext/string_conversions.h:
@@ -3299,6 +3400,8 @@ Project/sources/PhysicModel.h:
 
 3rdParty/glm/glm/detail/type_vec3.hpp:
 
+/usr/include/c++/12/map:
+
 /usr/include/bits/pthreadtypes.h:
 
 /usr/include/bits/long-double.h:
@@ -3371,6 +3474,8 @@ Project/sources/Mesh.h:
 
 /usr/include/c++/12/x86_64-redhat-linux/bits/gthr-default.h:
 
+/usr/include/c++/12/list:
+
 3rdParty/glm/glm/ext/vector_uint3.hpp:
 
 /usr/include/c++/12/cstdint:
@@ -3382,10 +3487,6 @@ Project/sources/Mesh.h:
 3rdParty/assimp/include/assimp/defs.h:
 
 /usr/include/bits/floatn.h:
-
-/usr/include/c++/12/bits/stl_tree.h:
-
-3rdParty/glm/glm/detail/type_mat2x2.hpp:
 
 /usr/include/c++/12/bits/new_allocator.h:
 
@@ -3422,6 +3523,8 @@ Project/sources/Mesh.h:
 /usr/include/c++/12/bits/hashtable_policy.h:
 
 Project/sources/Mesh.cpp:
+
+/usr/include/c++/12/bits/stl_multimap.h:
 
 /usr/include/c++/12/bits/stl_iterator.h:
 
@@ -3579,6 +3682,8 @@ Project/sources/Camera.h:
 
 3rdParty/glm/glm/ext/scalar_constants.inl:
 
+/usr/include/c++/12/unordered_map:
+
 3rdParty/assimp/include/assimp/Compiler/poppack1.h:
 
 /usr/include/sys/types.h:
@@ -3635,6 +3740,10 @@ Project/sources/Model.cpp:
 
 /usr/include/bits/types/__fpos64_t.h:
 
+3rdParty/glm/glm/detail/type_mat2x2.hpp:
+
+/usr/include/c++/12/bits/stl_tree.h:
+
 /usr/include/c++/12/tr1/riemann_zeta.tcc:
 
 /usr/include/c++/12/x86_64-redhat-linux/bits/ctype_inline.h:
@@ -3646,6 +3755,8 @@ Project/sources/Model.cpp:
 /usr/include/c++/12/bits/algorithmfwd.h:
 
 3rdParty/glm/glm/ext/matrix_float3x2_precision.hpp:
+
+/usr/include/c++/12/bits/std_function.h:
 
 /usr/include/c++/12/x86_64-redhat-linux/bits/gthr.h:
 
@@ -3849,6 +3960,8 @@ Project/sources/Model.h:
 
 /usr/include/c++/12/bits/locale_facets.tcc:
 
+3rdParty/glm/glm/ext/quaternion_exponential.inl:
+
 3rdParty/glm/glm/detail/type_mat2x4.inl:
 
 /usr/include/c++/12/ostream:
@@ -3926,6 +4039,10 @@ Project/sources/Model.h:
 /usr/include/bullet/BulletCollision/BroadphaseCollision/btDispatcher.h:
 
 3rdParty/glm/glm/gtc/epsilon.inl:
+
+/usr/include/c++/12/bits/uses_allocator.h:
+
+/usr/include/bullet/BulletCollision/CollisionShapes/btConvexShape.h:
 
 3rdParty/assimp/include/assimp/types.h:
 
@@ -4011,10 +4128,6 @@ Project/sources/Model.h:
 
 /usr/include/c++/12/bits/hashtable.h:
 
-/usr/include/c++/12/bits/uses_allocator.h:
-
-/usr/include/bullet/BulletCollision/CollisionShapes/btConvexShape.h:
-
 /usr/include/c++/12/bits/enable_special_members.h:
 
 /usr/include/c++/12/bits/unordered_set.h:
@@ -4095,6 +4208,8 @@ Project/sources/Model.h:
 
 /usr/include/bullet/BulletCollision/CollisionShapes/btTriangleCallback.h:
 
+/usr/include/c++/12/bits/unordered_map.h:
+
 /usr/include/bullet/BulletCollision/CollisionShapes/btConvexHullShape.h:
 
 /usr/include/bullet/BulletCollision/CollisionShapes/btStridingMeshInterface.h:
@@ -4102,6 +4217,8 @@ Project/sources/Model.h:
 /usr/include/bullet/BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h:
 
 /usr/include/bullet/BulletCollision/CollisionShapes/btTriangleMeshShape.h:
+
+3rdParty/glm/glm/gtx/norm.hpp:
 
 /usr/include/bullet/BulletCollision/BroadphaseCollision/btQuantizedBvh.h:
 
@@ -4126,9 +4243,3 @@ Project/sources/Model.h:
 /usr/include/bullet/BulletCollision/BroadphaseCollision/btCollisionAlgorithm.h:
 
 /usr/include/bullet/BulletCollision/BroadphaseCollision/btDbvt.h:
-
-/usr/include/bullet/BulletDynamics/Dynamics/btDynamicsWorld.h:
-
-/usr/include/bullet/LinearMath/btThreads.h:
-
-/usr/include/bullet/BulletDynamics/Dynamics/btSimpleDynamicsWorld.h:

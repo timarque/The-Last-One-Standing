@@ -126,6 +126,7 @@ int main()
         TankModel *tankEnemy = new TankModel(PATH_TO_OBJECTS  "/tank/enemy.obj");
         btCollisionShape *shapeEnemy1 = new btBoxShape(btVector3(0.6, 0.7, 0.7));
         tankEnemy->createPhysicsObject(physics, shapeEnemy1, 1, btVector3(i*2, abs(i)*2, 3.0));
+        tankEnemy->physicsObject.get()->setUserIndex(i+5);
         ennemies.push_back(std::move(tankEnemy));
     }
 
@@ -160,6 +161,34 @@ int main()
 
     while (!glfwWindowShouldClose(window))
     {
+
+        std::vector<size_t> bulletsToRemove;
+        std::vector<size_t> ennemiesToRemove;
+
+        for (size_t i = 0; i < bullets.size(); ++i) {
+            for (size_t j = 0; j < ennemies.size(); ++j) {
+                bool collided = physics.checkCollisions(bullets[i].physicsObject, ennemies[j]->physicsObject);
+                if (collided) {
+
+                    bulletsToRemove.push_back(i);
+                    ennemiesToRemove.push_back(j);
+
+                    // If you want to break out of the inner loop after a collision, you can use a break statement here.
+                }
+            }
+        }
+
+        // Remove elements in reverse order to avoid invalidating indices
+        for (auto it = bulletsToRemove.rbegin(); it != bulletsToRemove.rend(); ++it) {
+            physics.dynamicsWorld->removeRigidBody(bullets[*it].physicsObject.get());
+            bullets.erase(bullets.begin() + *it);
+        }
+
+        for (auto it = ennemiesToRemove.rbegin(); it != ennemiesToRemove.rend(); ++it) {
+            physics.dynamicsWorld->removeRigidBody(ennemies[*it]->physicsObject.get());
+            ennemies.erase(ennemies.begin() + *it);
+        }
+
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -187,8 +216,7 @@ int main()
         bool shot = tankModel.update(window, deltaTime);
         btVector3 forward_pos = tankModel.getForward();
         if (shot) {
-            PhysicModel bullet = generatePhysicalSphere(PATH_TO_OBJECTS "/tank/ball.obj", 0.2, 10, tankModel.getPosition() + glm::vec3(forward_pos.x(), 0.7, forward_pos.z()), physics);
-
+            PhysicModel bullet = generatePhysicalSphere(PATH_TO_OBJECTS "/tank/ball.obj", 0.2, 10, tankModel.getPosition() + glm::vec3(forward_pos.x(), 0.2, forward_pos.z()), physics);
             bullet.applyImpulse((forward_pos + btVector3(0.0, camera.Position.y, 0.0)) * btVector3(500.f, 0.0, 500.f));
             bullets.push_back(std::move(bullet));
         }
@@ -269,7 +297,9 @@ int main()
         // ourShader.setMatrix4("projection", projection);
         // ourShader.setMatrix4("view", view);
         // sphere.DrawWithShader(ourShader);
+
         physics.simulate(deltaTime);
+       
         //tankModel.updateFromPhysics();
         //vampire_dancing.updateFromPhysics();
         // // sphere.updateFromPhysics();

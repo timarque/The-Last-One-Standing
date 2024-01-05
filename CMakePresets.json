@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
     "version": 3,
     "configurePresets": [
@@ -9,4 +10,17 @@
             }
         }
     ]
+=======
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "default",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "C:/Users/hanno/source/libs/vcpkg/scripts/buildsystems/vcpkg.cmake"
+            }
+        }
+    ]
+>>>>>>> 6069a2b (Merlin configurations)
 }

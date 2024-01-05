@@ -35,6 +35,7 @@ public:
     glm::vec3 Up;
     glm::vec3 Right;
     glm::vec3 WorldUp;
+    glm::vec3 Orientation = glm::vec3(0.0f, 0.0f, -1.0f); // 180deg rotation for cam
     // Eular Angles
     GLfloat Yaw;
     GLfloat Pitch;
@@ -82,9 +83,9 @@ public:
         if (direction == BACKWARD)
             this->Position -= this->Front * velocity;
         if (direction == LEFT)
-            this->Position -= this->Right * velocity;
+            this->Position -= -glm::normalize(glm::cross(Orientation, Up)) * velocity;
         if (direction == RIGHT)
-            this->Position += this->Right * velocity;
+            this->Position += glm::normalize(glm::cross(Orientation, Up)) * velocity;
         if (direction == UP)
             this->Position += this->Up * velocity;
         if (direction == DOWN)

@@ -67,7 +67,7 @@ int main()
 
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
+    // glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
     // Désactive le curseur de la souris
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -77,68 +77,58 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-    std::cout << 0 << std::endl;
 
     // // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
     // stbi_set_flip_vertically_on_load(true);
     glEnable(GL_DEPTH_TEST);
 
-    std::cout << 1 << std::endl;
     PhysicsEngine physics(btVector3(0, -9.81, 0));
     // Shaders
     Shader shader(PATH_TO_SHADERS "/backpack/shader.vert", PATH_TO_SHADERS "/backpack/shader.frag");
     Shader debugShader(PATH_TO_SHADERS "/debug/debug.vert", PATH_TO_SHADERS "/debug/debug.frag");
     Shader cubeMapShader(PATH_TO_SHADERS "/skybox/skybox.vert", PATH_TO_SHADERS "/skybox/skybox.frag");
     Shader animationShader(PATH_TO_SHADERS "/animation/animation.vert", PATH_TO_SHADERS "/animation/animation.frag");
-    std::cout << 2 << std::endl;
 
     //* Bullet Physics Rendering Debug Tool
     DebugDrawer *debugDrawer = new DebugDrawer(debugShader.ID);
     physics.getWorld()->setDebugDrawer(debugDrawer);
-    std::cout << 3 << std::endl;
     
     // Cube map
     CubeMap cubeMap(PATH_TO_OBJECTS "/cube.obj", &cubeMapShader);
     std::string cubeMapTexturePath = PATH_TO_TEXTURES "/skybox/";
     cubeMap.addTexture(&cubeMapTexturePath);
-    std::cout << 4 << std::endl;
 
     TankModel tankModel(PATH_TO_OBJECTS  "/tank/tank.obj");
     btCollisionShape *shape = new btBoxShape(btVector3(0.7, 0.7, 0.7));
     tankModel.createPhysicsObject(physics, shape, 1, btVector3(0.0, 2.0, 0.0));
-    std::cout << 5 << std::endl;
 
 
     // animated model
-    PhysicModel *vampire_dancing = new PhysicModel(PATH_TO_OBJECTS "/animation/dancing_vampire.dae");
-    btCollisionShape *shape_vampire = new btBoxShape(btVector3(0.8, 2.0, 0.8));
-    vampire_dancing->createPhysicsObject(physics, shape_vampire, 100, btVector3(-5.f, 0.f, .5f));
-    Animation *danceAnimation = new Animation(PATH_TO_OBJECTS "/animation/dancing_vampire.dae", vampire_dancing); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
-    Animator animator(danceAnimation);
-    std::cout << 6 << std::endl;
+    // PhysicModel *vampire_dancing = new PhysicModel(PATH_TO_OBJECTS "/animation/dancing_vampire.dae");
+    // btCollisionShape *shape_vampire = new btBoxShape(btVector3(0.8, 2.0, 0.8));
+    // vampire_dancing->createPhysicsObject(physics, shape_vampire, 100, btVector3(-5.f, 0.f, .5f));
+    // Animation *danceAnimation = new Animation(PATH_TO_OBJECTS "/animation/dancing_vampire.dae", vampire_dancing); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
+    // Animator animator(danceAnimation);
 
-    PhysicModel *platform = new PhysicModel(PATH_TO_OBJECTS "/tank/platform.dae");
-    btCollisionShape* shape_deploy = new btBoxShape(btVector3(0.8, 0.3, 0.8));
-    platform->createPhysicsObject(physics, shape_deploy, 100, btVector3(0.0, 0.0, 0.0));
-    Animation *deployanimation = new Animation(PATH_TO_OBJECTS "/tank/platform.dae", platform); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
-    Animator anim(deployanimation);
-    std::cout << 7 << std::endl;
+    // PhysicModel *platform = new PhysicModel(PATH_TO_OBJECTS "/tank/platform.dae");
+    // btCollisionShape* shape_deploy = new btBoxShape(btVector3(0.8, 0.3, 0.8));
+    // platform->createPhysicsObject(physics, shape_deploy, 100, btVector3(0.0, 0.0, 0.0));
+    // Animation *deployanimation = new Animation(PATH_TO_OBJECTS "/tank/platform.dae", platform); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
+    // Animator anim(deployanimation);
 
-    PhysicModel slenderman(PATH_TO_OBJECTS "/slenderman.fbx");
-    btCollisionShape* shape_slenderman = new btBoxShape(btVector3(0.8,4.7, 0.8));
-    slenderman.createPhysicsObject(physics, shape_slenderman, 100, btVector3(-12.0, 0.0, -12.0));
-    Animation slenderanimation(PATH_TO_OBJECTS "/slenderman.fbx", &slenderman);
-    Animator animslender(&slenderanimation);
+    // PhysicModel slenderman(PATH_TO_OBJECTS "/slenderman.fbx");
+    // btCollisionShape* shape_slenderman = new btBoxShape(btVector3(0.8,4.7, 0.8));
+    // slenderman.createPhysicsObject(physics, shape_slenderman, 100, btVector3(-12.0, 0.0, -12.0));
+    // Animation slenderanimation(PATH_TO_OBJECTS "/slenderman.fbx", &slenderman);
+    // Animator animslender(&slenderanimation);
 
     TankModel tankEnemyModel(PATH_TO_OBJECTS  "/tank/enemy.obj");
     btCollisionShape *shapeEnemy = new btBoxShape(btVector3(0.6, 0.7, 0.7));
     tankEnemyModel.createPhysicsObject(physics, shapeEnemy, 1, btVector3(0.0, 0.0, 3.0));
-    std::cout << 8 << std::endl;
     
     PhysicModel floorModel(PATH_TO_OBJECTS  "/floor/floor.obj");
     btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0.0, 1.0, 0.0), 0);
     floorModel.createPhysicsObject(physics, floor_shape, 0.0, btVector3(0, 0, 0));
-    std::cout << 9 << std::endl;
     
     int grid_size = 20;
 
@@ -169,56 +159,66 @@ int main()
         lastFrame = currentFrame;
         double now = glfwGetTime();
         processInput(window);
-        camera.Position = tankModel.getPosition() + glm::vec3(0.0, 2.5, -4.0);
-        // glm::mat4 view = glm::translate(glm::mat4(1.0f), tankModel.getPosition() + glm::vec3(0.0, 2.0, -5.0));
-        // view = glm::rotate(view, atan2(-tankModel.getRotation()[2][0], -tankModel.getRotation()[0][0]), glm::vec3(0.0f, 1.0f, 0.0f));
-        // view = glm::inverse(view);
+
+        glm::vec3 tankPosition = tankModel.getPosition();
+        glm::vec3 cameraOffset = glm::vec3(0.0, 3.5, -4.0);
+        glm::mat4 tankRotationMatrix = tankModel.getRotation();
+        glm::vec4 rotatedOffset = tankRotationMatrix * glm::vec4(cameraOffset, 1.0f);
+        camera.Position = tankPosition + glm::vec3(rotatedOffset);
+
+        // Décalage supplémentaire pour que la caméra regarde légèrement devant le tank
+        glm::vec3 lookAtOffset = glm::vec3(0.0, 0.0, 5.0);
+        glm::vec4 rotatedLookAtOffset = tankRotationMatrix * glm::vec4(lookAtOffset, 1.0f);
+        glm::vec3 lookAtPosition = tankPosition + glm::vec3(rotatedLookAtOffset);
+
+        glm::mat4 view = glm::lookAt(camera.Position, lookAtPosition, camera.Up);
+
 
         glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        animator.UpdateAnimation(deltaTime);
-        anim.UpdateAnimation(deltaTime);
-        animslender.UpdateAnimation(deltaTime);
+        // animator.UpdateAnimation(deltaTime);
+        // anim.UpdateAnimation(deltaTime);
+        // animslender.UpdateAnimation(deltaTime);
         
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         // glm::mat4 view = glm::lookAt(camera.Position, tankModel.getPosition() + glm::vec3(0.0, 1.5, 0.0), glm::vec3(0.0f, 1.0f, 0.0f));
-        glm::mat4 view = camera.GetViewMatrix();
+        // glm::mat4 view = camera.GetViewMatrix();
         auto current_pos_light = light_pos + glm::vec3(4 * std::sin(now / 2), 0.0,  4 * std::cos(now / 2));
 
-        animationShader.use();
-        animationShader.setMatrix4("projection", projection);
-        animationShader.setMatrix4("view", view);
+        // animationShader.use();
+        // animationShader.setMatrix4("projection", projection);
+        // animationShader.setMatrix4("view", view);
 
-        auto transforms_slenderman = animslender.GetFinalBoneMatrices();
-        for (int i = 0; i < transforms_slenderman.size(); ++i) {
-            animationShader.setMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms_slenderman[i]);
-        }
-        glm::mat4 model_slenderman = glm::mat4(1.0f);
-        model_slenderman = glm::translate(model_slenderman, glm::vec3(-12.f, 0.f, -12.f));
-        model_slenderman = glm::scale(model_slenderman, glm::vec3(.01f, .01f, .01f));	// it's a bit too big for our scene, so scale it down
-        animationShader.setMatrix4("model", model_slenderman);
-        slenderman.DrawWithShader(animationShader, 1);
+        // auto transforms_slenderman = animslender.GetFinalBoneMatrices();
+        // for (int i = 0; i < transforms_slenderman.size(); ++i) {
+        //     animationShader.setMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms_slenderman[i]);
+        // }
+        // glm::mat4 model_slenderman = glm::mat4(1.0f);
+        // model_slenderman = glm::translate(model_slenderman, glm::vec3(-12.f, 0.f, -12.f));
+        // model_slenderman = glm::scale(model_slenderman, glm::vec3(.01f, .01f, .01f));	// it's a bit too big for our scene, so scale it down
+        // animationShader.setMatrix4("model", model_slenderman);
+        // slenderman.DrawWithShader(animationShader, 1);
 
 
-        auto transforms = animator.GetFinalBoneMatrices();
-        for (int i = 0; i < transforms.size(); ++i) {
-            animationShader.setMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
-        }
+        // auto transforms = animator.GetFinalBoneMatrices();
+        // for (int i = 0; i < transforms.size(); ++i) {
+        //     animationShader.setMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
+        // }
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-5.f, 0.f, .5f)); // keep same translation here as when object is init otherwise colision box diff than position
-        model = glm::scale(model, glm::vec3(.8f, .8f, .8f));	// it's a bit too big for our scene, so scale it down
-        animationShader.setMatrix4("model", model);
-        vampire_dancing->DrawWithShader(animationShader, 1);
+        // model = glm::translate(model, glm::vec3(-5.f, 0.f, .5f)); // keep same translation here as when object is init otherwise colision box diff than position
+        // model = glm::scale(model, glm::vec3(.8f, .8f, .8f));	// it's a bit too big for our scene, so scale it down
+        // animationShader.setMatrix4("model", model);
+        // vampire_dancing->DrawWithShader(animationShader, 1);
 
-        auto transforms_deploy = anim.GetFinalBoneMatrices();
-        for (int i = 0; i < transforms_deploy.size(); ++i) {
-            animationShader.setMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms_deploy[i]);
-        }
-        glm::mat4 model_deploy = glm::mat4(1.0f);
-        model_deploy = glm::scale(model_deploy, glm::vec3(1.0f, 1.0f, 1.0f));	
-        animationShader.setMatrix4("model", model_deploy);;
-        platform->DrawWithShader(animationShader, 1);
+        // auto transforms_deploy = anim.GetFinalBoneMatrices();
+        // for (int i = 0; i < transforms_deploy.size(); ++i) {
+        //     animationShader.setMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms_deploy[i]);
+        // }
+        // glm::mat4 model_deploy = glm::mat4(1.0f);
+        // model_deploy = glm::scale(model_deploy, glm::vec3(1.0f, 1.0f, 1.0f));	
+        // animationShader.setMatrix4("model", model_deploy);;
+        // platform->DrawWithShader(animationShader, 1);
 
         shader.use();
         shader.setVec3("u_view_pos", camera.Position);

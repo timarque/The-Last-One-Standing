@@ -119,7 +119,6 @@ void Model::ExtractBoneWeightForVertices(std::vector<Vertex>& vertices, aiMesh* 
 }
 
 
-
 Model::Model(std::string path) {
     loadModel(path);
 }

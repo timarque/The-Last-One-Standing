@@ -11,10 +11,10 @@
 #include "PhysicsEngine.hpp"
 #include "PhysicModel.h"
 #include "TankModel.hpp"
-#include "Sphere.h"
 #include "CubeMap.h"
 #include "debugObject.hpp"
 #include "Animator.h"
+#include "Sphere.h"
 
 #include <iostream>
 
@@ -83,62 +83,54 @@ int main()
     // stbi_set_flip_vertically_on_load(true);
     glEnable(GL_DEPTH_TEST);
 
-    std::cout << 1 << std::endl;
     PhysicsEngine physics(btVector3(0, -9.81, 0));
     // Shaders
     Shader shader(PATH_TO_SHADERS "/backpack/shader.vert", PATH_TO_SHADERS "/backpack/shader.frag");
     Shader debugShader(PATH_TO_SHADERS "/debug/debug.vert", PATH_TO_SHADERS "/debug/debug.frag");
     Shader cubeMapShader(PATH_TO_SHADERS "/skybox/skybox.vert", PATH_TO_SHADERS "/skybox/skybox.frag");
     Shader animationShader(PATH_TO_SHADERS "/animation/animation.vert", PATH_TO_SHADERS "/animation/animation.frag");
-    std::cout << 2 << std::endl;
 
     //* Bullet Physics Rendering Debug Tool
     DebugDrawer *debugDrawer = new DebugDrawer(debugShader.ID);
     physics.getWorld()->setDebugDrawer(debugDrawer);
-    std::cout << 3 << std::endl;
     
     // Cube map
     CubeMap cubeMap(PATH_TO_OBJECTS "/cube.obj", &cubeMapShader);
     std::string cubeMapTexturePath = PATH_TO_TEXTURES "/skybox/";
     cubeMap.addTexture(&cubeMapTexturePath);
-    std::cout << 4 << std::endl;
 
     TankModel tankModel(PATH_TO_OBJECTS  "/tank/tank.obj");
     btCollisionShape *shape = new btBoxShape(btVector3(0.7, 0.7, 0.7));
     tankModel.createPhysicsObject(physics, shape, 1, btVector3(0.0, 2.0, 0.0));
-    std::cout << 5 << std::endl;
 
+    PhysicModel* platform = new PhysicModel(PATH_TO_OBJECTS "/tank/platform.dae");
+    btCollisionShape* shape_deploy = new btBoxShape(btVector3(0.8, 0.3, 0.8));
+    platform->createPhysicsObject(physics, shape_deploy, 100, btVector3(0.0, 0.0, 0.0));
+    Animation* deployanimation = new Animation(PATH_TO_OBJECTS "/tank/platform.dae", platform); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
+    Animator anim(deployanimation);
 
-    // animated model
+    // enemies
     PhysicModel *vampire_dancing = new PhysicModel(PATH_TO_OBJECTS "/animation/dancing_vampire.dae");
     btCollisionShape *shape_vampire = new btBoxShape(btVector3(0.8, 2.0, 0.8));
     vampire_dancing->createPhysicsObject(physics, shape_vampire, 100, btVector3(-5.f, 0.f, .5f));
     Animation *danceAnimation = new Animation(PATH_TO_OBJECTS "/animation/dancing_vampire.dae", vampire_dancing); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
     Animator animator(danceAnimation);
-    std::cout << 6 << std::endl;
-
-    PhysicModel *platform = new PhysicModel(PATH_TO_OBJECTS "/tank/platform.dae");
-    btCollisionShape* shape_deploy = new btBoxShape(btVector3(0.8, 0.3, 0.8));
-    platform->createPhysicsObject(physics, shape_deploy, 100, btVector3(0.0, 0.0, 0.0));
-    Animation *deployanimation = new Animation(PATH_TO_OBJECTS "/tank/platform.dae", platform); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
-    Animator anim(deployanimation);
-    std::cout << 7 << std::endl;
 
     PhysicModel slenderman(PATH_TO_OBJECTS "/slenderman.fbx");
     btCollisionShape* shape_slenderman = new btBoxShape(btVector3(0.8,4.7, 0.8));
-    slenderman.createPhysicsObject(physics, shape_slenderman, 100, btVector3(-12.0, 0.0, -12.0));
+    slenderman.createPhysicsObject(physics, shape_slenderman, 0, btVector3(-12.0, 0.0, -12.0));
     Animation slenderanimation(PATH_TO_OBJECTS "/slenderman.fbx", &slenderman);
     Animator animslender(&slenderanimation);
-
+    
     TankModel tankEnemyModel(PATH_TO_OBJECTS  "/tank/enemy.obj");
     btCollisionShape *shapeEnemy = new btBoxShape(btVector3(0.6, 0.7, 0.7));
     tankEnemyModel.createPhysicsObject(physics, shapeEnemy, 1, btVector3(0.0, 0.0, 3.0));
-    std::cout << 8 << std::endl;
-    
+
+
+    // floor 
     PhysicModel floorModel(PATH_TO_OBJECTS  "/floor/floor.obj");
     btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0.0, 1.0, 0.0), 0);
     floorModel.createPhysicsObject(physics, floor_shape, 0.0, btVector3(0, 0, 0));
-    std::cout << 9 << std::endl;
     
     int grid_size = 20;
 
@@ -161,6 +153,8 @@ int main()
     shader.setFloat("light.constant", 1.0);
     shader.setFloat("light.linear", 0.1);
     shader.setFloat("light.quadratic", 0.01);
+
+    std::vector<PhysicModel> bullets;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -185,6 +179,42 @@ int main()
         // glm::mat4 view = glm::lookAt(camera.Position, tankModel.getPosition() + glm::vec3(0.0, 1.5, 0.0), glm::vec3(0.0f, 1.0f, 0.0f));
         glm::mat4 view = camera.GetViewMatrix();
         auto current_pos_light = light_pos + glm::vec3(4 * std::sin(now / 2), 0.0,  4 * std::cos(now / 2));
+
+        shader.use();
+        shader.setVec3("u_view_pos", camera.Position);
+        shader.setVec3("light.light_pos", current_pos_light);
+        bool shot = tankModel.update(window, deltaTime);
+        btVector3 forward_pos = tankModel.getForward();
+        if (shot) {
+            PhysicModel bullet = generatePhysicalSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", tankModel.getPosition() + glm::vec3(forward_pos.x() * 1.0, 0.1, forward_pos.z() * 1.0), physics);
+            bullet.applyImpulse(forward_pos * btVector3(500.f, 0.1f, 500.f));
+            bullets.push_back(std::move(bullet));
+        }
+        for (int i = 0; i < bullets.size(); i++) {
+            shader.setMatrix4("model", bullets[i].getModelMatrix(glm::vec3(1.0f)));
+            bullets[i].DrawWithShader(shader, 1);
+        }
+
+        shader.setMatrix4("model", tankModel.getModelMatrix(glm::vec3(1.0f)));
+        shader.setMatrix4("projection", projection);
+        shader.setMatrix4("view", view);
+        tankModel.DrawWithShader(shader, 1);
+
+        shader.setMatrix4("model", glm::rotate(tankEnemyModel.getModelMatrix(glm::vec3(1.0f)), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0)));
+        shader.setMatrix4("projection", projection);
+        shader.setMatrix4("view", view);
+        tankEnemyModel.DrawWithShader(shader, 1);
+
+        for (int i = 0; i < grid_size * grid_size; i++) {
+            if (i % grid_size != 0) floor = glm::translate(floor, glm::vec3(0.0f, 0.0f, 2.0f)); 
+            else {
+                floor = glm::mat4(1.0f);
+                floor = glm::translate(floor, glm::vec3(-grid_size + 2.0f * i / grid_size, 0.0f, -grid_size));
+            }
+            shader.setMatrix4("model", floor);
+            floorModel.DrawWithShader(shader, 1);
+        }
+
 
         animationShader.use();
         animationShader.setMatrix4("projection", projection);
@@ -216,39 +246,15 @@ int main()
             animationShader.setMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms_deploy[i]);
         }
         glm::mat4 model_deploy = glm::mat4(1.0f);
-        model_deploy = glm::scale(model_deploy, glm::vec3(1.0f, 1.0f, 1.0f));	
+        model_deploy = glm::scale(model_deploy, glm::vec3(1.0f, 1.0f, 1.0f));
         animationShader.setMatrix4("model", model_deploy);;
         platform->DrawWithShader(animationShader, 1);
 
-        shader.use();
-        shader.setVec3("u_view_pos", camera.Position);
-        shader.setVec3("light.light_pos", current_pos_light);
-
-        tankModel.update(window, deltaTime);
-
-        shader.setMatrix4("model", tankModel.getModelMatrix(glm::vec3(1.0f)));
-        shader.setMatrix4("projection", projection);
-        shader.setMatrix4("view", view);
-        tankModel.DrawWithShader(shader, 1);
-
-        shader.setMatrix4("model", glm::rotate(tankEnemyModel.getModelMatrix(glm::vec3(1.0f)), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0)));
-        shader.setMatrix4("projection", projection);
-        shader.setMatrix4("view", view);
-        tankEnemyModel.DrawWithShader(shader, 1);
-
-        for (int i = 0; i < grid_size * grid_size; i++) {
-            if (i % grid_size != 0) floor = glm::translate(floor, glm::vec3(0.0f, 0.0f, 2.0f)); 
-            else {
-                floor = glm::mat4(1.0f);
-                floor = glm::translate(floor, glm::vec3(-grid_size + 2.0f * i / grid_size, 0.0f, -grid_size));
-            }
-            shader.setMatrix4("model", floor);
-            floorModel.DrawWithShader(shader, 1);
-        }
 
         debugShader.use();
         debugShader.setMatrix4("view", view);
         debugShader.setMatrix4("projection", projection);
+
 
         physics.getWorld()->debugDrawWorld();
         debugDrawer->flushLines();
@@ -259,8 +265,6 @@ int main()
         // ourShader.setMatrix4("projection", projection);
         // ourShader.setMatrix4("view", view);
         // sphere.DrawWithShader(ourShader);
-
-
         physics.simulate(deltaTime);
         //tankModel.updateFromPhysics();
         //vampire_dancing.updateFromPhysics();

@@ -22,6 +22,9 @@ public:
     glm::vec3 getPosition();
 
     btTransform getTransform() { return physicsObject->getWorldTransform(); }
+
+    btVector3 getForward() { return physicsObject->getWorldTransform().getBasis().getColumn(2).normalized();}
+
     glm::mat4 getRotation();
     glm::mat4 getModelMatrix(glm::vec3 scale);
 

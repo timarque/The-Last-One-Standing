@@ -15,6 +15,9 @@
 #include <glm/gtc/type_ptr.hpp>
 
 class TankModel : public PhysicModel {
+private:
+    double reload_time = 2.0;
+    double last_shot = 0.0;
 public:
     // float mSteering;
     
@@ -25,12 +28,16 @@ public:
     // Créer un objet physique associé au modèle dans le monde physique
     // void createPhysicsObject(PhysicsEngine physics, btCollisionShape *shape, float mass, btVector3 origin);
     // glm::vec3 getPosition();
-    void update(GLFWwindow *window, float deltaTime);
+    bool update(GLFWwindow *window, float deltaTime);
     // Mettre à jour la transformation du modèle à partir de la physique
     // void applyEngineForce(float force);
     // void setBrake(float force);
     // void setSteering(float steering);
 
     // glm::mat4 getOpenGLMatrix();
+
+    double get_reload_time() const { return reload_time; };
+    double get_reload_time_left(double time) const { return time - last_shot; };
+    void set_reload_time_start(double time) { last_shot = time; };
 };
 #endif

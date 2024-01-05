@@ -79,8 +79,9 @@
 //     return glm::vec3(0.0f);
 // }
 
-void TankModel::update(GLFWwindow *window, float deltaTime)
+bool TankModel::update(GLFWwindow *window, float deltaTime)
 {
+    bool shot = false;
     // Key for resetting car position and position
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
         std::cout << "Reset position" << std::endl;
@@ -124,6 +125,15 @@ void TankModel::update(GLFWwindow *window, float deltaTime)
     } else {
         // this->setSteering(float((1 - 10 * deltaTime) * this->mSteering));
     }
+
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        if (get_reload_time_left(glfwGetTime()) > this->reload_time) {
+            std::cout << "shoot" << std::endl;
+            set_reload_time_start(glfwGetTime());
+            shot = true;
+        }
+    }
+    return shot;
 }
 
 // glm::mat4 TankModel::getOpenGLMatrix() {

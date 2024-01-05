@@ -103,18 +103,18 @@ int main()
     btCollisionShape *shape = new btBoxShape(btVector3(0.7, 0.7, 0.7));
     tankModel.createPhysicsObject(physics, shape, 1, btVector3(0.0, 2.0, 0.0));
 
-    PhysicModel* platform = new PhysicModel(PATH_TO_OBJECTS "/tank/platform.dae");
+    PhysicModel platform(PATH_TO_OBJECTS "/tank/platform.dae");
     btCollisionShape* shape_deploy = new btBoxShape(btVector3(0.8, 0.3, 0.8));
-    platform->createPhysicsObject(physics, shape_deploy, 100, btVector3(0.0, 0.0, 0.0));
-    Animation* deployanimation = new Animation(PATH_TO_OBJECTS "/tank/platform.dae", platform); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
-    Animator anim(deployanimation);
+    platform.createPhysicsObject(physics, shape_deploy, 0, btVector3(0.0, 0.0, 0.0));
+    Animation deployanimation(PATH_TO_OBJECTS "/tank/platform.dae", &platform); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
+    Animator anim(&deployanimation);
 
     // enemies
-    PhysicModel *vampire_dancing = new PhysicModel(PATH_TO_OBJECTS "/animation/dancing_vampire.dae");
-    btCollisionShape *shape_vampire = new btBoxShape(btVector3(0.8, 2.0, 0.8));
-    vampire_dancing->createPhysicsObject(physics, shape_vampire, 100, btVector3(-5.f, 0.f, .5f));
-    Animation *danceAnimation = new Animation(PATH_TO_OBJECTS "/animation/dancing_vampire.dae", vampire_dancing); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
-    Animator animator(danceAnimation);
+    PhysicModel vampire_dancing(PATH_TO_OBJECTS "/animation/dancing_vampire.dae");
+    btCollisionShape* shape_vampire = new btBoxShape(btVector3(0.8, 2.0, 0.8));
+    vampire_dancing.createPhysicsObject(physics, shape_vampire, 0, btVector3(-5.f, 0.f, .5f));
+    Animation danceAnimation(PATH_TO_OBJECTS "/animation/dancing_vampire.dae", &vampire_dancing); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
+    Animator animator(&danceAnimation);
 
     PhysicModel slenderman(PATH_TO_OBJECTS "/slenderman.fbx");
     btCollisionShape* shape_slenderman = new btBoxShape(btVector3(0.8,4.7, 0.8));
@@ -125,6 +125,7 @@ int main()
     TankModel tankEnemyModel(PATH_TO_OBJECTS  "/tank/enemy.obj");
     btCollisionShape *shapeEnemy = new btBoxShape(btVector3(0.6, 0.7, 0.7));
     tankEnemyModel.createPhysicsObject(physics, shapeEnemy, 1, btVector3(0.0, 0.0, 3.0));
+    glm::rotate(tankEnemyModel.getModelMatrix(glm::vec3(1.0f)), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0));
 
 
     // floor 
@@ -155,6 +156,10 @@ int main()
     shader.setFloat("light.quadratic", 0.01);
 
     std::vector<PhysicModel> bullets;
+    std::vector<TankModel*> tanks;
+    // pushback tous nos objets dans ce vecteur
+    tanks.push_back(&tankModel);
+    tanks.push_back(&tankEnemyModel);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -173,7 +178,7 @@ int main()
         animator.UpdateAnimation(deltaTime);
         anim.UpdateAnimation(deltaTime);
         animslender.UpdateAnimation(deltaTime);
-        
+
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         // glm::mat4 view = glm::lookAt(camera.Position, tankModel.getPosition() + glm::vec3(0.0, 1.5, 0.0), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -183,9 +188,12 @@ int main()
         shader.use();
         shader.setVec3("u_view_pos", camera.Position);
         shader.setVec3("light.light_pos", current_pos_light);
+        shader.setMatrix4("projection", projection);
+        shader.setMatrix4("view", view);
         bool shot = tankModel.update(window, deltaTime);
         btVector3 forward_pos = tankModel.getForward();
         if (shot) {
+            // possibly do a bullet shader
             PhysicModel bullet = generatePhysicalSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", tankModel.getPosition() + glm::vec3(forward_pos.x() * 1.0, 0.1, forward_pos.z() * 1.0), physics);
             bullet.applyImpulse(forward_pos * btVector3(500.f, 0.1f, 500.f));
             bullets.push_back(std::move(bullet));
@@ -194,17 +202,10 @@ int main()
             shader.setMatrix4("model", bullets[i].getModelMatrix(glm::vec3(1.0f)));
             bullets[i].DrawWithShader(shader, 1);
         }
-
-        shader.setMatrix4("model", tankModel.getModelMatrix(glm::vec3(1.0f)));
-        shader.setMatrix4("projection", projection);
-        shader.setMatrix4("view", view);
-        tankModel.DrawWithShader(shader, 1);
-
-        shader.setMatrix4("model", glm::rotate(tankEnemyModel.getModelMatrix(glm::vec3(1.0f)), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0)));
-        shader.setMatrix4("projection", projection);
-        shader.setMatrix4("view", view);
-        tankEnemyModel.DrawWithShader(shader, 1);
-
+        for (int j = 0; j < tanks.size(); j++) {
+            shader.setMatrix4("model", tanks[j]->getModelMatrix(glm::vec3(1.0f)));
+            tanks[j]->DrawWithShader(shader, 1);
+        }
         for (int i = 0; i < grid_size * grid_size; i++) {
             if (i % grid_size != 0) floor = glm::translate(floor, glm::vec3(0.0f, 0.0f, 2.0f)); 
             else {
@@ -239,7 +240,7 @@ int main()
         model = glm::translate(model, glm::vec3(-5.f, 0.f, .5f)); // keep same translation here as when object is init otherwise colision box diff than position
         model = glm::scale(model, glm::vec3(.8f, .8f, .8f));	// it's a bit too big for our scene, so scale it down
         animationShader.setMatrix4("model", model);
-        vampire_dancing->DrawWithShader(animationShader, 1);
+        vampire_dancing.DrawWithShader(animationShader, 1);
 
         auto transforms_deploy = anim.GetFinalBoneMatrices();
         for (int i = 0; i < transforms_deploy.size(); ++i) {
@@ -248,7 +249,7 @@ int main()
         glm::mat4 model_deploy = glm::mat4(1.0f);
         model_deploy = glm::scale(model_deploy, glm::vec3(1.0f, 1.0f, 1.0f));
         animationShader.setMatrix4("model", model_deploy);;
-        platform->DrawWithShader(animationShader, 1);
+        platform.DrawWithShader(animationShader, 1);
 
 
         debugShader.use();

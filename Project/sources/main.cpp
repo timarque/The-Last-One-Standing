@@ -16,6 +16,7 @@
 #include <iostream>
 
 #include "bullet/btBulletDynamicsCommon.h"
+#include "LightSource.h"
 
 // #include <btphysics.h>
 
@@ -23,6 +24,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
+void renderScene(PhysicModel &sunM, Shader &ourShader, PhysicModel &moonM, PhysicModel &earthM, int grid_size, PhysicModel &floorModel);
 
 glm::mat4 btScalar2mat4(btScalar *matrix)
 {
@@ -92,6 +94,7 @@ int main()
     Shader ambiant(PATH_TO_SHADERS "/ambiant_light/ambiant.vert", PATH_TO_SHADERS "/ambiant_light/ambiant.frag");
     Shader physical(PATH_TO_SHADERS "/physicalObjects/physicalObjects.vert", PATH_TO_SHADERS "/physicalObjects/physicalObjects.frag");
     Shader cubeMapShader(PATH_TO_SHADERS "/skybox/skybox.vert", PATH_TO_SHADERS "/skybox/skybox.frag");
+    Shader depthMapShader(PATH_TO_SHADERS "/depthMap/depthMap.vert", PATH_TO_SHADERS "/depthMap/depthMap.frag");
 
     // Cube map
     CubeMap cubeMap(PATH_TO_OBJECTS "/cube.obj", &cubeMapShader);
@@ -109,7 +112,6 @@ int main()
     PhysicModel moonM = generatePhysicalSphere(PATH_TO_OBJECTS "/moon.obj", glm::vec3(0.0f, 3.0f, 0.0f), physics);
     PhysicModel sunM = generatePhysicalSphere(PATH_TO_OBJECTS "/sun.obj", 0.33, 0.0, glm::vec3(0.0f, 15.0f, 0.0f), physics);
     PhysicModel lightM = generatePhysicalSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", glm::vec3(0.0f, 0.0f, 0.0f), physics);
-
     PhysicModel heliport(PATH_TO_OBJECTS "/tank/heliport.obj");
     btCollisionShape *heliport_shape = new btBoxShape(btVector3(0.5, 0.5, 0.5));
     heliport.createPhysicsObject(physics, heliport_shape, 2, btVector3(-2.0, 0.0, -2.0));
@@ -123,9 +125,17 @@ int main()
     btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
     floorModel.createPhysicsObject(physics, floor_shape, 0.0, btVector3(0, 0, 0));
     
+    const unsigned int grid_size = 20;
 
-    int grid_size = 20;
-    glm::vec3 light_pos = glm::vec3(0.0, 2.0, 0.0);
+    // Configuring the light source
+    glm::vec3 light_pos = glm::vec3(0.0, 3.0, 0.0);
+    LightSource lightSource(depthMapShader);
+    lightSource.setPosition(light_pos);
+    // The following objects will have shadows
+    std::vector<PhysicModel> scene = {
+        earthM,
+        moonM
+    };
 
     glm::mat4 model = glm::mat4(1.0f);
     // btTransform transform;
@@ -136,7 +146,7 @@ int main()
     model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// L'objet est super grand, on le déplace
     
     glm::mat4 sun = glm::mat4(1.0f);
-    sun = glm::translate(sun, light_pos);
+    sun = glm::translate(sun, lightSource.getPosition());
     sun = glm::scale(sun, glm::vec3(0.2f));
     glm::mat4 itMsun = glm::transpose(glm::inverse(sun));
 
@@ -146,7 +156,7 @@ int main()
     glm::mat4 inverseModel = glm::transpose(glm::inverse(model));
 
 
-    float ambient = 0.1;
+    float ambient = 0.3;
     float diffuse = 2.0;
     float specular = 0.8;
     
@@ -170,102 +180,65 @@ int main()
     ourShader.setFloat("light.constant", 1.0);
     ourShader.setFloat("light.linear", 0.1);
     ourShader.setFloat("light.quadratic", 0.01);
+    ourShader.setInt("shadowMap", 0);
 
     camera.Position = glm::vec3(-3.0f, 1.0f, -3.0f);
     camera.LookAtModel(glm::vec3(0.0f, 1.0f, 0.0f));
     
     while (!glfwWindowShouldClose(window))
     {
+        // Compute the FPS
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         double now = glfwGetTime();
         processInput(window);
 
-        glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
+        // Render scene from the light
+        // ---------------------------
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // Setup the depth map shader
+        depthMapShader.use();
+        depthMapShader.setMatrix4("lightSpaceMatrix", lightSource.getLightSpaceMatrix());
+        // Render everything
+        glViewport(0, 0, lightSource.getShadowWidth(), lightSource.getShadowHeight());
+        glBindFramebuffer(GL_FRAMEBUFFER, lightSource.getDepthMapFBO());
+            glClear(GL_DEPTH_BUFFER_BIT);
+            renderScene(sunM, depthMapShader, moonM, earthM, grid_size, floorModel);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // lightSource.renderSceneToLight(scene);
+        // Reset viewport
+        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         // view/projection transformations
+
+
+        // Render scene as normal
+        // ----------------------
+        btTransform transform;
+
+        // Setup shader parameters
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
-        // don't forget to enable shader before setting uniforms
-
-        btTransform transform;
-        glm::mat4 m;
         ourShader.use();
         ourShader.setMatrix4("projection", projection);
         ourShader.setMatrix4("view", view);
         ourShader.setVec3("u_view_pos", camera.Position);
+        ourShader.setVec3("light.light_pos", lightSource.getPosition());
+        ourShader.setMatrix4("lightSpaceMatrix", lightSource.getLightSpaceMatrix());
+        ourShader.setInt("shadowMap", 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, lightSource.getDepthMapID());
+
+        renderScene(sunM, ourShader, moonM, earthM, grid_size, floorModel);
+
+        // Update the position of the light
         auto delta = light_pos + glm::vec3(4 * std::sin(now / 2), 0.0,  4 * std::cos(now / 2));
-        ourShader.setVec3("light.light_pos", delta);
-
         sunM.updatePosition(delta);
-        m = sunM.getOpenGLMatrix();
-        ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
-        ourShader.setFloat("light.ambient_strength", 1.0);
-        sunM.DrawWithShader(ourShader, 1);
-        ourShader.setFloat("light.ambient_strength", ambient);
-
-        m = moonM.getOpenGLMatrix();
-        ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
-        moonM.DrawWithShader(ourShader, 1);
-        
-        m = earthM.getOpenGLMatrix();
-        ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
-        earthM.DrawWithShader(ourShader, 1);
-
-        m = heliport.getOpenGLMatrix();
-        ourShader.setMatrix4("model", m);
-        heliport.DrawWithShader(ourShader, 1);
-        
-        if (posUpdated) ourModel.updatePosition(carPosition);
-        m = ourModel.getOpenGLMatrix();
-        ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.2)));
-        if (jump)
-        {
-            ourModel.applyImpulse(btVector3(0.0f, 5.0f, 0.0f));
-            jump = false;
-        }
-        ourModel.DrawWithShader(ourShader, 1);
-
-        physical.use();
-        physical.setMatrix4("M", model);
-        physical.setMatrix4("itM", inverseModel);
-        physical.setMatrix4("V", view);
-        physical.setMatrix4("P", projection);
-        physical.setVec3("u_view_pos", camera.Position);
-        physical.setVec3("light.light_pos", delta);
-        
-        m = lightM.getOpenGLMatrix();
-        physical.setMatrix4("M", glm::scale(m, glm::vec3(0.5)));
-        
-        lightM.DrawWithShader(physical, 0); // pas besoin du param en plus mtn je pense mais je le garde car peut etre bien pr debug au cas ou 
-
-
-        // sun = glm::translate(sun, glm::vec3(0.1 * cos(currentFrame), 0.0, 0.1 * sin(currentFrame)));
-
-        // render the loaded model
-        ourShader.use();
-        ourShader.setMatrix4("model", model);
-        ourShader.setMatrix4("projection", projection);
-        ourShader.setMatrix4("view", view);
-
-        for (int i = 0; i < grid_size * grid_size; i++) {
-            if (i % grid_size != 0) floor = glm::translate(floor, glm::vec3(0.0f, 0.0f, 2.0f)); 
-            else {
-                floor = glm::mat4(1.0f);
-                floor = glm::translate(floor, glm::vec3(-grid_size + 2.0f * i / grid_size, 0.0f, -grid_size));
-            }
-            ourShader.setMatrix4("model", floor);
-            floorModel.DrawWithShader(ourShader, 1);
-        }
-
-        // ourShader.use();
-        // ourShader.setMatrix4("model", model);
-        // ourShader.setMatrix4("projection", projection);
-        // ourShader.setMatrix4("view", view);
-        // sphere.DrawWithShader(ourShader);
-
+        lightSource.setPosition(delta);
+        //Update the position of all the physical objects
         physics.simulate(deltaTime);
         ourModel.updateFromPhysics();
         // sphere.updateFromPhysics();
@@ -275,6 +248,7 @@ int main()
         sunM.updateFromPhysics();
         lightM.updateFromPhysics();
 
+        // Draw the cube map
         cubeMap.draw(&camera);
 
         glfwSwapBuffers(window);
@@ -285,6 +259,76 @@ int main()
     return 0;
 }
 
+void renderScene(PhysicModel &sunM, Shader &ourShader, PhysicModel &moonM, PhysicModel &earthM, int grid_size, PhysicModel &floorModel)
+{
+    float ambient = 0.1;
+    glm::mat4 m;
+    // Draw the sun
+    /*
+    m = sunM.getOpenGLMatrix();
+    ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
+    ourShader.setFloat("light.ambient_strength", 1.0);
+    sunM.DrawWithShader(ourShader, 1);
+    ourShader.setFloat("light.ambient_strength", ambient);
+    */
+    // Draw the moon
+    m = moonM.getOpenGLMatrix();
+    ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
+    moonM.DrawWithShader(ourShader, 1);
+    // Draw the earth
+    m = earthM.getOpenGLMatrix();
+    ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.5)));
+    earthM.DrawWithShader(ourShader, 1);
+
+    /*
+    if (posUpdated) ourModel.updatePosition(carPosition);
+    m = ourModel.getOpenGLMatrix();
+    ourShader.setMatrix4("model", glm::scale(m, glm::vec3(0.2)));
+    if (jump)
+    {
+        ourModel.applyImpulse(btVector3(0.0f, 5.0f, 0.0f));
+        jump = false;
+    }
+    ourModel.DrawWithShader(ourShader, 1); */
+
+    /*
+    physical.use();
+    physical.setMatrix4("M", model);
+    physical.setMatrix4("itM", inverseModel);
+    physical.setMatrix4("V", view);
+    physical.setMatrix4("P", projection);
+    physical.setVec3("u_view_pos", camera.Position);
+    physical.setVec3("light.light_pos", delta);
+    m = lightM.getOpenGLMatrix();
+    physical.setMatrix4("M", glm::scale(m, glm::vec3(0.5)));
+    lightM.DrawWithShader(physical, 0); // pas besoin du param en plus mtn je pense mais je le garde car peut etre bien pr debug au cas ou
+    */
+
+    // sun = glm::translate(sun, glm::vec3(0.1 * cos(currentFrame), 0.0, 0.1 * sin(currentFrame)));
+
+    /*
+    // render the loaded model
+    ourShader.use();
+    ourShader.setMatrix4("model", model);
+    ourShader.setMatrix4("projection", projection);
+    ourShader.setMatrix4("view", view);
+    */
+
+    // Draw the floor
+    glm::mat4 floor = glm::mat4(1.0f);
+    for (int i = 0; i < grid_size * grid_size; i++)
+    {
+        if (i % grid_size != 0)
+            floor = glm::translate(floor, glm::vec3(0.0f, 0.0f, 2.0f));
+        else
+        {
+            floor = glm::mat4(1.0f);
+            floor = glm::translate(floor, glm::vec3(-grid_size + 2.0f * i / grid_size, 0.0f, -grid_size));
+        }
+        ourShader.setMatrix4("model", floor);
+        floorModel.DrawWithShader(ourShader, 1);
+    }
+}
 
 void processInput(GLFWwindow *window)
 {

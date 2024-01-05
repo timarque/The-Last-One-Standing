@@ -54,7 +54,7 @@ void Mesh::Draw(Shader& shader, int apply) {
     unsigned int normalNr = 1;
     if (apply == 1) {
         for (unsigned int i = 0; i < textures.size(); i++) {
-            glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
+            glActiveTexture(GL_TEXTURE0 + i + 1); // activate proper texture unit before binding
             // retrieve texture number (the N in diffuse_textureN)
             std::string number;
             std::string name = textures[i].type;
@@ -64,7 +64,7 @@ void Mesh::Draw(Shader& shader, int apply) {
                 number = std::to_string(specularNr++);
             else if (name == "texture_normal")
                 number = std::to_string(normalNr++);
-            shader.setInt((name + number).c_str(), i);
+            shader.setInt((name + number).c_str(), i + 1);
             glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }
     }
@@ -76,10 +76,9 @@ void Mesh::Draw(Shader& shader, int apply) {
 
     for (GLuint i = 0; i < this->textures.size(); i++)
     {
-        glActiveTexture(GL_TEXTURE0 + i);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTexture(GL_TEXTURE0 + i + 1);
+        glBindTexture(GL_TEXTURE_2D, textures[i].id);   // 0 ??
     }
-
 }
 
 

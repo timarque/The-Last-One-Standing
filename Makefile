@@ -88,51 +88,6 @@ rebuild_cache:
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
 
-# Special rule for the target list_install_components
-list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"assimp-dev\" \"libassimp5.3.0\" \"libassimp5.3.0-dev\""
-.PHONY : list_install_components
-
-# Special rule for the target list_install_components
-list_install_components/fast: list_install_components
-.PHONY : list_install_components/fast
-
-# Special rule for the target install
-install: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install
-
-# Special rule for the target install
-install/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install/fast
-
-# Special rule for the target install/local
-install/local: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local
-
-# Special rule for the target install/local
-install/local/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local/fast
-
-# Special rule for the target install/strip
-install/strip: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip
-
-# Special rule for the target install/strip
-install/strip/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip/fast
-
 # The main all target
 all: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/CMakeFiles /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project//CMakeFiles/progress.marks
@@ -178,45 +133,6 @@ glad/fast:
 .PHONY : glad/fast
 
 #=============================================================================
-# Target rules for targets named uninstall
-
-# Build rule for target.
-uninstall: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 uninstall
-.PHONY : uninstall
-
-# fast build rule for target.
-uninstall/fast:
-	$(MAKE) $(MAKESILENT) -f 3rdParty/assimp/CMakeFiles/uninstall.dir/build.make 3rdParty/assimp/CMakeFiles/uninstall.dir/build
-.PHONY : uninstall/fast
-
-#=============================================================================
-# Target rules for targets named assimp
-
-# Build rule for target.
-assimp: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 assimp
-.PHONY : assimp
-
-# fast build rule for target.
-assimp/fast:
-	$(MAKE) $(MAKESILENT) -f 3rdParty/assimp/code/CMakeFiles/assimp.dir/build.make 3rdParty/assimp/code/CMakeFiles/assimp.dir/build
-.PHONY : assimp/fast
-
-#=============================================================================
-# Target rules for targets named unit
-
-# Build rule for target.
-unit: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 unit
-.PHONY : unit
-
-# fast build rule for target.
-unit/fast:
-	$(MAKE) $(MAKESILENT) -f 3rdParty/assimp/test/CMakeFiles/unit.dir/build.make 3rdParty/assimp/test/CMakeFiles/unit.dir/build
-.PHONY : unit/fast
-
-#=============================================================================
 # Target rules for targets named project_main
 
 # Build rule for target.
@@ -260,16 +176,9 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-	@echo "... install"
-	@echo "... install/local"
-	@echo "... install/strip"
-	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... uninstall"
-	@echo "... assimp"
 	@echo "... glad"
 	@echo "... project_main"
-	@echo "... unit"
 	@echo "... 3rdParty/glad/src/glad.o"
 	@echo "... 3rdParty/glad/src/glad.i"
 	@echo "... 3rdParty/glad/src/glad.s"

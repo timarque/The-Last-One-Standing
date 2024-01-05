@@ -18,3 +18,4 @@ Project/CMakeLists.txt
 Project/cmake_install.cmake
 Project/Makefile
 Project/project_main
+vcpkg_installed/

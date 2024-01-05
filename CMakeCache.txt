@@ -478,7 +478,7 @@ ZLIB_LIBRARY_DBG:FILEPATH=/usr/lib64/libz.so
 ZLIB_LIBRARY_REL:FILEPATH=/usr/lib64/libz.so
 
 //The directory containing a CMake configuration file for assimp.
-assimp_DIR:PATH=assimp_DIR-NOTFOUND
+assimp_DIR:PATH=/usr/lib64/cmake/assimp-5.0
 
 //Dependencies for the target
 assimp_LIB_DEPENDS:STATIC=optimized;/usr/lib64/libz.so;debug;/usr/lib64/libz.so;general;rt;
@@ -504,6 +504,8 @@ project_SOURCE_DIR:STATIC=/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Pro
 ASSIMP_BUILD_ARCHITECTURE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: ASSIMP_BUILD_COMPILER
 ASSIMP_BUILD_COMPILER-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ASSIMP_LIBRARY_SUFFIX
+ASSIMP_LIBRARY_SUFFIX-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: BULLET_COLLISION_LIBRARY
 BULLET_COLLISION_LIBRARY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: BULLET_COLLISION_LIBRARY_DEBUG
@@ -654,7 +656,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=6
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=2
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

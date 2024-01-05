@@ -14,6 +14,7 @@
 #include "Sphere.h"
 #include "CubeMap.h"
 #include "debugObject.hpp"
+#include "Animator.h"
 
 #include <iostream>
 
@@ -87,6 +88,7 @@ int main()
     Shader shader(PATH_TO_SHADERS "/backpack/shader.vert", PATH_TO_SHADERS "/backpack/shader.frag");
     Shader debugShader(PATH_TO_SHADERS "/debug/debug.vert", PATH_TO_SHADERS "/debug/debug.frag");
     Shader cubeMapShader(PATH_TO_SHADERS "/skybox/skybox.vert", PATH_TO_SHADERS "/skybox/skybox.frag");
+    Shader animationShader(PATH_TO_SHADERS "/animation/animation.vert", PATH_TO_SHADERS "/animation/animation.frag");
 
     //* Bullet Physics Rendering Debug Tool
     DebugDrawer *debugDrawer = new DebugDrawer(debugShader.ID);
@@ -99,7 +101,20 @@ int main()
 
     TankModel tankModel(PATH_TO_OBJECTS  "/tank/tank.obj");
     btCollisionShape *shape = new btBoxShape(btVector3(0.7, 0.7, 0.7));
-    tankModel.createPhysicsObject(physics, shape, 1, btVector3(0.0, 0.0, 0.0));
+    tankModel.createPhysicsObject(physics, shape, 1, btVector3(0.0, 2.0, 0.0));
+
+
+    // animated model
+    Model vampire_dancing(PATH_TO_OBJECTS "/animation/dancing_vampire.dae");
+    Animation danceAnimation(PATH_TO_OBJECTS "/animation/dancing_vampire.dae", &vampire_dancing); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
+    Animator animator(&danceAnimation);
+
+    PhysicModel platform(PATH_TO_OBJECTS "/tank/platform.dae");
+    btCollisionShape* shape_deploy = new btBoxShape(btVector3(0.8, 0.3, 0.8));
+    platform.createPhysicsObject(physics, shape_deploy, 100, btVector3(0.0, 0.0, 0.0));
+    Animation deployanimation(PATH_TO_OBJECTS "/tank/platform.dae", &platform); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
+    Animator anim(&deployanimation);
+
     
     PhysicModel floorModel(PATH_TO_OBJECTS  "/floor/floor.obj");
     btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0.0, 1.0, 0.0), 0);
@@ -140,11 +155,36 @@ int main()
 
         glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        animator.UpdateAnimation(deltaTime);
+        anim.UpdateAnimation(deltaTime);
         
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
         auto current_pos_light = light_pos + glm::vec3(4 * std::sin(now / 2), 0.0,  4 * std::cos(now / 2));
+
+        animationShader.use();
+        animationShader.setMatrix4("projection", projection);
+        animationShader.setMatrix4("view", view);
+        auto transforms = animator.GetFinalBoneMatrices();
+        for (int i = 0; i < transforms.size(); ++i) {
+            animationShader.setMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
+        }
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-10.0f, 0.0f, -10.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(.5f, .5f, .5f));	// it's a bit too big for our scene, so scale it down
+        animationShader.setMatrix4("model", model);;
+        vampire_dancing.DrawWithShader(animationShader, 1);
+
+        auto transforms_deploy = anim.GetFinalBoneMatrices();
+        for (int i = 0; i < transforms_deploy.size(); ++i) {
+            animationShader.setMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms_deploy[i]);
+        }
+        glm::mat4 model_deploy = glm::mat4(1.0f);
+        model_deploy = glm::translate(model_deploy, glm::vec3(-0.0f, 0.0f, -0.0f)); // translate it down so it's at the center of the scene
+        model_deploy = glm::scale(model_deploy, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        animationShader.setMatrix4("model", model_deploy);;
+        platform.DrawWithShader(animationShader, 1);
 
         shader.use();
         shader.setVec3("u_view_pos", camera.Position);

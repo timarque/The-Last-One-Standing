@@ -35,10 +35,9 @@ void PhysicModel::updateFromPhysics()
 
 glm::vec3 PhysicModel::getPosition() {
     btTransform worldTransform = getTransform();
-    float y = dynamic_cast<btBoxShape *>(physicsObject->getCollisionShape())->getHalfExtentsWithoutMargin().y();
+    float y = static_cast<btBoxShape *>(physicsObject->getCollisionShape())->getHalfExtentsWithoutMargin().y();
     btVector3 position = worldTransform.getOrigin();
     glm::vec3 modelCoordinates(position.x(), position.y() - y, position.z());
-    // std::cout << modelCoordinates.x << " " << modelCoordinates.y << " " << modelCoordinates.z << std::endl;
     return modelCoordinates;
 }
 
@@ -46,7 +45,6 @@ glm::mat4 PhysicModel::getRotation() {
     btTransform worldTransform = getTransform();
     btQuaternion rotation = worldTransform.getRotation();
     glm::mat4 modelRotation(glm::quat(rotation.w(), rotation.x(), rotation.y(), rotation.z()));
-    // std::cout << modelRotation.x << " " << modelRotation.y << " " << modelRotation.z << std::endl;
     return modelRotation;
 }
 
@@ -92,6 +90,7 @@ void PhysicModel::updatePosition(glm::vec3 position)
     newTransform.setOrigin(btVector3(position.x, position.y, position.z));
     btQuaternion currentRotation = physicsObject->getWorldTransform().getRotation();
     newTransform.setRotation(currentRotation);
+    physicsObject->setWorldTransform(newTransform);
     physicsObject->setWorldTransform(newTransform);
 };
 

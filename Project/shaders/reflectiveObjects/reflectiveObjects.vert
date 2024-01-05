@@ -4,13 +4,13 @@ in vec2 tex_coords;
 in vec3 normal;
 out vec3 v_frag_coord;
 out vec3 v_normal;
-uniform mat4 M;
-uniform mat4 V;
-uniform mat4 P;
-uniform mat4 itM;
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
 void main(){ 
-	vec4 frag_coord = M*vec4(position, 1.0);
-	gl_Position = P*V*frag_coord;
-	v_normal = vec3(itM * vec4(normal, 1.0)); 
+	vec4 frag_coord = model*vec4(position, 1.0);
+	gl_Position = projection*view*frag_coord;
+	v_normal = mat3(transpose(inverse(model))) * normal;
 	v_frag_coord = frag_coord.xyz;
 }

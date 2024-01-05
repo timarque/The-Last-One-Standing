@@ -7,6 +7,7 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "TankModel.hpp"
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement {
@@ -35,6 +36,7 @@ public:
     glm::vec3 Up;
     glm::vec3 Right;
     glm::vec3 WorldUp;
+    glm::vec3 Orientation = glm::vec3(0.0f, 0.0f, -1.0f); // 180deg rotation for cam
     // Eular Angles
     GLfloat Yaw;
     GLfloat Pitch;
@@ -67,6 +69,20 @@ public:
     {
         return glm::lookAt(this->Position, this->Position + this->Front, this->Up);
     }
+    
+    glm::mat4 GetViewMatrix(TankModel* model) {
+        glm::vec3 tankPosition = model->getPosition();
+        glm::vec3 cameraOffset = glm::vec3(0.0, 3.5, -4.0);
+        glm::mat4 tankRotationMatrix = model->getRotation();
+        glm::vec4 rotatedOffset = tankRotationMatrix * glm::vec4(cameraOffset, 1.0f);
+        Position = tankPosition + glm::vec3(rotatedOffset);
+        // On regarde un peu devant le tank
+        glm::vec3 lookAtOffset = glm::vec3(0.0, 0.0, 5.0);
+        glm::vec4 rotatedLookAtOffset = tankRotationMatrix * glm::vec4(lookAtOffset, 1.0f);
+        glm::vec3 lookAtPosition = tankPosition + glm::vec3(rotatedLookAtOffset);
+        glm::vec3 targetPosition = glm::vec3(lookAtPosition.x, model->getHeightView(), lookAtPosition.z);
+        return glm::lookAt(Position, targetPosition, Up);
+    }
 
     glm::mat4 GetProjectionMatrix(float fov=45.0, float ratio=1.0, float near=0.01, float far=100.0)
     {
@@ -74,21 +90,9 @@ public:
     }
 
     // Processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
-    void ProcessKeyboardMovement(Camera_Movement direction, GLfloat deltaTime)
-    {
-        GLfloat velocity = this->MovementSpeed * deltaTime;
-        if (direction == FORWARD)
-            this->Position += this->Front * velocity;
-        if (direction == BACKWARD)
-            this->Position -= this->Front * velocity;
-        if (direction == LEFT)
-            this->Position -= this->Right * velocity;
-        if (direction == RIGHT)
-            this->Position += this->Right * velocity;
-        if (direction == UP)
-            this->Position += this->Up * velocity;
-        if (direction == DOWN)
-            this->Position -= this->Up * velocity;
+    void ProcessKeyboardMovement(Camera_Movement direction, GLfloat deltaTime) {
+        if (direction == UP) ProcessKeyboardRotation(0.0f, -1.0f); // Ajustez selon votre sensibilité
+        if (direction == DOWN) ProcessKeyboardRotation(0.0f, 1.0f); // Ajustez selon votre sensibilité
     }
 
     // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.

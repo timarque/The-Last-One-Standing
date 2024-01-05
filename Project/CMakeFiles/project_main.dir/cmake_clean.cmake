@@ -5,6 +5,13 @@ file(REMOVE_RECURSE
   "CMakeFiles/project_main.dir/sources/Model.cpp.o.d"
   "CMakeFiles/project_main.dir/sources/PhysicModel.cpp.o"
   "CMakeFiles/project_main.dir/sources/PhysicModel.cpp.o.d"
+<<<<<<< HEAD
+=======
+  "CMakeFiles/project_main.dir/sources/TankModel.cpp.o"
+  "CMakeFiles/project_main.dir/sources/TankModel.cpp.o.d"
+  "CMakeFiles/project_main.dir/sources/debugObject.cpp.o"
+  "CMakeFiles/project_main.dir/sources/debugObject.cpp.o.d"
+>>>>>>> merge_camera
   "CMakeFiles/project_main.dir/sources/main.cpp.o"
   "CMakeFiles/project_main.dir/sources/main.cpp.o.d"
   "project_main"

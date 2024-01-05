@@ -5,30 +5,28 @@
 
 void PhysicModel::createPhysicsObject(PhysicsEngine physics, btCollisionShape *collision_shape, float mass, btVector3 origin)
 {
+
+    btVector3 localInertia(0, 0, 0);
+    collision_shape->calculateLocalInertia(mass, localInertia);
+    // Ajuster l'inertie selon vos besoins
     btTransform transform;
     transform.setIdentity();
     transform.setOrigin(origin);
 
-    btVector3 localInertia(1, 0, 0);
-    collision_shape->calculateLocalInertia(mass, localInertia);
-
-    // Ajuster l'inertie selon vos besoins
-
     btDefaultMotionState *motionState = new btDefaultMotionState(transform);
 
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, collision_shape);
-    physicsObject = new btRigidBody(rbInfo);
-    physicsObject->setRestitution(0.8);
-    physicsObject->setFriction(0.5f);
-    physicsObject->applyForce(btVector3(0, 0, -10), btVector3(1, 0, 0));
-    physics.getWorld()->addRigidBody(physicsObject);
+    physicsObject = std::make_unique<btRigidBody>(*new btRigidBody(rbInfo));
+    physicsObject->setRestitution(0.3);
+    physicsObject->setFriction(0.2f);
+    physics.getWorld()->addRigidBody(physicsObject.get());
+    physicsObject->activate();
 }
 
 // Mettre à jour la transformation du modèle à partir de la physique
 void PhysicModel::updateFromPhysics()
 {
-    btTransform transform;
-    physicsObject->getMotionState()->getWorldTransform(transform);
+    btTransform transform = getTransform();
     btVector3 position = transform.getOrigin();
     btQuaternion rotation = transform.getRotation();
     for (Mesh mesh : meshes)
@@ -36,11 +34,22 @@ void PhysicModel::updateFromPhysics()
 }
 
 glm::vec3 PhysicModel::getPosition() {
-    btTransform worldTransform;
-    physicsObject->getMotionState()->getWorldTransform(worldTransform);
+    btTransform worldTransform = getTransform();
+    float y = static_cast<btBoxShape *>(physicsObject->getCollisionShape())->getHalfExtentsWithoutMargin().y();
     btVector3 position = worldTransform.getOrigin();
-    glm::vec3 modelCoordinates(position.x(), position.y(), position.z());
+    glm::vec3 modelCoordinates(position.x(), position.y() - y, position.z());
     return modelCoordinates;
+}
+
+glm::mat4 PhysicModel::getRotation() {
+    btTransform worldTransform = getTransform();
+    btQuaternion rotation = worldTransform.getRotation();
+    glm::mat4 modelRotation(glm::quat(rotation.w(), rotation.x(), rotation.y(), rotation.z()));
+    return modelRotation;
+}
+
+glm::mat4 PhysicModel::getModelMatrix(glm::vec3 scale) {
+    return glm::translate(glm::mat4(1.0f), getPosition()) * getRotation();
 }
 
 void PhysicModel::moveForward(float speed, glm::vec3 forward_dir)
@@ -50,16 +59,17 @@ void PhysicModel::moveForward(float speed, glm::vec3 forward_dir)
 
 void PhysicModel::moveForward(float speed, btVector3 forward_dir)
 {
-    btTransform worldTransform;
-    physicsObject->getMotionState()->getWorldTransform(worldTransform);
-    worldTransform.setOrigin(worldTransform.getOrigin() + speed * forward_dir);
-    physicsObject->getMotionState()->setWorldTransform(worldTransform);
+    btVector3 currentVelocity = physicsObject->getLinearVelocity();
+    btVector3 desiredVelocity = speed * forward_dir ;
+    btVector3 velocityChange = desiredVelocity - currentVelocity;
+    physicsObject->activate();
+    physicsObject->applyCentralImpulse(velocityChange);
 }
+
 
 void PhysicModel::moveForward(float speed)
 {
-    btTransform worldTransform;
-    physicsObject->getMotionState()->getWorldTransform(worldTransform);
+    btTransform worldTransform = getTransform();
     btVector3 forwardDir = worldTransform.getBasis().getColumn(2);
     moveForward(speed, forwardDir);
 }
@@ -68,11 +78,10 @@ void PhysicModel::moveBackward(float speed) { moveForward(-speed); }
 
 void PhysicModel::rotate(float angleDegrees)
 {
-    btTransform worldTransform;
-    physicsObject->getMotionState()->getWorldTransform(worldTransform);
+    btTransform worldTransform = getTransform();
     btQuaternion rotation(btVector3(0, 1, 0), btRadians(angleDegrees));
     worldTransform.setRotation(rotation * worldTransform.getRotation());
-    physicsObject->getMotionState()->setWorldTransform(worldTransform);
+    physicsObject->setWorldTransform(worldTransform);
 }
 
 void PhysicModel::updatePosition(glm::vec3 position)
@@ -82,14 +91,12 @@ void PhysicModel::updatePosition(glm::vec3 position)
     btQuaternion currentRotation = physicsObject->getWorldTransform().getRotation();
     newTransform.setRotation(currentRotation);
     physicsObject->setWorldTransform(newTransform);
-    physicsObject->getMotionState()->setWorldTransform(newTransform);
-    physicsObject->activate();
+    physicsObject->setWorldTransform(newTransform);
 };
 
 glm::mat4 PhysicModel::getOpenGLMatrix() {
     glm::mat4 m;
-    btTransform transform;
-    physicsObject->getMotionState()->getWorldTransform(transform);
+    btTransform transform = getTransform();
     transform.getOpenGLMatrix(glm::value_ptr(m));
     return m;
 }

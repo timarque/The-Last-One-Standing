@@ -5,10 +5,13 @@
 #include "Model.h"
 #include "PhysicsEngine.hpp"
 #include "bullet/btBulletDynamicsCommon.h"
+#include <memory>
 
 class PhysicModel : public Model {
 protected:
-    btRigidBody *physicsObject; // Ajouter un membre pour représenter l'objet physique associé au modèle
+    std::unique_ptr<btRigidBody> physicsObject;
+    std::unique_ptr<btCollisionShape> mShape;
+    std::unique_ptr<btDefaultMotionState> mMotionState;
 public:
     PhysicModel(std::string path) : Model(path) {};
     // Créer un objet physique associé au modèle dans le monde physique
@@ -17,6 +20,13 @@ public:
     void updateFromPhysics();
 
     glm::vec3 getPosition();
+
+    btTransform getTransform() { return physicsObject->getWorldTransform(); }
+
+    btVector3 getForward() { return physicsObject->getWorldTransform().getBasis().getColumn(2).normalized();}
+
+    glm::mat4 getRotation();
+    glm::mat4 getModelMatrix(glm::vec3 scale);
 
     void moveForward(float speed, glm::vec3 forward_dir);
     void moveForward(float speed, btVector3 forward_dir);

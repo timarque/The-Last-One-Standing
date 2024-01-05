@@ -205,6 +205,57 @@ sources/PhysicModel.cpp.s:
 	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/PhysicModel.cpp.s
 .PHONY : sources/PhysicModel.cpp.s
 
+<<<<<<< HEAD
+=======
+sources/TankModel.o: sources/TankModel.cpp.o
+.PHONY : sources/TankModel.o
+
+# target to build an object file
+sources/TankModel.cpp.o:
+	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/TankModel.cpp.o
+.PHONY : sources/TankModel.cpp.o
+
+sources/TankModel.i: sources/TankModel.cpp.i
+.PHONY : sources/TankModel.i
+
+# target to preprocess a source file
+sources/TankModel.cpp.i:
+	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/TankModel.cpp.i
+.PHONY : sources/TankModel.cpp.i
+
+sources/TankModel.s: sources/TankModel.cpp.s
+.PHONY : sources/TankModel.s
+
+# target to generate assembly for a file
+sources/TankModel.cpp.s:
+	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/TankModel.cpp.s
+.PHONY : sources/TankModel.cpp.s
+
+sources/debugObject.o: sources/debugObject.cpp.o
+.PHONY : sources/debugObject.o
+
+# target to build an object file
+sources/debugObject.cpp.o:
+	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/debugObject.cpp.o
+.PHONY : sources/debugObject.cpp.o
+
+sources/debugObject.i: sources/debugObject.cpp.i
+.PHONY : sources/debugObject.i
+
+# target to preprocess a source file
+sources/debugObject.cpp.i:
+	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/debugObject.cpp.i
+.PHONY : sources/debugObject.cpp.i
+
+sources/debugObject.s: sources/debugObject.cpp.s
+.PHONY : sources/debugObject.s
+
+# target to generate assembly for a file
+sources/debugObject.cpp.s:
+	cd /home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project && $(MAKE) $(MAKESILENT) -f Project/CMakeFiles/project_main.dir/build.make Project/CMakeFiles/project_main.dir/sources/debugObject.cpp.s
+.PHONY : sources/debugObject.cpp.s
+
+>>>>>>> merge_camera
 sources/main.o: sources/main.cpp.o
 .PHONY : sources/main.o
 
@@ -247,6 +298,15 @@ help:
 	@echo "... sources/PhysicModel.o"
 	@echo "... sources/PhysicModel.i"
 	@echo "... sources/PhysicModel.s"
+<<<<<<< HEAD
+=======
+	@echo "... sources/TankModel.o"
+	@echo "... sources/TankModel.i"
+	@echo "... sources/TankModel.s"
+	@echo "... sources/debugObject.o"
+	@echo "... sources/debugObject.i"
+	@echo "... sources/debugObject.s"
+>>>>>>> merge_camera
 	@echo "... sources/main.o"
 	@echo "... sources/main.i"
 	@echo "... sources/main.s"

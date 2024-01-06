@@ -29,7 +29,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 
-void renderScene(std::vector<PhysicModel> &bullets, Shader &shader, TankModel &tankModel, std::vector<TankModel *> &ennemies, const unsigned int grid_size, glm::mat4 &floor, PhysicModel &floorModel);
+void renderScene(std::vector<PhysicModel> &bullets, Shader &shader, TankModel &tankModel, std::vector<TankModel *> &ennemies, int grid_size, glm::mat4 &floor, PhysicModel &floorModel);
 
 glm::mat4 btScalar2mat4(btScalar *matrix)
 {
@@ -260,7 +260,6 @@ int main()
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, lightSource.getDepthMapID());
         // Can maybe be placed outside of the loop ?
-
         renderScene(bullets, shader, tankModel, ennemies, grid_size, floor, floorModel);
 
         // animationShader.use();
@@ -330,7 +329,7 @@ int main()
     return 0;
 }
 
-void renderScene(std::vector<PhysicModel> &bullets, Shader &shader, TankModel &tankModel, std::vector<TankModel *> &ennemies, const unsigned int grid_size, glm::mat4 &floor, PhysicModel &floorModel)
+void renderScene(std::vector<PhysicModel> &bullets, Shader &shader, TankModel &tankModel, std::vector<TankModel *> &ennemies, int grid_size, glm::mat4 &floor, PhysicModel &floorModel)
 {
     for (int i = 0; i < bullets.size(); i++)
     {
@@ -351,8 +350,7 @@ void renderScene(std::vector<PhysicModel> &bullets, Shader &shader, TankModel &t
         enemy->DrawWithShader(shader, 1);
     }
 
-    std::cout << grid_size << std::endl;
-
+    floor = glm::mat4(1.0f);
     for (int i = 0; i < grid_size * grid_size; i++)
     {
         if (i % grid_size != 0)

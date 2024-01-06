@@ -93,6 +93,8 @@ int main()
     Shader cubeMapShader(PATH_TO_SHADERS "/skybox/skybox.vert", PATH_TO_SHADERS "/skybox/skybox.frag");
     Shader animationShader(PATH_TO_SHADERS "/animation/animation.vert", PATH_TO_SHADERS "/animation/animation.frag");
     Shader depthMapShader(PATH_TO_SHADERS "/depthMap/depthMap.vert", PATH_TO_SHADERS "/depthMap/depthMap.frag");
+    Shader reflectiveShader(PATH_TO_SHADERS "/reflectiveObjects/reflectiveObjects.vert", PATH_TO_SHADERS "/reflectiveObjects/reflectiveObjects.frag");
+    Shader refractiveShader(PATH_TO_SHADERS "/refractiveObjects/refractiveObjects.vert", PATH_TO_SHADERS "/refractiveObjects/refractiveObjects.frag");
 
     //* Bullet Physics Rendering Debug Tool
     DebugDrawer *debugDrawer = new DebugDrawer(debugShader.ID);
@@ -106,6 +108,10 @@ int main()
     TankModel tankModel(PATH_TO_OBJECTS  "/tank/tank.obj");
     btCollisionShape *shape = new btBoxShape(btVector3(0.7, 0.7, 0.7));
     tankModel.createPhysicsObject(physics, shape, 1, btVector3(0.0, 2.0, -10.0));
+
+    PhysicModel reflectiveSphere = generatePhysicalSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", glm::vec3(3.0, 5.0, 7.0), physics);
+    PhysicModel refractiveSphere = generatePhysicalSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", glm::vec3(-3.0, 5.0, 7.0), physics);
+
 
     PhysicModel *platform = new PhysicModel(PATH_TO_OBJECTS "/tank/platform.dae");
     btCollisionShape* shape_deploy = new btBoxShape(btVector3(0.8, 0.3, 0.8));
@@ -144,7 +150,6 @@ int main()
     floorModel.createPhysicsObject(physics, floor_shape, 0.0, btVector3(0, 0, 0));
     
     const int grid_size = 20;
-    const int grid_size = 40;
 
     // Configure the light source
     glm::vec3 light_pos = glm::vec3(0.0, 5.0, 0.0);
@@ -169,6 +174,27 @@ int main()
     shader.setFloat("light.linear", 0.1);
     shader.setFloat("light.quadratic", 0.01);
     shader.setInt("shadowMap", 0);
+
+    reflectiveShader.use();
+    reflectiveShader.setFloat("shininess", 32.0f);
+    reflectiveShader.setVec3("materialColour", materialColour);
+    reflectiveShader.setFloat("light.ambient_strength", ambient);
+    reflectiveShader.setFloat("light.diffuse_strength", diffuse);
+    reflectiveShader.setFloat("light.specular_strength", specular);
+    reflectiveShader.setFloat("light.constant", 1.0);
+    reflectiveShader.setFloat("light.linear", 0.14);
+    reflectiveShader.setFloat("light.quadratic", 0.07);
+
+    refractiveShader.use();
+    refractiveShader.setFloat("shininess", 32.0f);
+    refractiveShader.setVec3("materialColour", materialColour);
+    refractiveShader.setFloat("light.ambient_strength", ambient);
+    refractiveShader.setFloat("light.diffuse_strength", diffuse);
+    refractiveShader.setFloat("light.specular_strength", specular);
+    refractiveShader.setFloat("light.constant", 1.0);
+    refractiveShader.setFloat("light.linear", 0.14);
+    refractiveShader.setFloat("light.quadratic", 0.07);
+
 
     std::vector<PhysicModel> bullets;
     std::vector<PhysicModel*> animated_enemies;
@@ -294,24 +320,9 @@ int main()
         shader.use();
 
         shader.setVec3("u_view_pos", camera.Position);
-        shader.setVec3("light.light_pos", light_pos);
-        bool shot = tankModel.update(window, deltaTime);
-        btVector3 forward_pos = tankModel.getForward();
-        if (shot) {
-            PhysicModel bullet = generatePhysicalSphere(PATH_TO_OBJECTS "/tank/ball.obj", 0.2, 10, tankModel.getPosition() + glm::vec3(forward_pos.x(), 0.2, forward_pos.z()), physics);
-            bullet.applyImpulse((forward_pos + btVector3(0.0, camera.Position.y, 0.0)) * btVector3(500.f, 0.0, 500.f));
-            bullets.push_back(std::move(bullet));
-        }
-        for (int i = 0; i < bullets.size(); i++) {
-            shader.setMatrix4("model", bullets[i].getModelMatrix(glm::vec3(1.0f)));
-            bullets[i].DrawWithShader(shader, 1);
-        }
-
         shader.setMatrix4("model", tankModel.getModelMatrix(glm::vec3(1.0f)));
         shader.setMatrix4("projection", projection);
         shader.setMatrix4("view", view);
-        shader.setMatrix4("projection", projection);
-        shader.setVec3("u_view_pos", camera.Position);
         shader.setVec3("light.light_pos", lightSource.getPosition());
         shader.setMatrix4("lightSpaceMatrix", lightSource.getLightSpaceMatrix());
         shader.setInt("shadowMap", 0);  // Maybe not needed ?
@@ -319,6 +330,25 @@ int main()
         glBindTexture(GL_TEXTURE_2D, lightSource.getDepthMapID());
         // Can maybe be placed outside of the loop ?
         renderScene(bullets, shader, tankModel, ennemies, grid_size, floor, floorModel);
+        
+
+        // reflective and refractive spheres
+        reflectiveShader.use();
+        reflectiveShader.setMatrix4("projection", projection);
+        reflectiveShader.setMatrix4("view", view);
+        glm::mat4 model = glm::mat4(1.0f);
+        reflectiveShader.setMatrix4("model", model);
+        reflectiveShader.setVec3("u_view_pos", camera.Position);
+        reflectiveShader.setVec3("light_pos", lightSource.getPosition());
+        //reflectiveSphere.DrawWithShader(reflectiveShader, 1); // commentend en attendant de fix position
+
+        refractiveShader.use();
+        refractiveShader.setMatrix4("projection", projection);
+        refractiveShader.setMatrix4("view", view);
+        refractiveShader.setMatrix4("model", model);
+        refractiveShader.setVec3("u_view_pos", camera.Position);
+        refractiveShader.setVec3("light_pos", lightSource.getPosition());
+        refractiveSphere.DrawWithShader(refractiveShader, 1);
 
 
         animationShader.use();
@@ -356,20 +386,7 @@ int main()
         //physics.getWorld()->debugDrawWorld();
         //debugDrawer->flushLines();
 
-
-        // ourShader.use();
-        // ourShader.setMatrix4("model", model);
-        // ourShader.setMatrix4("projection", projection);
-        // ourShader.setMatrix4("view", view);
-        // sphere.DrawWithShader(ourShader);
-
         physics.simulate(deltaTime);
-       
-        //tankModel.updateFromPhysics();
-        //vampire_dancing.updateFromPhysics();
-        // // sphere.updateFromPhysics();
-        // floorModel.updateFromPhysics();
-
         cubeMap.draw(view, projection);
 
         glfwSwapBuffers(window);

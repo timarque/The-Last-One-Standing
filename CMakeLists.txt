@@ -20,4 +20,4 @@ add_compile_definitions(PATH_TO_TEXTURES="${CMAKE_CURRENT_SOURCE_DIR}/Project/te
 
 add_executable(VR_project ${SOURCES_MAIN})
 
-target_link_libraries(VR_project PRIVATE assimp::assimp glfw glad::glad ${BULLET_LIBRARIES})
+target_link_libraries(VR_project PRIVATE assimp glfw glad::glad ${BULLET_LIBRARIES})

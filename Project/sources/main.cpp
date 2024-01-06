@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <memory>
+#include <stdlib.h>
 
 #include "Shader.h"
 #include "Camera.h"
@@ -14,7 +15,7 @@
 #include "TankModel.hpp"
 #include "CubeMap.h"
 #include "debugObject.hpp"
-#include "Animator.h"
+// #include "Animator.h"
 #include "Sphere.h"
 #include "LightSource.h"
 
@@ -29,7 +30,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 
-void renderScene(std::vector<PhysicModel> &bullets, Shader &shader, TankModel &tankModel, std::vector<TankModel *> &ennemies, int grid_size, glm::mat4 &floor, PhysicModel &floorModel);
+void renderScene(std::vector<PhysicModel> &bullets, Shader &shader, TankModel &tankModel, std::vector<TankModel *> &ennemies, int grid_size, glm::mat4 &floor, PhysicModel &floorModel, std::vector<PhysicModel*> &cactuses);
 
 glm::mat4 btScalar2mat4(btScalar *matrix)
 {
@@ -113,27 +114,27 @@ int main()
     PhysicModel refractiveSphere = generatePhysicalSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", glm::vec3(-3.0, 5.0, 7.0), physics);
 
 
-    PhysicModel *platform = new PhysicModel(PATH_TO_OBJECTS "/tank/platform.dae");
-    btCollisionShape* shape_deploy = new btBoxShape(btVector3(0.8, 0.3, 0.8));
-    platform->createPhysicsObject(physics, shape_deploy, 100, btVector3(-0.0, 0.0, -10.0), 1, "platform");
-    platform->physicsObject.get()->setUserIndex(25);
-    Animation deployanimation(PATH_TO_OBJECTS "/tank/platform.dae", platform); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
-    Animator anim(&deployanimation);
+    // PhysicModel *platform = new PhysicModel(PATH_TO_OBJECTS "/tank/platform.dae");
+    // btCollisionShape* shape_deploy = new btBoxShape(btVector3(0.8, 0.3, 0.8));
+    // platform->createPhysicsObject(physics, shape_deploy, 100, btVector3(-0.0, 0.0, -10.0), 1, "platform");
+    // platform->physicsObject.get()->setUserIndex(25);
+    // Animation deployanimation(PATH_TO_OBJECTS "/tank/platform.dae", platform); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
+    // Animator anim(&deployanimation);
 
     // enemies
-    PhysicModel *vampire_dancing = new PhysicModel(PATH_TO_OBJECTS "/animation/dancing_vampire.dae");
-    btCollisionShape *shape_vampire = new btBoxShape(btVector3(0.8, 2.0, 0.8));
-    vampire_dancing->createPhysicsObject(physics, shape_vampire, 0, btVector3(0.f, 0.f, -20.f), 3, "vampire");
-    vampire_dancing->physicsObject.get()->setUserIndex(15);
-    Animation danceAnimation(PATH_TO_OBJECTS "/animation/dancing_vampire.dae", vampire_dancing); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
-    Animator animator(&danceAnimation);
+    // PhysicModel *vampire_dancing = new PhysicModel(PATH_TO_OBJECTS "/animation/dancing_vampire.dae");
+    // btCollisionShape *shape_vampire = new btBoxShape(btVector3(0.8, 2.0, 0.8));
+    // vampire_dancing->createPhysicsObject(physics, shape_vampire, 0, btVector3(0.f, 0.f, -20.f), 3, "vampire");
+    // vampire_dancing->physicsObject.get()->setUserIndex(15);
+    // Animation danceAnimation(PATH_TO_OBJECTS "/animation/dancing_vampire.dae", vampire_dancing); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
+    // // Animator animator(&danceAnimation);
 
-    PhysicModel *slenderman = new PhysicModel(PATH_TO_OBJECTS "/slenderman.fbx");
-    btCollisionShape* shape_slenderman = new btBoxShape(btVector3(0.8,4.7, 0.8));
-    slenderman->createPhysicsObject(physics, shape_slenderman, 0, btVector3(-15.0, 0.0, -30.0), 10, "slenderman");
-    slenderman->physicsObject.get()->setUserIndex(30);
-    Animation slenderanimation(PATH_TO_OBJECTS "/slenderman.fbx", slenderman);
-    Animator animslender(&slenderanimation);
+    // PhysicModel *slenderman = new PhysicModel(PATH_TO_OBJECTS "/slenderman.fbx");
+    // btCollisionShape* shape_slenderman = new btBoxShape(btVector3(0.8,4.7, 0.8));
+    // // // slenderman->createPhysicsObject(physics, shape_slenderman, 0, btVector3(-15.0, 0.0, -30.0), 10, "slenderman");
+    // slenderman->physicsObject.get()->setUserIndex(30);
+    // Animation slenderanimation(PATH_TO_OBJECTS "/slenderman.fbx", slenderman);
+    // Animator animslender(&slenderanimation);
 
     std::vector<TankModel*> ennemies;
     for (int i = -5; i < 5; i++) {
@@ -149,7 +150,18 @@ int main()
     btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0.0, 1.0, 0.0), 0);
     floorModel.createPhysicsObject(physics, floor_shape, 0.0, btVector3(0, 0, 0));
     
-    const int grid_size = 20;
+    
+    const int grid_size = 40;
+    
+    std::vector<PhysicModel*> cactuses;
+    for (size_t i = 0; i < 15; i++) {
+        float x = ((rand() % grid_size + 1) - grid_size/2) * 2;
+        float z = ((rand() % grid_size + 1) - grid_size/2) * 2;
+        PhysicModel *cactus = new PhysicModel(PATH_TO_OBJECTS "/floor/cactus.obj");
+        btCollisionShape *cactus_shape = new btBoxShape(btVector3(0.6, 0.6, 0.2));
+        cactus->createPhysicsObject(physics, cactus_shape, 0.0, btVector3(x, 0.5, z));
+        cactuses.push_back(std::move(cactus));
+    }
 
     // Configure the light source
     glm::vec3 light_pos = glm::vec3(0.0, 5.0, 0.0);
@@ -197,14 +209,14 @@ int main()
 
 
     std::vector<PhysicModel> bullets;
-    std::vector<PhysicModel*> animated_enemies;
-    std::vector<Animator> animations;
-    animations.push_back(std::move(anim));
-    animations.push_back(std::move(animator));
-    animations.push_back(std::move(animslender));
-    animated_enemies.push_back(std::move(platform));
-    animated_enemies.push_back(std::move(vampire_dancing));
-    animated_enemies.push_back(std::move(slenderman));
+    // std::vector<PhysicModel*> animated_enemies;
+    // std::vector<Animator> animations;
+    // animations.push_back(std::move(anim));
+    // animations.push_back(std::move(animator));
+    // animations.push_back(std::move(animslender));
+    // animated_enemies.push_back(std::move(platform));
+    // animated_enemies.push_back(std::move(vampire_dancing));
+    // animated_enemies.push_back(std::move(slenderman));
 
 
     while (!glfwWindowShouldClose(window))
@@ -226,17 +238,17 @@ int main()
                     // If you want to break out of the inner loop after a collision, you can use a break statement here.
                 }
             }
-            for (size_t k = 0; k < animated_enemies.size(); k++) {
-                bool collided = physics.checkCollisions(bullets[i].physicsObject, animated_enemies[k]->physicsObject);
-                if (collided) {
-                    bulletsToRemove.push_back(i);
-                    animated_enemies[k]->hp -= 1;
-                    if (animated_enemies[k]->hp == 0) {
-                        anim_ennemiesToRemove.push_back(k);
-                        animationsToRemove.push_back(k);
-                    }
-                }
-            }
+            // for (size_t k = 0; k < animated_enemies.size(); k++) {
+            //     bool collided = physics.checkCollisions(bullets[i].physicsObject, animated_enemies[k]->physicsObject);
+            //     if (collided) {
+            //         bulletsToRemove.push_back(i);
+            //         animated_enemies[k]->hp -= 1;
+            //         if (animated_enemies[k]->hp == 0) {
+            //             anim_ennemiesToRemove.push_back(k);
+            //             animationsToRemove.push_back(k);
+            //         }
+            //     }
+            // }
         }
 
         // Remove elements in reverse order to avoid invalidating indices
@@ -252,13 +264,13 @@ int main()
 
 
 
-        for (auto it = anim_ennemiesToRemove.rbegin(); it != anim_ennemiesToRemove.rend(); ++it) {
-            physics.dynamicsWorld->removeRigidBody(animated_enemies[*it]->physicsObject.get());
-            animated_enemies.erase(animated_enemies.begin() + *it);
-        }
-        for (auto it = animationsToRemove.rbegin(); it != animationsToRemove.rend(); ++it) {
-            animations.erase(animations.begin() + *it);
-        }
+        // for (auto it = anim_ennemiesToRemove.rbegin(); it != anim_ennemiesToRemove.rend(); ++it) {
+        //     physics.dynamicsWorld->removeRigidBody(animated_enemies[*it]->physicsObject.get());
+        //     animated_enemies.erase(animated_enemies.begin() + *it);
+        // }
+        // for (auto it = animationsToRemove.rbegin(); it != animationsToRemove.rend(); ++it) {
+        //     animations.erase(animations.begin() + *it);
+        // }
 
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
@@ -288,7 +300,7 @@ int main()
         glViewport(0, 0, lightSource.getShadowWidth(), lightSource.getShadowHeight());
         glBindFramebuffer(GL_FRAMEBUFFER, lightSource.getDepthMapFBO());
             glClear(GL_DEPTH_BUFFER_BIT);
-            renderScene(bullets, depthMapShader, tankModel, ennemies, grid_size, floor, floorModel);
+            renderScene(bullets, depthMapShader, tankModel, ennemies, grid_size, floor, floorModel, cactuses);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         // lightSource.renderSceneToLight(scene);
         // Reset viewport
@@ -302,9 +314,9 @@ int main()
         // anim.UpdateAnimation(deltaTime);
         // animslender.UpdateAnimation(deltaTime);
 
-        for (auto& animation : animations) {
-            animation.UpdateAnimation(deltaTime);
-        }
+        // for (auto& animation : animations) {
+        //     // animation.UpdateAnimation(deltaTime);
+        // }
 
         
         // view/projection transformations
@@ -329,7 +341,7 @@ int main()
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, lightSource.getDepthMapID());
         // Can maybe be placed outside of the loop ?
-        renderScene(bullets, shader, tankModel, ennemies, grid_size, floor, floorModel);
+        renderScene(bullets, shader, tankModel, ennemies, grid_size, floor, floorModel, cactuses);
         
 
         // reflective and refractive spheres
@@ -356,35 +368,35 @@ int main()
         animationShader.setMatrix4("view", view);
 
 
-        for (int i = 0; i < animated_enemies.size(); i++) {
-            auto transforms = animations[i].GetFinalBoneMatrices();
-            for (int j = 0; j < transforms.size(); ++j) {
-                animationShader.setMatrix4("finalBonesMatrices[" + std::to_string(j) + "]", transforms[j]);
-            }
-            glm::mat4 model = glm::mat4(1.0f);
-            if (animated_enemies[i]->name == "platform") {
-                model = glm::translate(model, glm::vec3(-0.f, 0.f, -10.f));
-                model = glm::scale(model, glm::vec3(1.f, 1.f, 1.f));
-            }
-            else if (animated_enemies[i]->name == "vampire") {
-                model = glm::translate(model, glm::vec3(0.f, 0.f, -20.f)); // keep same translation here as when object is init otherwise colision box diff than position
-                model = glm::scale(model, glm::vec3(.8f, .8f, .8f));	// it's a bit too big for our scene, so scale it down
-            }
-            else if (animated_enemies[i]->name == "slenderman") {
-                model = glm::translate(model, glm::vec3(-15.f, 0.f, -30.f));
-                model = glm::scale(model, glm::vec3(.01f, .01f, .01f));	// it's a bit too big for our scene, so scale it down
-            }
-            animationShader.setMatrix4("model", model);
-            animated_enemies[i]->DrawWithShader(animationShader, 1);
-        }
+        // for (int i = 0; i < animated_enemies.size(); i++) {
+        //     auto transforms = animations[i].GetFinalBoneMatrices();
+        //     for (int j = 0; j < transforms.size(); ++j) {
+        //         animationShader.setMatrix4("finalBonesMatrices[" + std::to_string(j) + "]", transforms[j]);
+        //     }
+        //     glm::mat4 model = glm::mat4(1.0f);
+        //     if (animated_enemies[i]->name == "platform") {
+        //         model = glm::translate(model, glm::vec3(-0.f, 0.f, -10.f));
+        //         model = glm::scale(model, glm::vec3(1.f, 1.f, 1.f));
+        //     }
+        //     else if (animated_enemies[i]->name == "vampire") {
+        //         model = glm::translate(model, glm::vec3(0.f, 0.f, -20.f)); // keep same translation here as when object is init otherwise colision box diff than position
+        //         model = glm::scale(model, glm::vec3(.8f, .8f, .8f));	// it's a bit too big for our scene, so scale it down
+        //     }
+        //     else if (animated_enemies[i]->name == "slenderman") {
+        //         model = glm::translate(model, glm::vec3(-15.f, 0.f, -30.f));
+        //         model = glm::scale(model, glm::vec3(.01f, .01f, .01f));	// it's a bit too big for our scene, so scale it down
+        //     }
+        //     animationShader.setMatrix4("model", model);
+        //     animated_enemies[i]->DrawWithShader(animationShader, 1);
+        // }
 
-        //debugShader.use();
-        //debugShader.setMatrix4("view", view);
-        //debugShader.setMatrix4("projection", projection);
+        debugShader.use();
+        debugShader.setMatrix4("view", view);
+        debugShader.setMatrix4("projection", projection);
 
+        physics.getWorld()->debugDrawWorld();
+        debugDrawer->flushLines();
 
-        //physics.getWorld()->debugDrawWorld();
-        //debugDrawer->flushLines();
 
         physics.simulate(deltaTime);
         cubeMap.draw(view, projection);
@@ -397,7 +409,7 @@ int main()
     return 0;
 }
 
-void renderScene(std::vector<PhysicModel> &bullets, Shader &shader, TankModel &tankModel, std::vector<TankModel *> &ennemies, int grid_size, glm::mat4 &floor, PhysicModel &floorModel)
+void renderScene(std::vector<PhysicModel> &bullets, Shader &shader, TankModel &tankModel, std::vector<TankModel *> &ennemies, int grid_size, glm::mat4 &floor, PhysicModel &floorModel, std::vector<PhysicModel *> &cactuses)
 {
     for (int i = 0; i < bullets.size(); i++)
     {
@@ -416,6 +428,14 @@ void renderScene(std::vector<PhysicModel> &bullets, Shader &shader, TankModel &t
         // shader.setMatrix4("projection", projection);
         // shader.setMatrix4("view", view);
         enemy->DrawWithShader(shader, 1);
+    }
+   
+    for (auto cactus : cactuses)
+    {
+        shader.setMatrix4("model", cactus->getModelMatrix(glm::vec3(1.0f)));
+        // shader.setMatrix4("projection", projection);
+        // shader.setMatrix4("view", view);
+        cactus->DrawWithShader(shader, 1);
     }
 
     floor = glm::mat4(1.0f);

@@ -1,6 +1,0 @@
-/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/CMakeFiles/glad.dir
-/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/CMakeFiles/edit_cache.dir
-/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/CMakeFiles/rebuild_cache.dir
-/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/CMakeFiles/project_main.dir
-/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/CMakeFiles/edit_cache.dir
-/home/zandies/Dokumentoj/Kodingo/OpenGL/VR-project/Project/CMakeFiles/rebuild_cache.dir

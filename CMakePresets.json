@@ -5,7 +5,7 @@
             "name": "default",
             "binaryDir": "${sourceDir}/build",
             "cacheVariables": {
-                "CMAKE_TOOLCHAIN_FILE": "/home/zandies/vcpkg/scripts/buildsystems/vcpkg.cmake"
+                "CMAKE_TOOLCHAIN_FILE": "C:/Users/hanno/source/libs/vcpkg/scripts/buildsystems/vcpkg.cmake"
             }
         }
     ]

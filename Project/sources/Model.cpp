@@ -220,7 +220,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene) {
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
         std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-        // le probleme vient probablement du fait que y a pas la texture normal dans material, je dois load la texture autrement que avec material du coup je pense
+        // TODO : le probleme vient probablement du fait que y a pas la texture normal dans material, je dois load la texture autrement que avec material du coup je pense
         std::vector<Texture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
         textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
         std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
@@ -262,7 +262,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
 }
 
 void Model::addShader(Shader& shader)
-{
+{   // TODO : is it still useful ?
     shaders.push_back(&shader);
 }
 

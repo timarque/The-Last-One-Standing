@@ -31,9 +31,10 @@ uniform vec3 materialColour;
 float specularCalculation(vec3 N, vec3 L, vec3 V){
 	vec3 R = reflect(-L, N);
 	float cosTheta = dot(R, V);
-	float spec = pow(max(cosTheta, 0.0), 32.0);
+	float spec = pow(max(cosTheta, 0.0), shininess);
 	return light.specular_strength * spec;
 }
+
 
 void main()
 {    

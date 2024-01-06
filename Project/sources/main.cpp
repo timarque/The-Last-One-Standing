@@ -138,11 +138,11 @@ int main()
     
     int grid_size = 20;
 
-    glm::vec3 light_pos = glm::vec3(0.0, 2.0, 0.0);
+    glm::vec3 light_pos = glm::vec3(0.0, 5.0, 0.0);
     
     glm::mat4 floor = glm::mat4(1.0f);
 
-    float ambient = 0.1;
+    float ambient = 0.5;
     float diffuse = 2.0;
     float specular = 0.8;
     
@@ -209,15 +209,17 @@ int main()
         
         // glm::mat4 view = glm::lookAt(camera.Position, tankModel.getPosition() + glm::vec3(0.0, 1.5, 0.0), glm::vec3(0.0f, 1.0f, 0.0f));
         // glm::mat4 view = camera.GetViewMatrix();
+        // auto current_pos_light = light_pos;
         auto current_pos_light = light_pos + glm::vec3(4 * std::sin(now / 2), 0.0,  4 * std::cos(now / 2));
 
         shader.use();
         shader.setVec3("u_view_pos", camera.Position);
-        shader.setVec3("light.light_pos", current_pos_light);
+        shader.setVec3("light.light_pos", light_pos);
         bool shot = tankModel.update(window, deltaTime);
         btVector3 forward_pos = tankModel.getForward();
         if (shot) {
             PhysicModel bullet = generatePhysicalSphere(PATH_TO_OBJECTS "/tank/ball.obj", 0.2, 10, tankModel.getPosition() + glm::vec3(forward_pos.x(), 0.2, forward_pos.z()), physics);
+            // bullet.getTransform().setRotation(tankModel.getRotationQuat());
             bullet.applyImpulse((forward_pos + btVector3(0.0, camera.Position.y, 0.0)) * btVector3(500.f, 0.0, 500.f));
             bullets.push_back(std::move(bullet));
         }

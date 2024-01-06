@@ -17,7 +17,7 @@ void PhysicModel::createPhysicsObject(PhysicsEngine physics, btCollisionShape *c
 
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, collision_shape);
     physicsObject = std::make_unique<btRigidBody>(*new btRigidBody(rbInfo));
-    physicsObject->setRestitution(0.3);
+    physicsObject->setRestitution(0.8f);
     physicsObject->setFriction(0.2f);
     physics.getWorld()->addRigidBody(physicsObject.get());
     physicsObject->activate();
@@ -42,10 +42,12 @@ glm::vec3 PhysicModel::getPosition() {
 }
 
 glm::mat4 PhysicModel::getRotation() {
-    btTransform worldTransform = getTransform();
-    btQuaternion rotation = worldTransform.getRotation();
+    btQuaternion rotation = getRotationQuat(); 
     glm::mat4 modelRotation(glm::quat(rotation.w(), rotation.x(), rotation.y(), rotation.z()));
     return modelRotation;
+}
+btQuaternion PhysicModel::getRotationQuat() {
+    return getTransform().getRotation();
 }
 
 glm::mat4 PhysicModel::getModelMatrix(glm::vec3 scale) {

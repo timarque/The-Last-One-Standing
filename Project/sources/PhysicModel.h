@@ -28,6 +28,7 @@ public:
     btVector3 getForward() { return physicsObject->getWorldTransform().getBasis().getColumn(2).normalized();}
 
     glm::mat4 getRotation();
+    btQuaternion getRotationQuat();
     glm::mat4 getModelMatrix(glm::vec3 scale);
 
     void moveForward(float speed, glm::vec3 forward_dir);

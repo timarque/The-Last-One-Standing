@@ -16,7 +16,7 @@
 
 class TankModel : public PhysicModel {
 private:
-    double reload_time = 0.5;
+    double reload_time = 1;
     double last_shot = 0.0;
     double lastMouseX, lastMouseY;
     float heightView;

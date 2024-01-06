@@ -18,7 +18,7 @@
 #include "Animator.h"
 #include "Sphere.h"
 #include "LightSource.h"
-
+#include <random>
 #include <iostream>
 
 #include "bullet/btBulletDynamicsCommon.h"
@@ -116,20 +116,20 @@ int main()
     PhysicModel refractiveSphere = generatePhysicalSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", refrsphere_pos, physics);
 
 
-     PhysicModel *platform = new PhysicModel(PATH_TO_OBJECTS "/tank/platform.dae");
-     btCollisionShape* shape_deploy = new btBoxShape(btVector3(0.8, 0.3, 0.8));
-     platform->createPhysicsObject(physics, shape_deploy, 100, btVector3(-0.0, 0.0, -10.0), 1, "platform");
-     platform->physicsObject.get()->setUserIndex(25);
-     Animation deployanimation(PATH_TO_OBJECTS "/tank/platform.dae", platform); 
-     Animator anim(&deployanimation);
+    PhysicModel *platform = new PhysicModel(PATH_TO_OBJECTS "/tank/platform.dae");
+    btCollisionShape* shape_deploy = new btBoxShape(btVector3(0.8, 0.3, 0.8));
+    platform->createPhysicsObject(physics, shape_deploy, 100, btVector3(-0.0, 0.0, -10.0), 1, "platform");
+    platform->physicsObject.get()->setUserIndex(25);
+    Animation deployanimation(PATH_TO_OBJECTS "/tank/platform.dae", platform); 
+    Animator anim(&deployanimation);
 
     // enemies
-     PhysicModel *vampire_dancing = new PhysicModel(PATH_TO_OBJECTS "/animation/dancing_vampire.dae");
-     btCollisionShape *shape_vampire = new btBoxShape(btVector3(1.0, 3.0, 1.0));
-     vampire_dancing->createPhysicsObject(physics, shape_vampire, 0, btVector3(0.f, 0.f, -35.f), 10, "vampire");
-     vampire_dancing->physicsObject.get()->setUserIndex(15);
-     Animation danceAnimation(PATH_TO_OBJECTS "/animation/dancing_vampire.dae", vampire_dancing); 
-     Animator animator(&danceAnimation);
+    PhysicModel *vampire_dancing = new PhysicModel(PATH_TO_OBJECTS "/animation/dancing_vampire.dae");
+    btCollisionShape *shape_vampire = new btBoxShape(btVector3(1.0, 3.0, 1.0));
+    vampire_dancing->createPhysicsObject(physics, shape_vampire, 0, btVector3(0.f, 0.f, -35.f), 10, "vampire");
+    vampire_dancing->physicsObject.get()->setUserIndex(15);
+    Animation danceAnimation(PATH_TO_OBJECTS "/animation/dancing_vampire.dae", vampire_dancing); 
+    Animator animator(&danceAnimation);
 
      // removed as it uses fbx but working
      //PhysicModel *slenderman = new PhysicModel(PATH_TO_OBJECTS "/slenderman.fbx");
@@ -139,11 +139,16 @@ int main()
      //Animation slenderanimation(PATH_TO_OBJECTS "/slenderman.fbx", slenderman);
      //Animator animslender(&slenderanimation);
 
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dis(-25.0, 30.0);
+
     std::vector<TankModel*> ennemies;
     for (int i = -5; i < 5; i++) {
+        float randomFloat = dis(gen);
         TankModel *tankEnemy = new TankModel(PATH_TO_OBJECTS  "/tank/enemy.obj");
         btCollisionShape *shapeEnemy1 = new btBoxShape(btVector3(0.6, 0.7, 0.7));
-        tankEnemy->createPhysicsObject(physics, shapeEnemy1, 10.0, btVector3(i*2, 0.7, 3.0));
+        tankEnemy->createPhysicsObject(physics, shapeEnemy1, 10.0, btVector3(i*6, 0.5, randomFloat));
         tankEnemy->physicsObject.get()->setUserIndex(i+5);
         ennemies.push_back(std::move(tankEnemy));
     }
@@ -430,7 +435,12 @@ void renderScene(std::vector<PhysicModel> &bullets, Shader &shader, TankModel &t
 
     for (auto enemy : ennemies)
     {
-        shader.setMatrix4("model", glm::rotate(enemy->getModelMatrix(glm::vec3(1.0f)), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0)));
+        if (enemy->getPosition().z > 0.0) {
+            shader.setMatrix4("model", glm::rotate(enemy->getModelMatrix(glm::vec3(1.0f)), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0)));
+        }
+        else if (enemy->getPosition().z < -10.0) {
+            shader.setMatrix4("model", glm::rotate(enemy->getModelMatrix(glm::vec3(1.0f)), glm::radians(0.0f), glm::vec3(0.0, 1.0, 0.0)));
+        }
         // shader.setMatrix4("projection", projection);
         // shader.setMatrix4("view", view);
         enemy->DrawWithShader(shader, 1);

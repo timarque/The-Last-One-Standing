@@ -142,7 +142,7 @@ int main()
     for (int i = -5; i < 5; i++) {
         TankModel *tankEnemy = new TankModel(PATH_TO_OBJECTS  "/tank/enemy.obj");
         btCollisionShape *shapeEnemy1 = new btBoxShape(btVector3(0.6, 0.7, 0.7));
-        tankEnemy->createPhysicsObject(physics, shapeEnemy1, 0, btVector3(i*2, 0.7, 3.0));
+        tankEnemy->createPhysicsObject(physics, shapeEnemy1, 10.0, btVector3(i*2, 0.7, 3.0));
         tankEnemy->physicsObject.get()->setUserIndex(i+5);
         ennemies.push_back(std::move(tankEnemy));
     }
@@ -156,7 +156,7 @@ int main()
     const int grid_size = 40;
     
     std::vector<PhysicModel*> cactuses;
-    for (size_t i = 0; i < 15; i++) {
+    for (size_t i = 0; i < 5; i++) {
         float x = ((rand() % grid_size + 1) - grid_size/2) * 2;
         float z = ((rand() % grid_size + 1) - grid_size/2) * 2;
         PhysicModel *cactus = new PhysicModel(PATH_TO_OBJECTS "/floor/cactus.obj");

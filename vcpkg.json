@@ -1,14 +1,4 @@
 {
-<<<<<<< HEAD
-    "dependencies": [
-        "assimp",
-        "glad",
-        "glfw3",
-        "glm",
-        "bullet3"
-    ]
-}
-=======
   "builtin-baseline": "83972272512ce4ede5fc3b2ba98f6468b179f192",
   "dependencies": [
     "assimp",
@@ -18,4 +8,3 @@
     "bullet3"
   ]
 }
->>>>>>> 6069a2b (Merlin configurations)

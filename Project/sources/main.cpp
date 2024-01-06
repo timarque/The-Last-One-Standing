@@ -142,7 +142,8 @@ int main()
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dis(-25.0, 30.0);
-
+    std::uniform_real_distribution<float> diz(12, 20); // for random move
+    std::uniform_real_distribution<float> dir(0, 1);
     std::vector<TankModel*> ennemies;
     for (int i = -5; i < 5; i++) {
         float randomFloat = dis(gen);
@@ -232,6 +233,9 @@ int main()
 
     glm::mat4 refract = glm::mat4(1.0f);
     glm::mat4 itsmrefract = glm::transpose(glm::inverse(refract));
+
+    double lastmove = glfwGetTime();
+    bool start = true;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -407,13 +411,35 @@ int main()
         //physics.getWorld()->debugDrawWorld();
         //debugDrawer->flushLines();
 
+        
+         if (now - lastmove > 4 || start) {
+             for (auto enemy : ennemies) {
+                 float randomDir = dir(gen);
+                 float randomMove = diz(gen);
+                 if (randomDir < 0.25) {
+                     std::cout << "here" << std::endl;
+                     enemy->applyImpulse(btVector3(randomMove, 0.0, randomMove));
+                 }
+                 else if (randomDir > 0.25 && randomDir < 0.5) {
+                     enemy->applyImpulse(btVector3(randomMove, 0.0, -randomMove));
+                 }
+                 else if (randomDir > 0.5 && randomDir < 0.75) {
+                     enemy->applyImpulse(btVector3(-randomMove, 0.0, randomMove));
+                 }
+                 else {
+                     enemy->applyImpulse(btVector3(-randomMove, 0.0, -randomMove));
+                 }
+             }
+             lastmove = now;
+             start = false;
+         }
 
-        physics.simulate(deltaTime);
-        cubeMap.draw(view, projection);
-        reflectiveSphere.updateFromPhysics();
-        refractiveSphere.updateFromPhysics();
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+         physics.simulate(deltaTime);
+         cubeMap.draw(view, projection);
+         reflectiveSphere.updateFromPhysics();
+         refractiveSphere.updateFromPhysics();
+         glfwSwapBuffers(window);
+         glfwPollEvents();
     }
 
     glfwTerminate();

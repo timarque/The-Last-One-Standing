@@ -118,7 +118,7 @@ int main()
 
     PhysicModel *platform = new PhysicModel(PATH_TO_OBJECTS "/tank/platform.dae");
     btCollisionShape* shape_deploy = new btBoxShape(btVector3(0.8, 0.3, 0.8));
-    platform->createPhysicsObject(physics, shape_deploy, 100, btVector3(-0.0, 0.0, -10.0), 1, "platform");
+    platform->createPhysicsObject(physics, shape_deploy, 100, btVector3(-0.0, 0.0, -10.0), 2, "platform");
     platform->physicsObject.get()->setUserIndex(25);
     Animation deployanimation(PATH_TO_OBJECTS "/tank/platform.dae", platform); 
     Animator anim(&deployanimation);
@@ -352,7 +352,6 @@ int main()
         shader.setInt("shadowMap", 0);  // Maybe not needed ?
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, lightSource.getDepthMapID());
-        // Can maybe be placed outside of the loop ?
         renderScene(bullets, shader, tankModel, ennemies, grid_size, floor, floorModel, cactuses);
         
 

@@ -1,6 +1,4 @@
-//
-// Created by hanno on 27/12/2023.
-//
+
 
 #include "Mesh.h"
 #include <glm/glm.hpp>

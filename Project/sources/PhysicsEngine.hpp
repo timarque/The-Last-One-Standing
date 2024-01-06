@@ -36,7 +36,7 @@ struct PhysicsEngine {
 
             // Check if the hit object is the tank
             if (hitObject->getUserIndex() == tank->getUserIndex()) {
-                std::cout << "Hit the tank " << tank->getUserIndex() << std::endl;
+                std::cout << "Hit " << tank->getUserIndex() << std::endl;
                 return true;
             }
         }

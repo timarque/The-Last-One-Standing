@@ -1,6 +1,6 @@
 # The Last One Standing
 
-In this Game you control a tank that is deployed in the middle of invadors. You have to fight off a series of enemy tanks and Kill their boss by shooting your weapon.
+In this Game you control a tank that is deployed in the middle of invadors. You have to fight off a series of enemy tanks and kill their boss by shooting your weapon.
 
 
 How to run :
@@ -8,3 +8,15 @@ Using vcpkg: install vcpkg, then on the CMakePresets file, change the path to yo
 Then on the terminal, run cmake --preset=default, to install all the dependencies.
 To build the project, run cmake --build build --config Release
 Run the "VR_project.exe" executable that was built in the build/Release directory 
+
+Dependencies: 
+The libraries used in this project are:
+glfw, bullet, assimp, glm, stb
+
+Play:
+You move forward with the Z key and backwards with S. Use your mouse to look around and move sideways. 
+You can press Space bar to jump and left click on your mouse to shoot a bullet.
+
+Files:
+The source code, shaders objects and textures are in the project folder. 
+The textures for every object are in the object folder aswell usually alongside them except for the cubemap which is in the textures folder.

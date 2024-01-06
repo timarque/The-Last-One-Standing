@@ -34,9 +34,9 @@ struct PhysicsEngine {
         if (rayCallback.hasHit()) {
             const btCollisionObject* hitObject = rayCallback.m_collisionObject;
 
-            // Check if the hit object is the tank
+            // Check if the object hit is the tank
             if (hitObject->getUserIndex() == tank->getUserIndex()) {
-                std::cout << "Hit " << tank->getUserIndex() << std::endl;
+                // std::cout << "Hit " << tank->getUserIndex() << std::endl;
                 return true;
             }
         }

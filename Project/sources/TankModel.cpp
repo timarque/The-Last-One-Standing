@@ -134,7 +134,6 @@ bool TankModel::update(GLFWwindow *window, float deltaTime)
 
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
         if (get_reload_time_left(glfwGetTime()) > this->reload_time) {
-            std::cout << "shoot" << std::endl;
             set_reload_time_start(glfwGetTime());
             shot = true;
         }

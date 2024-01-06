@@ -148,7 +148,7 @@ int main()
     for (int i = -5; i < 5; i++) {
         float randomFloat = dis(gen);
         TankModel *tankEnemy = new TankModel(PATH_TO_OBJECTS  "/tank/enemy.obj");
-        btCollisionShape *shapeEnemy1 = new btBoxShape(btVector3(0.6, 0.7, 0.7));
+        btCollisionShape *shapeEnemy1 = new btBoxShape(btVector3(0.6f, 0.7f, 0.7f));
         tankEnemy->createPhysicsObject(physics, shapeEnemy1, 10.0, btVector3(i*6, 0.5, randomFloat));
         tankEnemy->physicsObject.get()->setUserIndex(i+5);
         ennemies.push_back(std::move(tankEnemy));
@@ -156,7 +156,7 @@ int main()
 
     // floor 
     PhysicModel floorModel(PATH_TO_OBJECTS  "/floor/floor.obj");
-    btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0.0, 1.0, 0.0), 0);
+    btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0.0f, 1.0f, 0.0f), 0);
     floorModel.createPhysicsObject(physics, floor_shape, 0.0, btVector3(0, 0, 0));
     
     
@@ -167,8 +167,8 @@ int main()
         float x = ((rand() % grid_size + 1) - grid_size/2) * 2;
         float z = ((rand() % grid_size + 1) - grid_size/2) * 2;
         PhysicModel *cactus = new PhysicModel(PATH_TO_OBJECTS "/floor/cactus.obj");
-        btCollisionShape *cactus_shape = new btBoxShape(btVector3(0.6, 0.6, 0.2));
-        cactus->createPhysicsObject(physics, cactus_shape, 0.0, btVector3(x, 0.5, z));
+        btCollisionShape *cactus_shape = new btBoxShape(btVector3(0.6f, 0.6f, 0.2f));
+        cactus->createPhysicsObject(physics, cactus_shape, 0.0f, btVector3(x, 0.5f, z));
         cactuses.push_back(std::move(cactus));
     }
 
@@ -179,9 +179,9 @@ int main()
     
     glm::mat4 floor = glm::mat4(1.0f);
 
-    float ambient = 0.9;
-    float diffuse = 2.0;
-    float specular = 0.8;
+    float ambient = 1.0f;
+    float diffuse = 2.0f;
+    float specular = 0.8f;
     
     glm::vec3 materialColour = glm::vec3(0.5f, 0.6f, 0.8f);
 
@@ -191,9 +191,9 @@ int main()
     shader.setFloat("light.ambient_strength", ambient);
     shader.setFloat("light.diffuse_strength", diffuse);
     shader.setFloat("light.specular_strength", specular);
-    shader.setFloat("light.constant", 1.0);
-    shader.setFloat("light.linear", 0.1);
-    shader.setFloat("light.quadratic", 0.01);
+    shader.setFloat("light.constant", 1.0f);
+    shader.setFloat("light.linear", 0.1f);
+    shader.setFloat("light.quadratic", 0.01f);
     shader.setInt("shadowMap", 0);
 
     reflectiveShader.use();
@@ -202,9 +202,9 @@ int main()
     reflectiveShader.setFloat("light.ambient_strength", ambient);
     reflectiveShader.setFloat("light.diffuse_strength", diffuse);
     reflectiveShader.setFloat("light.specular_strength", specular);
-    reflectiveShader.setFloat("light.constant", 1.0);
-    reflectiveShader.setFloat("light.linear", 0.14);
-    reflectiveShader.setFloat("light.quadratic", 0.07);
+    reflectiveShader.setFloat("light.constant", 1.0f);
+    reflectiveShader.setFloat("light.linear", 0.14f);
+    reflectiveShader.setFloat("light.quadratic", 0.07f);
 
     refractiveShader.use();
     refractiveShader.setFloat("shininess", 32.0f);
@@ -212,9 +212,9 @@ int main()
     refractiveShader.setFloat("light.ambient_strength", ambient);
     refractiveShader.setFloat("light.diffuse_strength", diffuse);
     refractiveShader.setFloat("light.specular_strength", specular);
-    refractiveShader.setFloat("light.constant", 1.0);
-    refractiveShader.setFloat("light.linear", 0.14);
-    refractiveShader.setFloat("light.quadratic", 0.07);
+    refractiveShader.setFloat("light.constant", 1.0f);
+    refractiveShader.setFloat("light.linear", 0.14f);
+    refractiveShader.setFloat("light.quadratic", 0.07f);
 
 
     std::vector<PhysicModel> bullets;
@@ -299,8 +299,8 @@ int main()
         bool shot = tankModel.update(window, deltaTime);
         btVector3 forward_pos = tankModel.getForward();
         if (shot) {
-            PhysicModel bullet = generatePhysicalSphere(PATH_TO_OBJECTS "/tank/ball.obj", 0.2, 10, tankModel.getPosition() + glm::vec3(forward_pos.x(), 0.2, forward_pos.z()), physics);
-            bullet.applyImpulse((forward_pos + btVector3(0.0, camera.Position.y, 0.0)) * btVector3(500.f, 0.0, 500.f));
+            PhysicModel bullet = generatePhysicalSphere(PATH_TO_OBJECTS "/tank/ball.obj", 0.2f, 10, tankModel.getPosition() + glm::vec3(forward_pos.x(), 0.2f, forward_pos.z()), physics);
+            bullet.applyImpulse((forward_pos + btVector3(0.0f, camera.Position.y, 0.0f)) * btVector3(500.f, 0.0f, 500.f));
             bullets.push_back(std::move(bullet));
         }
 
@@ -416,17 +416,16 @@ int main()
                  float randomDir = dir(gen);
                  float randomMove = diz(gen);
                  if (randomDir < 0.25) {
-                     std::cout << "here" << std::endl;
-                     enemy->applyImpulse(btVector3(randomMove, 0.0, randomMove));
+                     enemy->applyImpulse(btVector3(randomMove, 0.0f, randomMove));
                  }
                  else if (randomDir > 0.25 && randomDir < 0.5) {
-                     enemy->applyImpulse(btVector3(randomMove, 0.0, -randomMove));
+                     enemy->applyImpulse(btVector3(randomMove, 0.0f, -randomMove));
                  }
                  else if (randomDir > 0.5 && randomDir < 0.75) {
-                     enemy->applyImpulse(btVector3(-randomMove, 0.0, randomMove));
+                     enemy->applyImpulse(btVector3(-randomMove, 0.0f, randomMove));
                  }
                  else {
-                     enemy->applyImpulse(btVector3(-randomMove, 0.0, -randomMove));
+                     enemy->applyImpulse(btVector3(-randomMove, 0.0f, -randomMove));
                  }
              }
              lastmove = now;

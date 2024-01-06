@@ -12,12 +12,14 @@ protected:
     std::unique_ptr<btCollisionShape> mShape;
     std::unique_ptr<btDefaultMotionState> mMotionState;
 public:
-
+    int hp = 1.0;
+    std::string name = "physic_model";
     std::unique_ptr<btRigidBody> physicsObject;
     std::unique_ptr<btCollisionObject> physicsCol;
     PhysicModel(std::string path) : Model(path) {};
     // Créer un objet physique associé au modèle dans le monde physique
     void createPhysicsObject(PhysicsEngine physics, btCollisionShape *shape, float mass, btVector3 origin);
+    void createPhysicsObject(PhysicsEngine physics, btCollisionShape* shape, float mass, btVector3 origin, int hp, std::string name);
     // Mettre à jour la transformation du modèle à partir de la physique
     void updateFromPhysics();
 

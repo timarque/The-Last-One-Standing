@@ -68,6 +68,5 @@ void main()
 	float attenuation = 1 / (light.constant + light.linear * distance + light.quadratic * distance * distance);
 	float shadow = isInShadow(fragPosLightSpace);
 	float light = light.ambient_strength + (1.0 - shadow) * attenuation * (diffuse + specular);
-	vec4 test = vec4(materialColour * vec3(light), 1.0);	// TODO : what is this ?
     FragColor = texture(texture_diffuse1, TexCoords) * light;
 }

@@ -131,6 +131,7 @@ int main()
      Animation danceAnimation(PATH_TO_OBJECTS "/animation/dancing_vampire.dae", vampire_dancing); 
      Animator animator(&danceAnimation);
 
+     // removed as it uses fbx but working
      //PhysicModel *slenderman = new PhysicModel(PATH_TO_OBJECTS "/slenderman.fbx");
      //btCollisionShape* shape_slenderman = new btBoxShape(btVector3(0.8,4.7, 0.8));
      //slenderman->createPhysicsObject(physics, shape_slenderman, 0, btVector3(-15.0, 0.0, -30.0), 10, "slenderman");
@@ -172,7 +173,7 @@ int main()
     
     glm::mat4 floor = glm::mat4(1.0f);
 
-    float ambient = 0.3;
+    float ambient = 0.9;
     float diffuse = 2.0;
     float specular = 0.8;
     

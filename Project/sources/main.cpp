@@ -143,7 +143,7 @@ int main()
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dis(-25.0, 30.0);
-    std::uniform_real_distribution<float> diz(12, 20); // for random move
+    std::uniform_real_distribution<float> diz(16, 30); // for random move
     std::uniform_real_distribution<float> dir(0, 1);
     std::vector<TankModel*> ennemies;
     for (int i = -5; i < 5; i++) {
@@ -412,17 +412,17 @@ int main()
         //debugDrawer->flushLines();
 
         
-         if (now - lastmove > 4 || start) {
+         if (now - lastmove > 2 || start) {
              for (auto enemy : ennemies) {
                  float randomDir = dir(gen);
                  float randomMove = diz(gen);
                  if (randomDir < 0.25) {
                      enemy->applyImpulse(btVector3(randomMove, 0.0f, randomMove));
                  }
-                 else if (randomDir > 0.25 && randomDir < 0.5) {
+                 else if (randomDir < 0.5) {
                      enemy->applyImpulse(btVector3(randomMove, 0.0f, -randomMove));
                  }
-                 else if (randomDir > 0.5 && randomDir < 0.75) {
+                 else if (randomDir < 0.75) {
                      enemy->applyImpulse(btVector3(-randomMove, 0.0f, randomMove));
                  }
                  else {

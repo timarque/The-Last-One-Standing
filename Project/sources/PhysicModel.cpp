@@ -23,6 +23,31 @@ void PhysicModel::createPhysicsObject(PhysicsEngine physics, btCollisionShape *c
     physicsObject->activate();
 }
 
+// methode avec points de vie pour les boss
+void PhysicModel::createPhysicsObject(PhysicsEngine physics, btCollisionShape* collision_shape, float mass, btVector3 origin, int hp, std::string name)
+{
+    this->hp = hp;
+    this->name = name;
+    btVector3 localInertia(0, 0, 0);
+    collision_shape->calculateLocalInertia(mass, localInertia);
+    // Ajuster l'inertie selon vos besoins
+    btTransform transform;
+    transform.setIdentity();
+    transform.setOrigin(origin);
+
+    btDefaultMotionState* motionState = new btDefaultMotionState(transform);
+
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState, collision_shape);
+    physicsObject = std::make_unique<btRigidBody>(*new btRigidBody(rbInfo));
+    physicsObject->setRestitution(0.8f);
+    physicsObject->setFriction(0.2f);
+    physics.getWorld()->addRigidBody(physicsObject.get());
+    physicsObject->activate();
+}
+
+
+
+
 // Mettre à jour la transformation du modèle à partir de la physique
 void PhysicModel::updateFromPhysics()
 {

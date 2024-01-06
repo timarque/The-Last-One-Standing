@@ -41,8 +41,8 @@ glm::mat4 btScalar2mat4(btScalar *matrix)
 }
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1200;
+const unsigned int SCR_HEIGHT = 1000;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -107,24 +107,27 @@ int main()
     btCollisionShape *shape = new btBoxShape(btVector3(0.7, 0.7, 0.7));
     tankModel.createPhysicsObject(physics, shape, 1, btVector3(0.0, 2.0, -10.0));
 
-    // PhysicModel* platform = new PhysicModel(PATH_TO_OBJECTS "/tank/platform.dae");
-    // btCollisionShape* shape_deploy = new btBoxShape(btVector3(0.8, 0.3, 0.8));
-    // platform->createPhysicsObject(physics, shape_deploy, 100, btVector3(0.0, 0.0, 0.0));
-    // Animation* deployanimation = new Animation(PATH_TO_OBJECTS "/tank/platform.dae", platform); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
-    // Animator anim(deployanimation);
+    PhysicModel *platform = new PhysicModel(PATH_TO_OBJECTS "/tank/platform.dae");
+    btCollisionShape* shape_deploy = new btBoxShape(btVector3(0.8, 0.3, 0.8));
+    platform->createPhysicsObject(physics, shape_deploy, 100, btVector3(-0.0, 0.0, -10.0), 1, "platform");
+    platform->physicsObject.get()->setUserIndex(25);
+    Animation deployanimation(PATH_TO_OBJECTS "/tank/platform.dae", platform); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
+    Animator anim(&deployanimation);
 
     // enemies
-    // PhysicModel *vampire_dancing = new PhysicModel(PATH_TO_OBJECTS "/animation/dancing_vampire.dae");
-    // btCollisionShape *shape_vampire = new btBoxShape(btVector3(0.8, 2.0, 0.8));
-    // vampire_dancing->createPhysicsObject(physics, shape_vampire, 100, btVector3(-5.f, 0.f, .5f));
-    // Animation *danceAnimation = new Animation(PATH_TO_OBJECTS "/animation/dancing_vampire.dae", vampire_dancing); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
-    // Animator animator(danceAnimation);
+    PhysicModel *vampire_dancing = new PhysicModel(PATH_TO_OBJECTS "/animation/dancing_vampire.dae");
+    btCollisionShape *shape_vampire = new btBoxShape(btVector3(0.8, 2.0, 0.8));
+    vampire_dancing->createPhysicsObject(physics, shape_vampire, 0, btVector3(0.f, 0.f, -20.f), 3, "vampire");
+    vampire_dancing->physicsObject.get()->setUserIndex(15);
+    Animation danceAnimation(PATH_TO_OBJECTS "/animation/dancing_vampire.dae", vampire_dancing); // on peut en faire un autre pour montrer que ca marche y a un autre model => path = animation/model.dae
+    Animator animator(&danceAnimation);
 
-    // PhysicModel slenderman(PATH_TO_OBJECTS "/slenderman.fbx");
-    // btCollisionShape* shape_slenderman = new btBoxShape(btVector3(0.8,4.7, 0.8));
-    // slenderman.createPhysicsObject(physics, shape_slenderman, 0, btVector3(-12.0, 0.0, -12.0));
-    // Animation slenderanimation(PATH_TO_OBJECTS "/slenderman.fbx", &slenderman);
-    // Animator animslender(&slenderanimation);
+    PhysicModel *slenderman = new PhysicModel(PATH_TO_OBJECTS "/slenderman.fbx");
+    btCollisionShape* shape_slenderman = new btBoxShape(btVector3(0.8,4.7, 0.8));
+    slenderman->createPhysicsObject(physics, shape_slenderman, 0, btVector3(-15.0, 0.0, -30.0), 10, "slenderman");
+    slenderman->physicsObject.get()->setUserIndex(30);
+    Animation slenderanimation(PATH_TO_OBJECTS "/slenderman.fbx", slenderman);
+    Animator animslender(&slenderanimation);
 
     std::vector<TankModel*> ennemies;
     for (int i = -5; i < 5; i++) {
@@ -141,6 +144,7 @@ int main()
     floorModel.createPhysicsObject(physics, floor_shape, 0.0, btVector3(0, 0, 0));
     
     const int grid_size = 20;
+    const int grid_size = 40;
 
     // Configure the light source
     glm::vec3 light_pos = glm::vec3(0.0, 5.0, 0.0);
@@ -167,12 +171,23 @@ int main()
     shader.setInt("shadowMap", 0);
 
     std::vector<PhysicModel> bullets;
+    std::vector<PhysicModel*> animated_enemies;
+    std::vector<Animator> animations;
+    animations.push_back(std::move(anim));
+    animations.push_back(std::move(animator));
+    animations.push_back(std::move(animslender));
+    animated_enemies.push_back(std::move(platform));
+    animated_enemies.push_back(std::move(vampire_dancing));
+    animated_enemies.push_back(std::move(slenderman));
+
 
     while (!glfwWindowShouldClose(window))
     {
 
         std::vector<size_t> bulletsToRemove;
         std::vector<size_t> ennemiesToRemove;
+        std::vector<size_t> anim_ennemiesToRemove;
+        std::vector<size_t> animationsToRemove;
 
         for (size_t i = 0; i < bullets.size(); ++i) {
             for (size_t j = 0; j < ennemies.size(); ++j) {
@@ -183,6 +198,17 @@ int main()
                     ennemiesToRemove.push_back(j);
 
                     // If you want to break out of the inner loop after a collision, you can use a break statement here.
+                }
+            }
+            for (size_t k = 0; k < animated_enemies.size(); k++) {
+                bool collided = physics.checkCollisions(bullets[i].physicsObject, animated_enemies[k]->physicsObject);
+                if (collided) {
+                    bulletsToRemove.push_back(i);
+                    animated_enemies[k]->hp -= 1;
+                    if (animated_enemies[k]->hp == 0) {
+                        anim_ennemiesToRemove.push_back(k);
+                        animationsToRemove.push_back(k);
+                    }
                 }
             }
         }
@@ -198,7 +224,16 @@ int main()
             ennemies.erase(ennemies.begin() + *it);
         }
 
-        // Compute the fps
+
+
+        for (auto it = anim_ennemiesToRemove.rbegin(); it != anim_ennemiesToRemove.rend(); ++it) {
+            physics.dynamicsWorld->removeRigidBody(animated_enemies[*it]->physicsObject.get());
+            animated_enemies.erase(animated_enemies.begin() + *it);
+        }
+        for (auto it = animationsToRemove.rbegin(); it != animationsToRemove.rend(); ++it) {
+            animations.erase(animations.begin() + *it);
+        }
+
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -219,6 +254,7 @@ int main()
         // ---------------------------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         // Setup the depth map shader
         depthMapShader.use();
         depthMapShader.setMatrix4("lightSpaceMatrix", lightSource.getLightSpaceMatrix());
@@ -239,6 +275,11 @@ int main()
         // animator.UpdateAnimation(deltaTime);
         // anim.UpdateAnimation(deltaTime);
         // animslender.UpdateAnimation(deltaTime);
+
+        for (auto& animation : animations) {
+            animation.UpdateAnimation(deltaTime);
+        }
+
         
         // view/projection transformations
         
@@ -251,6 +292,23 @@ int main()
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         lightSource.setPosition(light_pos + glm::vec3(4 * std::sin(now / 2), 0.0,  4 * std::cos(now / 2)));
         shader.use();
+
+        shader.setVec3("u_view_pos", camera.Position);
+        shader.setVec3("light.light_pos", light_pos);
+        bool shot = tankModel.update(window, deltaTime);
+        btVector3 forward_pos = tankModel.getForward();
+        if (shot) {
+            PhysicModel bullet = generatePhysicalSphere(PATH_TO_OBJECTS "/tank/ball.obj", 0.2, 10, tankModel.getPosition() + glm::vec3(forward_pos.x(), 0.2, forward_pos.z()), physics);
+            bullet.applyImpulse((forward_pos + btVector3(0.0, camera.Position.y, 0.0)) * btVector3(500.f, 0.0, 500.f));
+            bullets.push_back(std::move(bullet));
+        }
+        for (int i = 0; i < bullets.size(); i++) {
+            shader.setMatrix4("model", bullets[i].getModelMatrix(glm::vec3(1.0f)));
+            bullets[i].DrawWithShader(shader, 1);
+        }
+
+        shader.setMatrix4("model", tankModel.getModelMatrix(glm::vec3(1.0f)));
+        shader.setMatrix4("projection", projection);
         shader.setMatrix4("view", view);
         shader.setMatrix4("projection", projection);
         shader.setVec3("u_view_pos", camera.Position);
@@ -262,40 +320,33 @@ int main()
         // Can maybe be placed outside of the loop ?
         renderScene(bullets, shader, tankModel, ennemies, grid_size, floor, floorModel);
 
-        // animationShader.use();
-        // animationShader.setMatrix4("projection", projection);
-        // animationShader.setMatrix4("view", view);
 
-        // auto transforms_slenderman = animslender.GetFinalBoneMatrices();
-        // for (int i = 0; i < transforms_slenderman.size(); ++i) {
-        //     animationShader.setMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms_slenderman[i]);
-        // }
-        // glm::mat4 model_slenderman = glm::mat4(1.0f);
-        // model_slenderman = glm::translate(model_slenderman, glm::vec3(-12.f, 0.f, -12.f));
-        // model_slenderman = glm::scale(model_slenderman, glm::vec3(.01f, .01f, .01f));	// it's a bit too big for our scene, so scale it down
-        // animationShader.setMatrix4("model", model_slenderman);
-        // slenderman.DrawWithShader(animationShader, 1);
+        animationShader.use();
+        animationShader.setMatrix4("projection", projection);
+        animationShader.setMatrix4("view", view);
 
 
-        // auto transforms = animator.GetFinalBoneMatrices();
-        // for (int i = 0; i < transforms.size(); ++i) {
-        //     animationShader.setMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
-        // }
-        glm::mat4 model = glm::mat4(1.0f);
-        // model = glm::translate(model, glm::vec3(-5.f, 0.f, .5f)); // keep same translation here as when object is init otherwise colision box diff than position
-        // model = glm::scale(model, glm::vec3(.8f, .8f, .8f));	// it's a bit too big for our scene, so scale it down
-        // animationShader.setMatrix4("model", model);
-        // vampire_dancing->DrawWithShader(animationShader, 1);
-
-        // auto transforms_deploy = anim.GetFinalBoneMatrices();
-        // for (int i = 0; i < transforms_deploy.size(); ++i) {
-        //     animationShader.setMatrix4("finalBonesMatrices[" + std::to_string(i) + "]", transforms_deploy[i]);
-        // }
-        // glm::mat4 model_deploy = glm::mat4(1.0f);
-        // model_deploy = glm::scale(model_deploy, glm::vec3(1.0f, 1.0f, 1.0f));	
-        // animationShader.setMatrix4("model", model_deploy);;
-        // platform->DrawWithShader(animationShader, 1);
-
+        for (int i = 0; i < animated_enemies.size(); i++) {
+            auto transforms = animations[i].GetFinalBoneMatrices();
+            for (int j = 0; j < transforms.size(); ++j) {
+                animationShader.setMatrix4("finalBonesMatrices[" + std::to_string(j) + "]", transforms[j]);
+            }
+            glm::mat4 model = glm::mat4(1.0f);
+            if (animated_enemies[i]->name == "platform") {
+                model = glm::translate(model, glm::vec3(-0.f, 0.f, -10.f));
+                model = glm::scale(model, glm::vec3(1.f, 1.f, 1.f));
+            }
+            else if (animated_enemies[i]->name == "vampire") {
+                model = glm::translate(model, glm::vec3(0.f, 0.f, -20.f)); // keep same translation here as when object is init otherwise colision box diff than position
+                model = glm::scale(model, glm::vec3(.8f, .8f, .8f));	// it's a bit too big for our scene, so scale it down
+            }
+            else if (animated_enemies[i]->name == "slenderman") {
+                model = glm::translate(model, glm::vec3(-15.f, 0.f, -30.f));
+                model = glm::scale(model, glm::vec3(.01f, .01f, .01f));	// it's a bit too big for our scene, so scale it down
+            }
+            animationShader.setMatrix4("model", model);
+            animated_enemies[i]->DrawWithShader(animationShader, 1);
+        }
 
         //debugShader.use();
         //debugShader.setMatrix4("view", view);

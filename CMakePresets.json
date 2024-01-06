@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-{
-    "version": 3,
-    "configurePresets": [
-        {
-            "name": "default",
-            "binaryDir": "${sourceDir}/build",
-            "cacheVariables": {
-                "CMAKE_TOOLCHAIN_FILE": "/home/zandies/vcpkg/scripts/buildsystems/vcpkg.cmake"
-            }
-        }
-    ]
-=======
 {
     "version": 3,
     "configurePresets": [
@@ -22,5 +9,4 @@
             }
         }
     ]
->>>>>>> 6069a2b (Merlin configurations)
 }

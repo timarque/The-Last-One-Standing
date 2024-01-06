@@ -131,8 +131,9 @@ int main()
     Animation danceAnimation(PATH_TO_OBJECTS "/animation/dancing_vampire.dae", vampire_dancing); 
     Animator animator(&danceAnimation);
 
-     // removed as it uses fbx but working
-     //PhysicModel *slenderman = new PhysicModel(PATH_TO_OBJECTS "/slenderman.fbx");
+     // removed as it uses fbx but working 
+     // slenderman
+     //PhysicModel *slenderman = new PhysicModel(PATH_TO_OBJECTS "/slenderman.fbx"); 
      //btCollisionShape* shape_slenderman = new btBoxShape(btVector3(0.8,4.7, 0.8));
      //slenderman->createPhysicsObject(physics, shape_slenderman, 0, btVector3(-15.0, 0.0, -30.0), 10, "slenderman");
      //slenderman->physicsObject.get()->setUserIndex(30);
@@ -222,9 +223,10 @@ int main()
     std::vector<Animator> animations;
     animations.push_back(std::move(anim));
     animations.push_back(std::move(animator));
-    //animations.push_back(std::move(animslender));
     animated_enemies.push_back(std::move(platform));
     animated_enemies.push_back(std::move(vampire_dancing));
+    //slenderman
+    //animations.push_back(std::move(animslender));
     //animated_enemies.push_back(std::move(slenderman));
 
 
@@ -394,7 +396,7 @@ int main()
                  model = glm::translate(model, glm::vec3(0.f, 0.f, -35.f)); 
                  model = glm::scale(model, glm::vec3(1.f, 1.f, 1.f));	
             }
-             //else if (animated_enemies[i]->name == "slenderman") {
+             //else if (animated_enemies[i]->name == "slenderman") { // slenderman
              //    model = glm::translate(model, glm::vec3(-15.f, 0.f, -30.f));
              //    model = glm::scale(model, glm::vec3(.01f, .01f, .01f));
              //}

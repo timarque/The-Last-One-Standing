@@ -16,6 +16,7 @@
 #include "debugObject.hpp"
 #include "Animator.h"
 #include "Sphere.h"
+#include "LightSource.h"
 
 #include <iostream>
 
@@ -27,6 +28,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
+
+void renderScene(std::vector<PhysicModel> &bullets, Shader &shader, TankModel &tankModel, std::vector<TankModel *> &ennemies, int grid_size, glm::mat4 &floor, PhysicModel &floorModel);
 
 glm::mat4 btScalar2mat4(btScalar *matrix)
 {
@@ -89,6 +92,7 @@ int main()
     Shader debugShader(PATH_TO_SHADERS "/debug/debug.vert", PATH_TO_SHADERS "/debug/debug.frag");
     Shader cubeMapShader(PATH_TO_SHADERS "/skybox/skybox.vert", PATH_TO_SHADERS "/skybox/skybox.frag");
     Shader animationShader(PATH_TO_SHADERS "/animation/animation.vert", PATH_TO_SHADERS "/animation/animation.frag");
+    Shader depthMapShader(PATH_TO_SHADERS "/depthMap/depthMap.vert", PATH_TO_SHADERS "/depthMap/depthMap.frag");
 
     //* Bullet Physics Rendering Debug Tool
     DebugDrawer *debugDrawer = new DebugDrawer(debugShader.ID);
@@ -139,13 +143,17 @@ int main()
     btCollisionShape *floor_shape = new btStaticPlaneShape(btVector3(0.0, 1.0, 0.0), 0);
     floorModel.createPhysicsObject(physics, floor_shape, 0.0, btVector3(0, 0, 0));
     
-    int grid_size = 40;
+    const int grid_size = 20;
+    const int grid_size = 40;
 
+    // Configure the light source
     glm::vec3 light_pos = glm::vec3(0.0, 5.0, 0.0);
+    LightSource lightSource(depthMapShader);
+    lightSource.setPosition(light_pos);
     
     glm::mat4 floor = glm::mat4(1.0f);
 
-    float ambient = 0.5;
+    float ambient = 0.3;
     float diffuse = 2.0;
     float specular = 0.8;
     
@@ -160,6 +168,7 @@ int main()
     shader.setFloat("light.constant", 1.0);
     shader.setFloat("light.linear", 0.1);
     shader.setFloat("light.quadratic", 0.01);
+    shader.setInt("shadowMap", 0);
 
     std::vector<PhysicModel> bullets;
     std::vector<PhysicModel*> animated_enemies;
@@ -215,6 +224,8 @@ int main()
             ennemies.erase(ennemies.begin() + *it);
         }
 
+
+
         for (auto it = anim_ennemiesToRemove.rbegin(); it != anim_ennemiesToRemove.rend(); ++it) {
             physics.dynamicsWorld->removeRigidBody(animated_enemies[*it]->physicsObject.get());
             animated_enemies.erase(animated_enemies.begin() + *it);
@@ -229,23 +240,59 @@ int main()
         double now = glfwGetTime();
         processInput(window);
 
+        // Shoot
+        bool shot = tankModel.update(window, deltaTime);
+        btVector3 forward_pos = tankModel.getForward();
+        if (shot) {
+            PhysicModel bullet = generatePhysicalSphere(PATH_TO_OBJECTS "/tank/ball.obj", 0.2, 10, tankModel.getPosition() + glm::vec3(forward_pos.x(), 0.2, forward_pos.z()), physics);
+            // bullet.getTransform().setRotation(tankModel.getRotationQuat());
+            bullet.applyImpulse((forward_pos + btVector3(0.0, camera.Position.y, 0.0)) * btVector3(500.f, 0.0, 500.f));
+            bullets.push_back(std::move(bullet));
+        }
 
-        glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
+        // Render scene from the light
+        // ---------------------------
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Setup the depth map shader
+        depthMapShader.use();
+        depthMapShader.setMatrix4("lightSpaceMatrix", lightSource.getLightSpaceMatrix());
+        // Render everything
+        glViewport(0, 0, lightSource.getShadowWidth(), lightSource.getShadowHeight());
+        glBindFramebuffer(GL_FRAMEBUFFER, lightSource.getDepthMapFBO());
+            glClear(GL_DEPTH_BUFFER_BIT);
+            renderScene(bullets, depthMapShader, tankModel, ennemies, grid_size, floor, floorModel);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // lightSource.renderSceneToLight(scene);
+        // Reset viewport
+        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Render scene as normal
+        // ----------------------
+
+        // animator.UpdateAnimation(deltaTime);
+        // anim.UpdateAnimation(deltaTime);
+        // animslender.UpdateAnimation(deltaTime);
+
         for (auto& animation : animations) {
             animation.UpdateAnimation(deltaTime);
         }
+
         
         // view/projection transformations
-        glm::mat4 view = camera.GetViewMatrix(&tankModel);
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         
         // glm::mat4 view = glm::lookAt(camera.Position, tankModel.getPosition() + glm::vec3(0.0, 1.5, 0.0), glm::vec3(0.0f, 1.0f, 0.0f));
         // glm::mat4 view = camera.GetViewMatrix();
         // auto current_pos_light = light_pos;
-        auto current_pos_light = light_pos + glm::vec3(4 * std::sin(now / 2), 0.0,  4 * std::cos(now / 2));
 
+        // Setup the shader
+        glm::mat4 view = camera.GetViewMatrix(&tankModel);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        lightSource.setPosition(light_pos + glm::vec3(4 * std::sin(now / 2), 0.0,  4 * std::cos(now / 2)));
         shader.use();
+
         shader.setVec3("u_view_pos", camera.Position);
         shader.setVec3("light.light_pos", light_pos);
         bool shot = tankModel.update(window, deltaTime);
@@ -263,24 +310,15 @@ int main()
         shader.setMatrix4("model", tankModel.getModelMatrix(glm::vec3(1.0f)));
         shader.setMatrix4("projection", projection);
         shader.setMatrix4("view", view);
-        tankModel.DrawWithShader(shader, 1);
-
-        for (auto enemy : ennemies) {
-            shader.setMatrix4("model", glm::rotate(enemy->getModelMatrix(glm::vec3(1.0f)), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0)));
-            shader.setMatrix4("projection", projection);
-            shader.setMatrix4("view", view);
-            enemy->DrawWithShader(shader, 1);
-        }
-
-        for (int i = 0; i < grid_size * grid_size; i++) {
-            if (i % grid_size != 0) floor = glm::translate(floor, glm::vec3(0.0f, 0.0f, 2.0f)); 
-            else {
-                floor = glm::mat4(1.0f);
-                floor = glm::translate(floor, glm::vec3(-grid_size + 2.0f * i / grid_size, 0.0f, -grid_size));
-            }
-            shader.setMatrix4("model", floor);
-            floorModel.DrawWithShader(shader, 1);
-        }
+        shader.setMatrix4("projection", projection);
+        shader.setVec3("u_view_pos", camera.Position);
+        shader.setVec3("light.light_pos", lightSource.getPosition());
+        shader.setMatrix4("lightSpaceMatrix", lightSource.getLightSpaceMatrix());
+        shader.setInt("shadowMap", 0);  // Maybe not needed ?
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, lightSource.getDepthMapID());
+        // Can maybe be placed outside of the loop ?
+        renderScene(bullets, shader, tankModel, ennemies, grid_size, floor, floorModel);
 
 
         animationShader.use();
@@ -309,7 +347,6 @@ int main()
             animationShader.setMatrix4("model", model);
             animated_enemies[i]->DrawWithShader(animationShader, 1);
         }
-
 
         //debugShader.use();
         //debugShader.setMatrix4("view", view);
@@ -343,6 +380,41 @@ int main()
     return 0;
 }
 
+void renderScene(std::vector<PhysicModel> &bullets, Shader &shader, TankModel &tankModel, std::vector<TankModel *> &ennemies, int grid_size, glm::mat4 &floor, PhysicModel &floorModel)
+{
+    for (int i = 0; i < bullets.size(); i++)
+    {
+        shader.setMatrix4("model", bullets[i].getModelMatrix(glm::vec3(1.0f)));
+        bullets[i].DrawWithShader(shader, 1);
+    }
+
+    shader.setMatrix4("model", tankModel.getModelMatrix(glm::vec3(1.0f)));
+    // shader.setMatrix4("projection", projection);
+    // shader.setMatrix4("view", view);
+    tankModel.DrawWithShader(shader, 1);
+
+    for (auto enemy : ennemies)
+    {
+        shader.setMatrix4("model", glm::rotate(enemy->getModelMatrix(glm::vec3(1.0f)), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0)));
+        // shader.setMatrix4("projection", projection);
+        // shader.setMatrix4("view", view);
+        enemy->DrawWithShader(shader, 1);
+    }
+
+    floor = glm::mat4(1.0f);
+    for (int i = 0; i < grid_size * grid_size; i++)
+    {
+        if (i % grid_size != 0)
+            floor = glm::translate(floor, glm::vec3(0.0f, 0.0f, 2.0f));
+        else
+        {
+            floor = glm::mat4(1.0f);
+            floor = glm::translate(floor, glm::vec3(-grid_size + 2.0f * i / grid_size, 0.0f, -grid_size));
+        }
+        shader.setMatrix4("model", floor);
+        floorModel.DrawWithShader(shader, 1);
+    }
+}
 
 void processInput(GLFWwindow *window)
 {

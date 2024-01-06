@@ -109,8 +109,8 @@ int main()
     btCollisionShape *shape = new btBoxShape(btVector3(0.7, 0.7, 0.7));
     tankModel.createPhysicsObject(physics, shape, 1, btVector3(0.0, 2.0, -10.0));
     
-    glm::vec3 reflsphere_pos = glm::vec3(3.0, 5.0, 7.0);
-    glm::vec3 refrsphere_pos = glm::vec3(-3.0, 5.0, 7.0);
+    glm::vec3 reflsphere_pos = glm::vec3(7.0, 5.0, 15.0);
+    glm::vec3 refrsphere_pos = glm::vec3(-7.0, 5.0, 15.0);
     PhysicModel reflectiveSphere = generatePhysicalSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", reflsphere_pos, physics);
     PhysicModel refractiveSphere = generatePhysicalSphere(PATH_TO_OBJECTS "/sphere_smooth.obj", refrsphere_pos, physics);
 
@@ -208,6 +208,12 @@ int main()
     animated_enemies.push_back(std::move(vampire_dancing));
     animated_enemies.push_back(std::move(slenderman));
 
+
+    glm::mat4 reflect = glm::mat4(1.0f);
+    glm::mat4 itsmreflect = glm::transpose(glm::inverse(reflect));
+
+    glm::mat4 refract = glm::mat4(1.0f);
+    glm::mat4 itsmrefract = glm::transpose(glm::inverse(refract));
 
     while (!glfwWindowShouldClose(window))
     {
@@ -338,9 +344,6 @@ int main()
         reflectiveShader.use();
         reflectiveShader.setMatrix4("projection", projection);
         reflectiveShader.setMatrix4("view", view);
-        glm::mat4 reflect = glm::mat4(1.0f);
-        reflect = glm::translate(reflect, glm::vec3(3.0, 5.0, 7.0));
-        glm::mat4 itsmreflect = glm::transpose(glm::inverse(reflect));
         reflectiveShader.setMatrix4("model", reflect);
         reflectiveShader.setMatrix4("itM", itsmreflect);
         reflectiveShader.setVec3("u_view_pos", camera.Position);
@@ -349,9 +352,6 @@ int main()
 
         refractiveShader.use();
         refractiveShader.setMatrix4("projection", projection);
-        glm::mat4 refract = glm::mat4(1.0f);
-        refract = glm::translate(refract, glm::vec3(-3.0, 5.0, 7.0));
-        glm::mat4 itsmrefract = glm::transpose(glm::inverse(refract));
         refractiveShader.setMatrix4("view", view);
         refractiveShader.setMatrix4("model", refract);
         refractiveShader.setMatrix4("itM", itsmrefract);
@@ -396,9 +396,9 @@ int main()
         //debugDrawer->flushLines();
 
         physics.simulate(deltaTime);
-        reflectiveSphere.updateFromPhysics();
         cubeMap.draw(view, projection);
-
+        reflectiveSphere.updateFromPhysics();
+        refractiveSphere.updateFromPhysics();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

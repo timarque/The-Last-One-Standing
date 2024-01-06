@@ -142,7 +142,8 @@ int main()
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dis(-25.0, 30.0);
-
+    std::uniform_real_distribution<float> diz(12, 20); // for random move
+    std::uniform_real_distribution<float> dir(0, 1);
     std::vector<TankModel*> ennemies;
     for (int i = -5; i < 5; i++) {
         float randomFloat = dis(gen);
@@ -233,6 +234,9 @@ int main()
     glm::mat4 refract = glm::mat4(1.0f);
     glm::mat4 itsmrefract = glm::transpose(glm::inverse(refract));
 
+    double lastmove = glfwGetTime();
+    bool start = true;
+
     while (!glfwWindowShouldClose(window))
     {
 
@@ -296,7 +300,6 @@ int main()
         btVector3 forward_pos = tankModel.getForward();
         if (shot) {
             PhysicModel bullet = generatePhysicalSphere(PATH_TO_OBJECTS "/tank/ball.obj", 0.2, 10, tankModel.getPosition() + glm::vec3(forward_pos.x(), 0.2, forward_pos.z()), physics);
-            // bullet.getTransform().setRotation(tankModel.getRotationQuat());
             bullet.applyImpulse((forward_pos + btVector3(0.0, camera.Position.y, 0.0)) * btVector3(500.f, 0.0, 500.f));
             bullets.push_back(std::move(bullet));
         }
@@ -361,7 +364,7 @@ int main()
         reflectiveShader.setMatrix4("itM", itsmreflect);
         reflectiveShader.setVec3("u_view_pos", camera.Position);
         reflectiveShader.setVec3("light_pos", lightSource.getPosition());
-        reflectiveSphere.DrawWithShader(reflectiveShader, 1); // commentend en attendant de fix position
+        reflectiveSphere.DrawWithShader(reflectiveShader, 1);
 
         refractiveShader.use();
         refractiveShader.setMatrix4("projection", projection);
@@ -389,12 +392,12 @@ int main()
                  model = glm::scale(model, glm::vec3(1.f, 1.f, 1.f));
              }
              else if (animated_enemies[i]->name == "vampire") {
-                 model = glm::translate(model, glm::vec3(0.f, 0.f, -35.f)); // keep same translation here as when object is init otherwise colision box diff than position
-                 model = glm::scale(model, glm::vec3(1.f, 1.f, 1.f));	// it's a bit too big for our scene, so scale it down
+                 model = glm::translate(model, glm::vec3(0.f, 0.f, -35.f)); 
+                 model = glm::scale(model, glm::vec3(1.f, 1.f, 1.f));	
             }
              //else if (animated_enemies[i]->name == "slenderman") {
              //    model = glm::translate(model, glm::vec3(-15.f, 0.f, -30.f));
-             //    model = glm::scale(model, glm::vec3(.01f, .01f, .01f));	// it's a bit too big for our scene, so scale it down
+             //    model = glm::scale(model, glm::vec3(.01f, .01f, .01f));
              //}
              animationShader.setMatrix4("model", model);
              animated_enemies[i]->DrawWithShader(animationShader, 1);
@@ -407,13 +410,35 @@ int main()
         //physics.getWorld()->debugDrawWorld();
         //debugDrawer->flushLines();
 
+        
+         if (now - lastmove > 4 || start) {
+             for (auto enemy : ennemies) {
+                 float randomDir = dir(gen);
+                 float randomMove = diz(gen);
+                 if (randomDir < 0.25) {
+                     std::cout << "here" << std::endl;
+                     enemy->applyImpulse(btVector3(randomMove, 0.0, randomMove));
+                 }
+                 else if (randomDir > 0.25 && randomDir < 0.5) {
+                     enemy->applyImpulse(btVector3(randomMove, 0.0, -randomMove));
+                 }
+                 else if (randomDir > 0.5 && randomDir < 0.75) {
+                     enemy->applyImpulse(btVector3(-randomMove, 0.0, randomMove));
+                 }
+                 else {
+                     enemy->applyImpulse(btVector3(-randomMove, 0.0, -randomMove));
+                 }
+             }
+             lastmove = now;
+             start = false;
+         }
 
-        physics.simulate(deltaTime);
-        cubeMap.draw(view, projection);
-        reflectiveSphere.updateFromPhysics();
-        refractiveSphere.updateFromPhysics();
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+         physics.simulate(deltaTime);
+         cubeMap.draw(view, projection);
+         reflectiveSphere.updateFromPhysics();
+         refractiveSphere.updateFromPhysics();
+         glfwSwapBuffers(window);
+         glfwPollEvents();
     }
 
     glfwTerminate();
@@ -429,28 +454,17 @@ void renderScene(std::vector<PhysicModel> &bullets, Shader &shader, TankModel &t
     }
 
     shader.setMatrix4("model", tankModel.getModelMatrix(glm::vec3(1.0f)));
-    // shader.setMatrix4("projection", projection);
-    // shader.setMatrix4("view", view);
     tankModel.DrawWithShader(shader, 1);
 
     for (auto enemy : ennemies)
     {
-        if (enemy->getPosition().z > 0.0) {
-            shader.setMatrix4("model", glm::rotate(enemy->getModelMatrix(glm::vec3(1.0f)), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0)));
-        }
-        else if (enemy->getPosition().z < -10.0) {
-            shader.setMatrix4("model", glm::rotate(enemy->getModelMatrix(glm::vec3(1.0f)), glm::radians(0.0f), glm::vec3(0.0, 1.0, 0.0)));
-        }
-        // shader.setMatrix4("projection", projection);
-        // shader.setMatrix4("view", view);
+        shader.setMatrix4("model", glm::rotate(enemy->getModelMatrix(glm::vec3(1.0f)), glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0)));
         enemy->DrawWithShader(shader, 1);
     }
    
     for (auto cactus : cactuses)
     {
         shader.setMatrix4("model", cactus->getModelMatrix(glm::vec3(1.0f)));
-        // shader.setMatrix4("projection", projection);
-        // shader.setMatrix4("view", view);
         cactus->DrawWithShader(shader, 1);
     }
 

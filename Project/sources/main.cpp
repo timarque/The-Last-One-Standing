@@ -177,7 +177,7 @@ int main()
     glm::vec3 light_center(0.0, 10.0, -10.0);
     float light_radius = 50.0;
     LightSource lightSource(depthMapShader,
-                            0.3,    // ambiant
+                            0.7,    // ambiant
                             5.0,    // diffuse
                             1.0);   // specular
     lightSource.setPosition(light_center, light_radius, 0.0);
@@ -251,11 +251,8 @@ int main()
             for (size_t j = 0; j < ennemies.size(); ++j) {
                 bool collided = physics.checkCollisions(bullets[i].physicsObject, ennemies[j]->physicsObject);
                 if (collided) {
-
                     bulletsToRemove.push_back(i);
                     ennemiesToRemove.push_back(j);
-
-                    // If you want to break out of the inner loop after a collision, you can use a break statement here.
                 }
             }
              for (size_t k = 0; k < animated_enemies.size(); k++) {
@@ -270,8 +267,7 @@ int main()
                  }
              }
         }
-
-        // Remove elements in reverse order to avoid invalidating indices
+        
         for (auto it = bulletsToRemove.rbegin(); it != bulletsToRemove.rend(); ++it) {
             physics.dynamicsWorld->removeRigidBody(bullets[*it].physicsObject.get());
             bullets.erase(bullets.begin() + *it);
@@ -308,7 +304,7 @@ int main()
 
         // Render scene from the light
         // ---------------------------
-        lightSource.setPosition(light_center, light_radius, now / 2.0);
+        lightSource.setPosition(light_center, light_radius / 1.5 , now);
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

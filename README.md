@@ -23,5 +23,5 @@ You move forward with the Z key or U key if you want to move faster and move bac
 You can press Space bar to jump and left click on your mouse to shoot a bullet.
 
 Files:
-The source code, shaders objects and textures are in the project folder. 
+The source code, shaders, objects and textures are in the "Project" folder. 
 The textures for every object are in the object folder aswell usually alongside them except for the cubemap which is in the textures folder.

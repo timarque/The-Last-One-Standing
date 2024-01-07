@@ -11,6 +11,8 @@ Then on the terminal, run cmake --preset=default, to install all the dependencie
 To build the project, run cmake --build build --config Release
 Run the "VR_project.exe" executable that was built in the build/Release directory 
 
+(If you are having trouble with the assmip library, change the "assimp::assimp" in CmakeLists.txt to "assimp")
+
 Dependencies: 
 The libraries used in this project are:
 glfw, bullet, assimp, glm, stb

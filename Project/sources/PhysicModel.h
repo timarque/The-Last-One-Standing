@@ -12,7 +12,7 @@ protected:
     std::unique_ptr<btCollisionShape> mShape;
     std::unique_ptr<btDefaultMotionState> mMotionState;
 public:
-    int hp = 1.0;
+    int hp = 1;
     std::string name = "physic_model";
     std::unique_ptr<btRigidBody> physicsObject;
     std::unique_ptr<btCollisionObject> physicsCol;

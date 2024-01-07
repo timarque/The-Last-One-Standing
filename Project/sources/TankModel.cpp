@@ -104,8 +104,11 @@ bool TankModel::update(GLFWwindow *window, float deltaTime)
         moveBackward(1.5);
     }
 
+
+
+
     if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
-        moveForward(2.0);
+        moveForward(3.0);
     }
 
     if (lastMouseX == 0, lastMouseY) {

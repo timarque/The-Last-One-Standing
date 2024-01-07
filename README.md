@@ -9,8 +9,9 @@ If you are on windows, make sure to also add the path to your vcpkg installation
 Then on the CMakePresets file, change the path to your own path where you installed vcpkg as such : "your_path/vcpkg/scripts/buildsystems/vcpkg.cmake". 
 Then on the terminal, run cmake --preset=default, to install all the dependencies.
 To build the project, run cmake --build build --config Release
-Run the "VR_project.exe" executable that was built in the build/Release directory 
-
+Run the "VR_project.exe" executable that was built in the build/Release directory
+Otherwise:
+Get dependencies and run normally with cmake.
 (If you are having trouble with the assmip library, change the "assimp::assimp" in CmakeLists.txt to "assimp")
 
 Dependencies: 

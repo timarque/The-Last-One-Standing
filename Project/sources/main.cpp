@@ -89,7 +89,7 @@ int main()
 
     PhysicsEngine physics(btVector3(0, -9.81, 0));
     // Shaders
-    Shader shader(PATH_TO_SHADERS "/backpack/shader.vert", PATH_TO_SHADERS "/backpack/shader.frag");
+    Shader shader(PATH_TO_SHADERS "/common/shader.vert", PATH_TO_SHADERS "/common/shader.frag");
     Shader debugShader(PATH_TO_SHADERS "/debug/debug.vert", PATH_TO_SHADERS "/debug/debug.frag");
     Shader cubeMapShader(PATH_TO_SHADERS "/skybox/skybox.vert", PATH_TO_SHADERS "/skybox/skybox.frag");
     Shader animationShader(PATH_TO_SHADERS "/animation/animation.vert", PATH_TO_SHADERS "/animation/animation.frag");
@@ -175,10 +175,10 @@ int main()
 
     // Configure the light source
     glm::vec3 light_center(0.0, 10.0, -10.0);
-    float light_radius = 40.0;
+    float light_radius = 50.0;
     LightSource lightSource(depthMapShader,
-                            1.3,    // ambiant
-                            5.0,    // diffuse
+                            1.2,    // ambiant
+                            2.0,    // diffuse
                             1.0);   // specular
     lightSource.setPosition(light_center, light_radius, 0.0);
     

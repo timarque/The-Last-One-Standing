@@ -1,7 +1,3 @@
-//
-// Created by hanno on 27/12/2023.
-//
-
 #include "Model.h"
 #include "stb_image.h"
 

@@ -99,9 +99,9 @@ bool TankModel::update(GLFWwindow *window, float deltaTime)
     }
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        moveForward(1);
+        moveForward(1.5);
     } else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        moveBackward(1);
+        moveBackward(1.5);
     }
 
     if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
@@ -134,7 +134,6 @@ bool TankModel::update(GLFWwindow *window, float deltaTime)
 
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
         if (get_reload_time_left(glfwGetTime()) > this->reload_time) {
-            std::cout << "shoot" << std::endl;
             set_reload_time_start(glfwGetTime());
             shot = true;
         }

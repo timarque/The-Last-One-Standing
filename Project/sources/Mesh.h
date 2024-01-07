@@ -1,7 +1,5 @@
 //
-// Created by Merlin on 27/12/2023.
 // This code is based on the tutorial from https://learnopengl.com
-// Used tool : CoPilot
 //
 
 #ifndef VR_PROJECT_MESH_H

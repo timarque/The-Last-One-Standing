@@ -1,6 +1,4 @@
-//
-// Created by hanno on 27/12/2023.
-//
+
 
 #include "Mesh.h"
 #include <glm/glm.hpp>
@@ -88,7 +86,7 @@ void Mesh::Draw(Shader& shader, int apply) {
 
     for (GLuint i = 0; i < this->textures.size(); i++)
     {
-        glActiveTexture(GL_TEXTURE0 + i + 1);
+        glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(i) + 1);
         glBindTexture(GL_TEXTURE_2D, 0); // textures[i].id
     }
 

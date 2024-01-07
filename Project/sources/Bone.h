@@ -125,7 +125,7 @@ private:
 		scaleFactor = midWayLength / framesDiff;
 		return scaleFactor;
 	}
-	// Interpolating is: we have usually 3 or 4 poses so we interpolate between to make it look smooth
+	// Interpolating is: we have usually 3 or 4 poses called keyposes so we interpolate between to make it look smooth
 	glm::mat4 InterpolatePosition(float animationTime)
 	{
 		if (1 == m_NumPositions)

@@ -1,7 +1,3 @@
-//
-// Created by Merlin Hannon on 16/12/2023.
-//
-
 #ifndef CUBEMAP_H
 #define CUBEMAP_H
 

@@ -1,6 +1,4 @@
-//
-// Created by hanno on 27/12/2023.
-//
+
 
 #ifndef VR_PROJECT_MODEL_H
 #define VR_PROJECT_MODEL_H

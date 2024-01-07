@@ -297,7 +297,7 @@ int main()
         bool shot = tankModel.update(window, deltaTime);
         btVector3 forward_pos = tankModel.getForward();
         if (shot) {
-            PhysicModel bullet = generatePhysicalSphere(PATH_TO_OBJECTS "/tank/ball.obj", 0.2f, 10, tankModel.getPosition() + glm::vec3(forward_pos.x(), 0.2f, forward_pos.z()), physics);
+            PhysicModel bullet = generatePhysicalSphere(PATH_TO_OBJECTS "/tank/ball.obj", 0.2f, 10, tankModel.getPosition() + glm::vec3(forward_pos.x(), 0.7f, forward_pos.z()), physics);
             bullet.applyImpulse((forward_pos + btVector3(0.0f, camera.Position.y, 0.0f)) * btVector3(500.f, 0.0f, 500.f));
             bullets.push_back(std::move(bullet));
         }

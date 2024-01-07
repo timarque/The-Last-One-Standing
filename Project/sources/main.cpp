@@ -174,35 +174,35 @@ int main()
     }
 
     // Configure the light source
-    glm::vec3 light_pos = glm::vec3(0.0, 5.0, 0.0);
-    LightSource lightSource(depthMapShader);
-    lightSource.setPosition(light_pos);
+    glm::vec3 light_center(0.0, 10.0, -10.0);
+    float light_radius = 50.0;
+    LightSource lightSource(depthMapShader,
+                            0.3,    // ambiant
+                            5.0,    // diffuse
+                            1.0);   // specular
+    lightSource.setPosition(light_center, light_radius, 0.0);
     
     glm::mat4 floor = glm::mat4(1.0f);
-
-    float ambient = 1.0f;
-    float diffuse = 2.0f;
-    float specular = 0.8f;
     
     glm::vec3 materialColour = glm::vec3(0.5f, 0.6f, 0.8f);
 
     shader.use();
     shader.setFloat("shininess", 32.0f);
     shader.setVec3("materialColour", materialColour);
-    shader.setFloat("light.ambient_strength", ambient);
-    shader.setFloat("light.diffuse_strength", diffuse);
-    shader.setFloat("light.specular_strength", specular);
+    shader.setFloat("light.ambient_strength", lightSource.getAmbiant());
+    shader.setFloat("light.diffuse_strength", lightSource.getDiffuse());
+    shader.setFloat("light.specular_strength", lightSource.getSpecular());
     shader.setFloat("light.constant", 1.0f);
-    shader.setFloat("light.linear", 0.1f);
+    shader.setFloat("light.linear", 0.05f);
     shader.setFloat("light.quadratic", 0.01f);
     shader.setInt("shadowMap", 0);
 
     reflectiveShader.use();
     reflectiveShader.setFloat("shininess", 32.0f);
     reflectiveShader.setVec3("materialColour", materialColour);
-    reflectiveShader.setFloat("light.ambient_strength", ambient);
-    reflectiveShader.setFloat("light.diffuse_strength", diffuse);
-    reflectiveShader.setFloat("light.specular_strength", specular);
+    reflectiveShader.setFloat("light.ambient_strength", lightSource.getAmbiant());
+    reflectiveShader.setFloat("light.diffuse_strength", lightSource.getDiffuse());
+    reflectiveShader.setFloat("light.specular_strength", lightSource.getSpecular());
     reflectiveShader.setFloat("light.constant", 1.0f);
     reflectiveShader.setFloat("light.linear", 0.14f);
     reflectiveShader.setFloat("light.quadratic", 0.07f);
@@ -210,9 +210,9 @@ int main()
     refractiveShader.use();
     refractiveShader.setFloat("shininess", 32.0f);
     refractiveShader.setVec3("materialColour", materialColour);
-    refractiveShader.setFloat("light.ambient_strength", ambient);
-    refractiveShader.setFloat("light.diffuse_strength", diffuse);
-    refractiveShader.setFloat("light.specular_strength", specular);
+    refractiveShader.setFloat("light.ambient_strength", lightSource.getAmbiant());
+    refractiveShader.setFloat("light.diffuse_strength", lightSource.getDiffuse());
+    refractiveShader.setFloat("light.specular_strength", lightSource.getSpecular());
     refractiveShader.setFloat("light.constant", 1.0f);
     refractiveShader.setFloat("light.linear", 0.14f);
     refractiveShader.setFloat("light.quadratic", 0.07f);
@@ -308,6 +308,8 @@ int main()
 
         // Render scene from the light
         // ---------------------------
+        lightSource.setPosition(light_center, light_radius, now / 2.0);
+
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -342,9 +344,8 @@ int main()
         // Setup the shader
         glm::mat4 view = camera.GetViewMatrix(&tankModel);
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        lightSource.setPosition(light_pos + glm::vec3(4 * std::sin(now / 2), 0.0,  4 * std::cos(now / 2)));
-        shader.use();
 
+        shader.use();
         shader.setVec3("u_view_pos", camera.Position);
         shader.setMatrix4("model", tankModel.getModelMatrix(glm::vec3(1.0f)));
         shader.setMatrix4("projection", projection);
@@ -354,6 +355,7 @@ int main()
         shader.setInt("shadowMap", 0);  // Maybe not needed ?
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, lightSource.getDepthMapID());
+
         renderScene(bullets, shader, tankModel, ennemies, grid_size, floor, floorModel, cactuses);
         
 

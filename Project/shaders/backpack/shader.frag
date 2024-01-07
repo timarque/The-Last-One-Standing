@@ -60,6 +60,8 @@ void main()
 	vec3 V = normalize(u_view_pos - v_frag_coord);
 
 	vec3 normalMap = normalize(texture(texture_normal1, TexCoords).xyz * 2.0 - 1.0);
+	normalMap.z = normalMap.z - 0.995;
+	normalMap.z = normalMap.z * 100; // it seems like all the z coords are between 0.98 and 1.0
     N = normalize(N + normalMap);
 
 	float specular = specularCalculation(N, L, V);

@@ -19,17 +19,24 @@ private:
     const unsigned int SHADOW_WIDTH  = 8192; // resolution of depth map
     const unsigned int SHADOW_HEIGHT = 8192;
     unsigned int depthMapFBO;   // Frame buffer used to create the depth map
-    glm::vec3 lightPosition;
-    const glm::vec3 centerOfScene = glm::vec3(0.0f, 0.0f, 0.0f);
     Shader depthShader;
     unsigned int depthMap;
+    glm::vec3 lightPosition;
+    const glm::vec3 centerOfScene = glm::vec3(0.0f, 0.0f, -10.0f);
+    float ambiant;
+    float diffuse;
+    float specular;
 
 public:
 
     LightSource() = default;    // never used
 
-    LightSource(Shader &depthShader) {
+    LightSource(Shader &depthShader, float ambiant, float diffuse, float specular) {
         this->depthShader = depthShader;
+        this->ambiant = ambiant;
+        this->diffuse = diffuse;
+        this-> specular = specular;
+
         // We want to render the scene from the light source
         glGenFramebuffers(1, &depthMapFBO);
         // Generation of a texture that will be used as depth buffer
@@ -61,8 +68,16 @@ public:
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void setPosition(glm::vec3 position) {
+    void setPosition(glm::vec3 &position) {
         lightPosition = position;
+    }
+
+    void setPosition(glm::vec3 center, float radius, float angle) {
+        setPosition(glm::vec3(center.x + radius * std::sin(angle), 
+                              center.y,
+                              center.z + radius * std::cos(angle)
+                              )
+                    );
     }
 
     glm::vec3 getPosition() {
@@ -75,8 +90,8 @@ public:
 
     glm::mat4 getLightSpaceMatrix() {
         // The light sees the whole scene
-        float near_plane = 2.0f, far_plane = 50.5f;  // TODO : did not understand these parameters
-        glm::mat4 lightProjection = glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, near_plane, far_plane);
+        float near_plane = 3.0f, far_plane = 200.5f;  // TODO : did not understand these parameters
+        glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, near_plane, far_plane);
         // It points in te direction of the center of the scene
         glm::mat4 lightView = glm::lookAt(lightPosition, 
                                           centerOfScene, 
@@ -96,6 +111,18 @@ public:
 
     unsigned int getDepthMapFBO() {
         return depthMapFBO;
+    }
+
+    float getDiffuse() {
+        return diffuse;
+    }
+
+    float getAmbiant() {
+        return ambiant;
+    }
+
+    float getSpecular() {
+        return specular;
     }
 
 private:

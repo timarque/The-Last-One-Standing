@@ -19,7 +19,7 @@ The libraries used in this project are:
 glfw, bullet, assimp, glm, stb
 
 Play:
-You move forward with the Z key and backwards with S. Use your mouse to look around and move sideways. 
+You move forward with the Z key or U key if you want to move faster and move backwards using S. Use your mouse to look around and move sideways. 
 You can press Space bar to jump and left click on your mouse to shoot a bullet.
 
 Files:

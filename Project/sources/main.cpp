@@ -175,9 +175,9 @@ int main()
 
     // Configure the light source
     glm::vec3 light_center(0.0, 10.0, -10.0);
-    float light_radius = 50.0;
+    float light_radius = 40.0;
     LightSource lightSource(depthMapShader,
-                            0.7,    // ambiant
+                            1.3,    // ambiant
                             5.0,    // diffuse
                             1.0);   // specular
     lightSource.setPosition(light_center, light_radius, 0.0);
